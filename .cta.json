@@ -1,0 +1,21 @@
+{
+  "framework": "react",
+  "typescript": true,
+  "projectName": "cv-portfolio-builder",
+  "mode": "code-router",
+  "tailwind": true,
+  "packageManager": "bun",
+  "toolchain": "eslint+prettier",
+  "variableValues": {},
+  "git": true,
+  "version": 1,
+  "existingAddOns": [
+    "tanstack-query",
+    "table",
+    "store",
+    "shadcn",
+    "module-federation",
+    "form",
+    "t3env"
+  ]
+}
