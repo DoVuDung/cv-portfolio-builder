@@ -16,7 +16,9 @@
     "check": "prettier --write . && eslint --fix",
     "prepare": "husky",
     "safe-push": "tsx scripts/safe-push.ts",
-    "setup:cicd": "tsx scripts/setup-cicd.ts"
+    "setup:cicd": "tsx scripts/setup-cicd.ts",
+    "build:mcp": "tsc -p tsconfig.mcp.json",
+    "start:mcp": "node dist/mcp/stitch-context-server.js"
   },
   "dependencies": {
     "@faker-js/faker": "^9.6.0",

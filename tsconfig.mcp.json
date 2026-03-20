@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["src/mcp/**/*"],
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "outDir": "dist/mcp",
+    "rootDir": "src/mcp",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  }
+}
