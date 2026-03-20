@@ -1,42 +1,70 @@
 import React, { useState } from 'react'
 import { Button } from './ui/button'
-import { TemplateSwitcher } from './TemplateSwitcher'
-import type { CV } from '@/agent/schemas/cv.schema'
-import type { Theme } from '@/templates/types/template.types'
-import { useCVMemory, useSkillAgent } from '@/agent/hooks/useSkillAgent'
-import { TemplateRenderer } from '@/templates/core/TemplateRenderer'
-import { useTemplateEngine } from '@/templates'
 
-interface CVBuilderProps {
-  initialData?: CV | null
+// Define CV types locally
+interface Profile {
+  name: string
+  title: string
+  summary: string
+  location: string
+  contact: {
+    email?: string
+    phone?: string
+    github?: string
+    linkedin?: string
+  }
 }
 
-export function CVBuilder({ initialData }: CVBuilderProps) {
-  const { currentCV, saveCV } = useCVMemory()
-  const { activeTemplate } = useTemplateEngine()
-  const [cvData, setCvData] = useState<CV>(initialData || currentCV || getDefaultCV())
+interface Experience {
+  company: string
+  role: string
+  startDate: string
+  endDate?: string
+  achievements: Array<string>
+  techStack: Array<string>
+}
+
+interface Project {
+  name: string
+  description: string
+  techStack: Array<string>
+  highlights: Array<string>
+}
+
+interface Education {
+  institution: string
+  degree: string
+  startDate: string
+  endDate: string
+}
+
+interface CV {
+  profile: Profile
+  skills: Array<string>
+  experience: Array<Experience>
+  projects: Array<Project>
+  education: Array<Education>
+}
+
+export function CVBuilder() {
+  const [cvData, setCvData] = useState<CV>({
+    profile: {
+      name: '',
+      title: '',
+      summary: '',
+      location: '',
+      contact: {},
+    },
+    skills: [],
+    experience: [],
+    projects: [],
+    education: [],
+  })
   const [isEditing, setIsEditing] = useState(true)
 
-  function getDefaultCV(): CV {
-    return {
-      profile: {
-        name: '',
-        title: '',
-        summary: '',
-        location: '',
-        contact: {
-          email: '',
-        },
-      },
-      skills: [],
-      experience: [],
-      projects: [],
-      education: [],
-    }
-  }
-
   const handleSave = () => {
-    saveCV(cvData, ['Manual save'])
+    localStorage.setItem('cv-data', JSON.stringify(cvData))
+    alert('CV saved to browser storage!')
     setIsEditing(false)
   }
 
@@ -114,17 +142,11 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
           {/* Left Panel - Editor */}
           <div className={`space-y-6 ${isEditing ? 'block' : 'hidden lg:block'}`}>
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Editor</h2>
-              <p className="text-gray-600 text-sm">
-                Edit your CV information. Changes are saved locally.
-              </p>
+              <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
               
-              {/* Profile Section */}
-              <div className="mt-4 space-y-4">
-                <TemplateSwitcher />
-                
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <label className="block text-sm font-medium mb-1">Name *</label>
                   <input
                     type="text"
                     value={cvData.profile.name}
@@ -133,11 +155,12 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
                       profile: { ...cvData.profile, name: e.target.value } 
                     })}
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Your full name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Title</label>
+                  <label className="block text-sm font-medium mb-1">Title *</label>
                   <input
                     type="text"
                     value={cvData.profile.title}
@@ -146,11 +169,12 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
                       profile: { ...cvData.profile, title: e.target.value } 
                     })}
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Senior Software Engineer"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Summary</label>
+                  <label className="block text-sm font-medium mb-1">Summary *</label>
                   <textarea
                     value={cvData.profile.summary}
                     onChange={(e) => setCvData({ 
@@ -159,6 +183,35 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
                     })}
                     rows={4}
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Write a brief professional summary..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Location</label>
+                  <input
+                    type="text"
+                    value={cvData.profile.location}
+                    onChange={(e) => setCvData({ 
+                      ...cvData, 
+                      profile: { ...cvData.profile, location: e.target.value } 
+                    })}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="City, State"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={cvData.profile.contact.email || ''}
+                    onChange={(e) => setCvData({ 
+                      ...cvData, 
+                      profile: { ...cvData.profile, contact: { ...cvData.profile.contact, email: e.target.value } } 
+                    })}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="your@email.com"
                   />
                 </div>
 
@@ -178,8 +231,28 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
               </div>
             </div>
 
-            {/* AI Assistant Panel */}
-            <AIAssistantPanel cvData={cvData} onUpdateCv={setCvData} />
+            {/* Quick Stats */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">{cvData.experience.length}</div>
+                  <div className="text-sm text-gray-600">Work Experience</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">{cvData.projects.length}</div>
+                  <div className="text-sm text-gray-600">Projects</div>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">{cvData.skills.length}</div>
+                  <div className="text-sm text-gray-600">Skills</div>
+                </div>
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">{cvData.education.length}</div>
+                  <div className="text-sm text-gray-600">Education</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Panel - Preview */}
@@ -187,83 +260,87 @@ export function CVBuilder({ initialData }: CVBuilderProps) {
             <div className="bg-white rounded-lg shadow p-6 sticky top-4">
               <h2 className="text-xl font-semibold mb-4">Live Preview</h2>
               
-              {activeTemplate ? (
-                <div className="border rounded-lg overflow-hidden">
-                  <TemplateRenderer
-                    template={activeTemplate}
-                    cvData={cvData}
-                    theme={activeTemplate.theme as Theme}
-                  />
+              <div className="border rounded-lg p-6 bg-gray-50">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">{cvData.profile.name || 'Your Name'}</h3>
+                  <p className="text-gray-600">{cvData.profile.title || 'Your Title'}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {[cvData.profile.location, cvData.profile.contact.email].filter(Boolean).join(' | ')}
+                  </p>
                 </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <p>Select a template to preview your CV</p>
-                </div>
-              )}
+
+                {cvData.profile.summary && (
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-700 mb-2">Summary</h4>
+                    <p className="text-gray-600 text-sm">{cvData.profile.summary}</p>
+                  </div>
+                )}
+
+                {cvData.skills.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-700 mb-2">Skills</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {cvData.skills.map((skill, idx) => (
+                        <span key={idx} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {cvData.experience.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-700 mb-2">Experience</h4>
+                    {cvData.experience.map((exp, idx) => (
+                      <div key={idx} className="mb-3 pb-3 border-b last:border-0">
+                        <div className="font-medium text-gray-900">{exp.role}</div>
+                        <div className="text-sm text-gray-600">{exp.company}</div>
+                        <ul className="list-disc list-inside text-sm text-gray-600 mt-1">
+                          {exp.achievements.map((achievement, i) => (
+                            <li key={i}>{achievement}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {cvData.projects.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-700 mb-2">Projects</h4>
+                    {cvData.projects.map((project, idx) => (
+                      <div key={idx} className="mb-3 pb-3 border-b last:border-0">
+                        <div className="font-medium text-gray-900">{project.name}</div>
+                        <p className="text-sm text-gray-600 mt-1">{project.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {cvData.education.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-2">Education</h4>
+                    {cvData.education.map((edu, idx) => (
+                      <div key={idx} className="mb-2">
+                        <div className="font-medium text-gray-900">{edu.degree}</div>
+                        <div className="text-sm text-gray-600">{edu.institution}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {cvData.profile.name === '' && cvData.profile.title === '' && (
+                  <div className="text-center py-12 text-gray-500">
+                    <p>Start editing to see your CV preview</p>
+                    <p className="text-sm mt-2">Click "Load Demo" to see an example</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </main>
-    </div>
-  )
-}
-
-// AI Assistant Panel Component
-interface AIAssistantPanelProps {
-  cvData: CV
-  onUpdateCv: (data: CV) => void
-}
-
-function AIAssistantPanel({ cvData, onUpdateCv }: AIAssistantPanelProps) {
-  const { analyzeCV, generateSummary, isLoading } = useSkillAgent({ debugMode: true })
-  const [result, setResult] = useState<string>('')
-
-  const handleAnalyze = async () => {
-    const analysis = await analyzeCV(cvData)
-    setResult(`Score: ${analysis.score}/100\n\nStrengths:\n${analysis.strengths.join('\n')}\n\nRecommendations:\n${analysis.recommendations.join('\n')}`)
-  }
-
-  const handleGenerateSummary = async () => {
-    const summary = await generateSummary(cvData, 'Senior Software Engineer')
-    onUpdateCv({ ...cvData, profile: { ...cvData.profile, summary } })
-    setResult(`Generated Summary:\n\n${summary}`)
-  }
-
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4">AI Assistant</h3>
-      
-      <div className="space-y-2">
-        <Button
-          onClick={handleAnalyze}
-          disabled={isLoading}
-          className="w-full"
-          variant="outline"
-        >
-          Analyze CV
-        </Button>
-
-        <Button
-          onClick={handleGenerateSummary}
-          disabled={isLoading}
-          className="w-full"
-          variant="outline"
-        >
-          Generate Summary
-        </Button>
-      </div>
-
-      {isLoading && (
-        <div className="mt-4 text-center text-sm text-gray-500">
-          AI is thinking...
-        </div>
-      )}
-
-      {result && (
-        <div className="mt-4 p-3 bg-gray-50 rounded text-sm whitespace-pre-wrap max-h-48 overflow-y-auto">
-          {result}
-        </div>
-      )}
     </div>
   )
 }
