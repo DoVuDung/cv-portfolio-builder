@@ -1,11 +1,14 @@
 import { z } from 'zod'
 
-// Agent context types
+// Agent context schema
 export const agentContextSchema = z.object({
-  jobTarget: z.string().optional(),
+  targetRole: z.string().optional(),
+  seniority: z.enum(['junior', 'mid', 'senior', 'lead', 'principal']).optional(),
   domain: z.string().optional(),
-  experienceLevel: z.enum(['junior', 'mid', 'senior', 'lead', 'principal']).optional(),
-  applicationGoals: z.array(z.string()).default([]),
+  preferences: z.object({
+    tone: z.enum(['professional', 'casual', 'academic', 'technical']).default('professional'),
+    emphasis: z.array(z.enum(['leadership', 'technical', 'impact', 'collaboration'])).default([]),
+  }).optional(),
 })
 
 // Tool parameter types
@@ -21,15 +24,19 @@ export const toolMetadataSchema = z.object({
   name: z.string(),
   description: z.string(),
   parameters: z.array(toolParameterSchema).default([]),
-  category: z.enum(['profile', 'experience', 'project', 'skills', 'analysis']),
+  category: z.enum(['analysis', 'generation', 'optimization', 'extraction', 'mapping']),
+  requiresLLM: z.boolean().default(false),
 })
 
 // Agent action types
 export const agentActionSchema = z.object({
-  type: z.enum(['suggest', 'create', 'update', 'delete', 'analyze']),
+  type: z.enum(['analyze', 'generate', 'optimize', 'extract', 'map']),
   tool: z.string(),
   payload: z.record(z.unknown()),
   status: z.enum(['pending', 'executing', 'completed', 'failed']).default('pending'),
+  result: z.unknown().optional(),
+  error: z.string().optional(),
+  timestamp: z.date().default(() => new Date()),
 })
 
 // Session state schema
@@ -40,6 +47,7 @@ export const sessionStateSchema = z.object({
   lastActivity: z.date(),
   actionHistory: z.array(agentActionSchema).default([]),
   context: agentContextSchema,
+  debugMode: z.boolean().default(false),
 })
 
 // Export types
@@ -48,4 +56,6 @@ export type ToolParameter = z.infer<typeof toolParameterSchema>
 export type ToolMetadata = z.infer<typeof toolMetadataSchema>
 export type AgentAction = z.infer<typeof agentActionSchema>
 export type SessionState = z.infer<typeof sessionStateSchema>
-export type ExperienceLevel = 'junior' | 'mid' | 'senior' | 'lead' | 'principal'
+export type SeniorityLevel = 'junior' | 'mid' | 'senior' | 'lead' | 'principal'
+export type Tone = 'professional' | 'casual' | 'academic' | 'technical'
+export type Emphasis = 'leadership' | 'technical' | 'impact' | 'collaboration'

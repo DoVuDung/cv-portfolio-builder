@@ -3,6 +3,7 @@ import { z } from 'zod'
 // Contact information schema
 export const contactSchema = z.object({
   email: z.string().email('Invalid email address'),
+  phone: z.string().optional(),
   github: z.string().optional(),
   linkedin: z.string().optional(),
   portfolio: z.string().optional(),
@@ -52,6 +53,11 @@ export const cvSchema = z.object({
   experience: z.array(experienceSchema).default([]),
   projects: z.array(projectSchema).default([]),
   education: z.array(educationSchema).default([]),
+  metadata: z.object({
+    version: z.string().default('1.0.0'),
+    lastUpdated: z.date().optional(),
+    createdAt: z.date().optional(),
+  }).optional(),
 })
 
 // Export types
@@ -61,3 +67,12 @@ export type Experience = z.infer<typeof experienceSchema>
 export type Project = z.infer<typeof projectSchema>
 export type Education = z.infer<typeof educationSchema>
 export type CV = z.infer<typeof cvSchema>
+export type CVMetadata = z.infer<typeof cvSchema>['metadata']
+
+// CV Version history
+export interface CVVersion {
+  version: string
+  timestamp: Date
+  changes: Array<string>
+  cv: CV
+}

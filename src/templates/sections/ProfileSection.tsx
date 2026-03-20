@@ -1,5 +1,5 @@
 import React from 'react'
-import type { Profile, Contact } from '../../types/cv.types'
+import type { Profile } from '@/agent'
 
 interface ProfileSectionProps {
   data: Profile

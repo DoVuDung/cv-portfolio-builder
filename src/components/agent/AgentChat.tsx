@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
-import { useCVAgent, useCVData, useSession } from '../hooks/use-cv-agent'
+import { useState } from 'react'
+import { useCVAgent, useCVData, useSession } from '@/hooks/use-cv-agent'
 
 interface Message {
   id: string
   type: 'user' | 'agent' | 'system'
   content: string
   timestamp: Date
-  suggestions?: string[]
+  suggestions?: Array<string>
 }
 
 /**
  * Agent Chat Interface - Chat-like UI for interacting with the agent
  */
 export function AgentChat() {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Array<Message>>([
     {
       id: '1',
       type: 'agent',

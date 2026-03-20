@@ -1,10 +1,7 @@
-import { useState, useCallback, useMemo } from 'react'
 import { useStore } from '@tanstack/react-store'
-import { cvStore, cvCompletenessScore, categorizedSkills } from '../agent/memory/cv-memory'
-import { contextManager } from '../agent/memory/context-manager'
-import { agentOrchestrator } from '../agent/core/agent'
+import { useCallback, useMemo, useState } from 'react'
 import { sessionManager } from '../agent/core/session'
-import type { CV } from '../agent/schemas/cv.schema'
+import { contextManager } from '../agent/memory/context-manager'
 import type { ToolResult } from '../agent/tools/base-tool'
 
 /**
@@ -51,7 +48,7 @@ export function useCVAgent() {
   /**
    * Get intelligent suggestions
    */
-  const getSuggestions = useCallback(async (): Promise<string[]> => {
+  const getSuggestions = useCallback(async (): Promise<Array<string>> => {
     try {
       setIsProcessing(true)
       return await agentOrchestrator.getSuggestions()
@@ -132,7 +129,7 @@ export function useAgentTools() {
   })
 
   const toolsByCategory = useMemo(() => {
-    const categories: Record<string, any[]> = {}
+    const categories: Record<string, Array<any>> = {}
 
     availableTools.forEach((tool) => {
       const category = tool.metadata.category

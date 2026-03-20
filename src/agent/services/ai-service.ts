@@ -4,8 +4,8 @@
 
 export interface AIProvider {
   name: string
-  generateText(prompt: string, options?: GenerationOptions): Promise<string>
-  generateJSON(prompt: string, options?: GenerationOptions): Promise<any>
+  generateText: (prompt: string, options?: GenerationOptions) => Promise<string>
+  generateJSON: (prompt: string, options?: GenerationOptions) => Promise<any>
 }
 
 export interface GenerationOptions {
@@ -16,36 +16,36 @@ export interface GenerationOptions {
 
 export interface AIServiceInterface {
   provider: AIProvider
-  setProvider(provider: AIProvider): void
-  generateSummary(params: GenerateSummaryParams): Promise<string>
-  enhanceAchievements(achievements: string[]): Promise<string[]>
-  analyzeCV(cvData: any): Promise<CVAnalysis>
-  identifySkillGaps(currentSkills: string[], targetRole: string): Promise<SkillGapAnalysis>
+  setProvider: (provider: AIProvider) => void
+  generateSummary: (params: GenerateSummaryParams) => Promise<string>
+  enhanceAchievements: (achievements: Array<string>) => Promise<Array<string>>
+  analyzeCV: (cvData: any) => Promise<CVAnalysis>
+  identifySkillGaps: (currentSkills: Array<string>, targetRole: string) => Promise<SkillGapAnalysis>
 }
 
 export interface GenerateSummaryParams {
   role: string
   experience: number
-  skills: string[]
+  skills: Array<string>
   domain?: string
 }
 
 export interface CVAnalysis {
-  strengths: string[]
-  weaknesses: string[]
-  recommendations: string[]
+  strengths: Array<string>
+  weaknesses: Array<string>
+  recommendations: Array<string>
   score: number
 }
 
 export interface SkillGapAnalysis {
-  gaps: string[]
-  recommendations: LearningRecommendation[]
+  gaps: Array<string>
+  recommendations: Array<LearningRecommendation>
 }
 
 export interface LearningRecommendation {
   skill: string
   priority: 'high' | 'medium' | 'low'
-  resources?: string[]
+  resources?: Array<string>
 }
 
 /**
@@ -100,7 +100,7 @@ export class AIService implements AIServiceInterface {
   /**
    * Enhance achievement descriptions
    */
-  async enhanceAchievements(achievements: string[]): Promise<string[]> {
+  async enhanceAchievements(achievements: Array<string>): Promise<Array<string>> {
     const prompt = buildEnhancementPrompt(achievements)
     const result = await this._provider.generateJSON(prompt)
     return result.enhanced || achievements
@@ -118,7 +118,7 @@ export class AIService implements AIServiceInterface {
   /**
    * Identify skill gaps
    */
-  async identifySkillGaps(currentSkills: string[], targetRole: string): Promise<SkillGapAnalysis> {
+  async identifySkillGaps(currentSkills: Array<string>, targetRole: string): Promise<SkillGapAnalysis> {
     const prompt = buildGapAnalysisPrompt(currentSkills, targetRole)
     const result = await this._provider.generateJSON(prompt)
     return result.gaps || { gaps: [], recommendations: [] }
@@ -133,7 +133,7 @@ ${params.domain ? `Domain: ${params.domain}.` : ''}
 Keep it concise, impactful, and under 100 words.`
 }
 
-function buildEnhancementPrompt(achievements: string[]): string {
+function buildEnhancementPrompt(achievements: Array<string>): string {
   return `Enhance these achievement descriptions to be more impactful and quantifiable:
 ${achievements.map((a) => `- ${a}`).join('\n')}
 
@@ -157,7 +157,7 @@ Provide:
 Format as JSON.`
 }
 
-function buildGapAnalysisPrompt(currentSkills: string[], targetRole: string): string {
+function buildGapAnalysisPrompt(currentSkills: Array<string>, targetRole: string): string {
   return `Identify skill gaps for a ${targetRole} role.
 Current skills: ${currentSkills.join(', ')}
 

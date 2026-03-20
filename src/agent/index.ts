@@ -1,23 +1,42 @@
+/**
+ * Skill Agent - Main Export File
+ * 
+ * Clean imports for using the Skill Agent system
+ */
+
+// Core
+export { SkillAgent, AgentOrchestrator, ToolRegistry, createSkillAgent } from './core/agent'
+export type { AgentTask, AgentResponse } from './core/agent'
+
 // Schemas
 export * from './schemas/cv.schema'
 export * from './schemas/agent.schema'
 
-// Memory
-export * from './memory/cv-memory'
-export * from './memory/context-manager'
-
 // Tools
-export * from './tools/base-tool'
-export * from './tools/profile-tools'
-export * from './tools/experience-tools'
-export * from './tools/project-tools'
-export * from './tools/skills-tools'
-export * from './tools/analysis-tools'
+export { BaseTool } from './tools/base-tool'
+export type { ITool, ToolResult, ToolCallLog } from './tools/base-tool'
+export * from './tools/core-tools'
+
+// Memory
+export { 
+  CVMemoryManager, 
+  SessionMemoryManager, 
+  PreferenceMemoryManager,
+  cvMemory,
+  sessionMemory,
+  preferenceMemory,
+} from './memory/cv-memory'
+
+// Context
+export { ContextManager, contextManager } from './context/context-manager'
 
 // Services
-export * from './services/ai-service'
-export * from './services/prompts'
+export * from './services/llm'
+export * from './services/logger'
 
-// Core
-export * from './core/agent'
-export * from './core/session'
+// Hooks
+export { 
+  useSkillAgent, 
+  useCVMemory, 
+  useAgentContext,
+} from './hooks/useSkillAgent'

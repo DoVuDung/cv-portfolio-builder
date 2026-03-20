@@ -1,195 +1,151 @@
-import { cvStore } from '../memory/cv-memory'
-import { contextManager } from '../memory/context-manager'
-import { aiService } from '../services/ai-service'
-import type { ToolMetadata, AgentAction, AgentContext } from '../schemas/agent.schema'
+import { cvMemory, preferenceMemory, sessionMemory } from '../memory/cv-memory'
+import { contextManager } from '../context/context-manager'
+import type { AgentAction, AgentContext } from '../schemas/agent.schema'
 import type { CV } from '../schemas/cv.schema'
-import type { ToolResult } from '../tools/base-tool'
-
-// Import all tools
-import { profileTools } from '../tools/profile-tools'
-import { experienceTools } from '../tools/experience-tools'
-import { projectTools } from '../tools/project-tools'
-import { skillsTools } from '../tools/skills-tools'
-import { analysisTools } from '../tools/analysis-tools'
+import type { ITool } from '../tools/base-tool'
+import type { LLMProvider } from '../services/llm'
 
 /**
- * Tool Registry - Central registry of all available tools
+ * Tool Registry - Manages available tools
  */
 export class ToolRegistry {
-  private static instance: ToolRegistry
-  private tools: Map<string, any> = new Map()
+  private tools: Map<string, ITool> = new Map()
 
-  private constructor() {
-    // Register all tools
-    this.registerTool('updateProfile', profileTools.updateProfile)
-    this.registerTool('generateSummary', profileTools.generateSummary)
-    this.registerTool('optimizeContact', profileTools.optimizeContact)
-
-    this.registerTool('addExperience', experienceTools.addExperience)
-    this.registerTool('enhanceAchievements', experienceTools.enhanceAchievements)
-    this.registerTool('suggestTechStack', experienceTools.suggestTechStack)
-
-    this.registerTool('addProject', projectTools.addProject)
-    this.registerTool('generateHighlights', projectTools.generateHighlights)
-    this.registerTool('linkToSkills', projectTools.linkToSkills)
-
-    this.registerTool('addSkill', skillsTools.addSkill)
-    this.registerTool('categorizeSkills', skillsTools.categorizeSkills)
-    this.registerTool('identifyGaps', skillsTools.identifyGaps)
-
-    this.registerTool('analyzeCV', analysisTools.analyzeCV)
-    this.registerTool('keywordOptimization', analysisTools.keywordOptimization)
-    this.registerTool('consistencyCheck', analysisTools.consistencyCheck)
+  /**
+   * Register a tool
+   */
+  register(tool: ITool): void {
+    this.tools.set(tool.metadata.name, tool)
   }
 
-  static getInstance(): ToolRegistry {
-    if (!ToolRegistry.instance) {
-      ToolRegistry.instance = new ToolRegistry()
-    }
-    return ToolRegistry.instance
+  /**
+   * Register multiple tools
+   */
+  registerMany(tools: Array<ITool>): void {
+    tools.forEach(tool => this.register(tool))
   }
 
-  registerTool(name: string, tool: any): void {
-    this.tools.set(name, tool)
+  /**
+   * Get tool by name
+   */
+  get(name: string): ITool | undefined {
+    return this.tools.get(name)
   }
 
-  getTool(name: string): any | null {
-    return this.tools.get(name) || null
+  /**
+   * Get all tools
+   */
+  getAll(): Array<ITool> {
+    return Array.from(this.tools.values())
   }
 
-  getAllTools(): Array<{ name: string; metadata: ToolMetadata }> {
-    return Array.from(this.tools.entries()).map(([name, tool]) => ({
-      name,
-      metadata: tool.metadata,
-    }))
+  /**
+   * Check if tool exists
+   */
+  has(name: string): boolean {
+    return this.tools.has(name)
   }
 
-  getToolsByCategory(category: string): any[] {
-    return Array.from(this.tools.values()).filter((tool) => tool.metadata.category === category)
+  /**
+   * List all tool names
+   */
+  listTools(): Array<string> {
+    return Array.from(this.tools.keys())
   }
 }
 
 /**
- * Agent Orchestrator - Main agent that coordinates tools and memory
+ * Agent Orchestrator - Coordinates tool execution and state management
  */
 export class AgentOrchestrator {
   private toolRegistry: ToolRegistry
-  private actionHistory: AgentAction[] = []
-  private isProcessing: boolean = false
+  private llmService?: LLMProvider
+  private debugMode: boolean
 
-  constructor() {
-    this.toolRegistry = ToolRegistry.getInstance()
+  constructor(options?: {
+    toolRegistry?: ToolRegistry
+    llmService?: LLMProvider
+    debugMode?: boolean
+  }) {
+    this.toolRegistry = options?.toolRegistry || new ToolRegistry()
+    this.llmService = options?.llmService
+    this.debugMode = options?.debugMode ?? false
   }
 
   /**
-   * Execute a tool by name
+   * Execute a single tool with logging
    */
   async executeTool<TParams, TResult>(
     toolName: string,
     params: TParams
-  ): Promise<ToolResult<TResult>> {
-    const tool = this.toolRegistry.getTool(toolName)
-
+  ): Promise<{ success: boolean; result?: TResult; error?: string }> {
+    const tool = this.toolRegistry.get(toolName)
+    
     if (!tool) {
       return {
         success: false,
-        message: `Tool "${toolName}" not found`,
+        error: `Tool not found: ${toolName}`,
       }
     }
 
-    // Record action start
-    const action: AgentAction = {
-      type: 'analyze',
-      tool: toolName,
-      payload: params as any,
-      status: 'executing',
-    }
-
+    const startTime = Date.now()
+    
     try {
-      this.isProcessing = true
-      const result = await tool.execute(params)
+      // Log tool execution start
+      if (this.debugMode) {
+        console.log(`[Agent] Executing tool: ${toolName}`, params)
+      }
 
-      action.status = 'completed'
-      this.actionHistory.push(action)
+      // Execute tool
+      const result = await tool.execute(params as never)
+      
+      // Log completion
+      const duration = Date.now() - startTime
+      if (this.debugMode) {
+        console.log(`[Agent] Tool completed: ${toolName} (${duration}ms)`)
+      }
 
-      return result
+      // Log to session memory
+      sessionMemory.logTool(toolName, params, result)
+
+      return {
+        success: true,
+        result: result as TResult,
+      }
     } catch (error) {
-      action.status = 'failed'
-      this.actionHistory.push(action)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      
+      if (this.debugMode) {
+        console.error(`[Agent] Tool failed: ${toolName}`, error)
+      }
 
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Tool execution failed',
+        error: errorMessage,
       }
-    } finally {
-      this.isProcessing = false
     }
   }
 
   /**
-   * Get intelligent suggestions based on current CV state
+   * Execute multiple tools in sequence
    */
-  async getSuggestions(): Promise<string[]> {
-    const suggestions: string[] = []
+  async executeToolChain(
+    steps: Array<{ tool: string; params: unknown }>
+  ): Promise<Array<{ tool: string; result: unknown; error?: string }>> {
+    const results: Array<{ tool: string; result: unknown; error?: string }> = []
 
-    // Get context-based suggestions
-    const contextSuggestions = contextManager.getContextualSuggestions()
-    suggestions.push(...contextSuggestions)
-
-    // Analyze CV for gaps
-    const analysis = await this.executeTool<void, any>('analyzeCV', undefined as any)
-
-    if (analysis.success && analysis.data) {
-      if (analysis.data.weaknesses) {
-        suggestions.push(...analysis.data.weaknesses)
-      }
-    }
-
-    // Remove duplicates
-    return [...new Set(suggestions)]
-  }
-
-  /**
-   * Run automated analysis and provide recommendations
-   */
-  async runAutomatedAnalysis(): Promise<{
-    score: number
-    topRecommendations: string[]
-    criticalIssues: string[]
-  }> {
-    const results = {
-      score: 0,
-      topRecommendations: [] as string[],
-      criticalIssues: [] as string[],
-    }
-
-    // Run consistency check
-    const consistencyResult = await this.executeTool<void, any>(
-      'consistencyCheck',
-      undefined as any
-    )
-    if (consistencyResult.success && consistencyResult.data) {
-      results.criticalIssues.push(...(consistencyResult.data.issues || []))
-      results.topRecommendations.push(...(consistencyResult.data.suggestions || []))
-    }
-
-    // Run full CV analysis
-    const analysisResult = await this.executeTool<void, any>('analyzeCV', undefined as any)
-    if (analysisResult.success && analysisResult.data) {
-      results.score = analysisResult.data.overallScore || 0
-    }
-
-    // Get skill gap analysis
-    const context = contextManager.getContext()
-    if (context.jobTarget) {
-      const currentSkills = cvStore.state.cv.skills
-      const gapsResult = await this.executeTool<any, any>('identifyGaps', {
-        targetRole: context.jobTarget,
-        currentSkills: currentSkills,
+    for (const step of steps) {
+      const result = await this.executeTool(step.tool, step.params)
+      
+      results.push({
+        tool: step.tool,
+        result: result.result,
+        error: result.error,
       })
 
-      if (gapsResult.success && gapsResult.data) {
-        results.topRecommendations.push(...((gapsResult.data.suggestions || []) as string[]))
+      // Stop on first failure
+      if (!result.success) {
+        break
       }
     }
 
@@ -197,55 +153,261 @@ export class AgentOrchestrator {
   }
 
   /**
-   * Get action history
+   * Set LLM service
    */
-  getActionHistory(): AgentAction[] {
-    return [...this.actionHistory]
+  setLLMService(service: LLMProvider): void {
+    this.llmService = service
   }
 
   /**
-   * Clear action history
+   * Enable/disable debug mode
    */
-  clearActionHistory(): void {
-    this.actionHistory = []
-  }
-
-  /**
-   * Check if agent is currently processing
-   */
-  getIsProcessing(): boolean {
-    return this.isProcessing
-  }
-
-  /**
-   * Export agent state
-   */
-  exportState(): string {
-    return JSON.stringify(
-      {
-        cv: cvStore.state.cv,
-        context: cvStore.state.context,
-        actionHistory: this.actionHistory,
-      },
-      null,
-      2
-    )
-  }
-
-  /**
-   * Import agent state
-   */
-  importState(stateJson: string): boolean {
-    try {
-      const state = JSON.parse(stateJson)
-      // Would need to implement state loading in cvActions
-      return true
-    } catch (error) {
-      console.error('Failed to import state:', error)
-      return false
-    }
+  setDebugMode(enabled: boolean): void {
+    this.debugMode = enabled
   }
 }
 
-// Export singleton instance
-export const agentOrchestrator = new AgentOrchestrator()
+/**
+ * Skill Agent - Main agent interface
+ */
+export class SkillAgent {
+  private orchestrator: AgentOrchestrator
+  private context: typeof contextManager
+
+  constructor(options?: {
+    orchestrator?: AgentOrchestrator
+    context?: typeof contextManager
+  }) {
+    this.orchestrator = options?.orchestrator || new AgentOrchestrator()
+    this.context = options?.context || contextManager
+  }
+
+  /**
+   * Run agent task
+   */
+  async run(task: AgentTask, input: Record<string, unknown>): Promise<AgentResponse> {
+    const startTime = Date.now()
+    
+    try {
+      let result: unknown
+      let actions: Array<AgentAction> = []
+
+      switch (task) {
+        case 'analyze_cv':
+          result = await this.analyzeCV(input.cv as CV)
+          actions = [{
+            type: 'analyze',
+            tool: 'analyzeCV',
+            payload: { cv: input.cv },
+            status: 'completed',
+            result,
+            timestamp: new Date(),
+          }]
+          break
+
+        case 'optimize_cv':
+          result = await this.optimizeCV(input.cv as CV, input.jobDescription as string)
+          actions = [
+            {
+              type: 'analyze',
+              tool: 'analyzeCV',
+              payload: { cv: input.cv },
+              status: 'completed',
+              timestamp: new Date(),
+            },
+            {
+              type: 'optimize',
+              tool: 'optimizeATS',
+              payload: { cv: input.cv, jobDescription: input.jobDescription },
+              status: 'completed',
+              result,
+              timestamp: new Date(),
+            },
+          ]
+          break
+
+        case 'generate_summary':
+          result = await this.generateSummary(input.cv as CV, input.targetRole as string)
+          actions = [{
+            type: 'generate',
+            tool: 'generateSummary',
+            payload: { cv: input.cv, targetRole: input.targetRole },
+            status: 'completed',
+            result,
+            timestamp: new Date(),
+          }]
+          break
+
+        case 'improve_experience':
+          result = await this.improveExperience(input.experience as any)
+          actions = [{
+            type: 'optimize',
+            tool: 'improveExperience',
+            payload: { experience: input.experience },
+            status: 'completed',
+            result,
+            timestamp: new Date(),
+          }]
+          break
+
+        default:
+          throw new Error(`Unknown task: ${task}`)
+      }
+
+      const duration = Date.now() - startTime
+
+      return {
+        success: true,
+        result,
+        actions,
+        metadata: {
+          duration,
+          taskId: `task_${Date.now()}`,
+          context: this.context.getContext(),
+        },
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      
+      return {
+        success: false,
+        error: errorMessage,
+        metadata: {
+          duration: Date.now() - startTime,
+          taskId: `task_${Date.now()}`,
+        },
+      }
+    }
+  }
+
+  /**
+   * Analyze CV
+   */
+  private async analyzeCV(cv: CV): Promise<unknown> {
+    const result = await this.orchestrator.executeTool('analyzeCV', { cv })
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+
+    // Save CV to memory
+    cvMemory.saveVersion(cv, ['Analyzed CV'])
+
+    return result.result
+  }
+
+  /**
+   * Optimize CV for ATS
+   */
+  private async optimizeCV(cv: CV, jobDescription?: string): Promise<unknown> {
+    const result = await this.orchestrator.executeTool('optimizeATS', { 
+      cv, 
+      jobDescription 
+    })
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+
+    // Save optimized CV
+    cvMemory.saveVersion(result.result as CV, ['Optimized for ATS'])
+
+    return result.result
+  }
+
+  /**
+   * Generate professional summary
+   */
+  private async generateSummary(cv: CV, targetRole: string): Promise<string> {
+    const result = await this.orchestrator.executeTool('generateSummary', { 
+      cv, 
+      targetRole 
+    })
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+
+    return result.result as string
+  }
+
+  /**
+   * Improve experience entry
+   */
+  private async improveExperience(experience: any): Promise<unknown> {
+    const result = await this.orchestrator.executeTool('improveExperience', { 
+      experience 
+    })
+    
+    if (!result.success) {
+      throw new Error(result.error)
+    }
+
+    return result.result
+  }
+
+  /**
+   * Get current context
+   */
+  getContext(): AgentContext {
+    return this.context.getContext()
+  }
+
+  /**
+   * Update context
+   */
+  updateContext(context: Partial<AgentContext>): void {
+    this.context.update(context)
+  }
+
+  /**
+   * Enable debug mode
+   */
+  enableDebugMode(): void {
+    this.orchestrator.setDebugMode(true)
+  }
+
+  /**
+   * Disable debug mode
+   */
+  disableDebugMode(): void {
+    this.orchestrator.setDebugMode(false)
+  }
+}
+
+// Type exports
+export type AgentTask = 
+  | 'analyze_cv'
+  | 'optimize_cv'
+  | 'generate_summary'
+  | 'improve_experience'
+
+export interface AgentResponse {
+  success: boolean
+  result?: unknown
+  error?: string
+  actions?: Array<AgentAction>
+  metadata: {
+    duration: number
+    taskId: string
+    context?: AgentContext
+  }
+}
+
+// Export factory function
+export function createSkillAgent(options?: {
+  llmService?: LLMProvider
+  debugMode?: boolean
+}): SkillAgent {
+  const toolRegistry = new ToolRegistry()
+  
+  const orchestrator = new AgentOrchestrator({
+    toolRegistry,
+    llmService: options?.llmService,
+    debugMode: options?.debugMode,
+  })
+
+  const agent = new SkillAgent({ orchestrator })
+
+  return agent
+}

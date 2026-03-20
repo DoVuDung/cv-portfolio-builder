@@ -345,7 +345,7 @@ Refer to:
 1. ✅ Complete your profile
 2. ✅ Add at least 2 experiences
 3. ✅ Add at least 2 projects
-4. ✅ List 10+ relevant skills
+4. ✅ List 1 relevant skills
 5. ✅ Run CV analysis
 6. ✅ Address identified gaps
 7. ✅ Repeat regularly!

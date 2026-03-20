@@ -1,5 +1,3 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
 import {
   Outlet,
   RouterProvider,
@@ -8,12 +6,14 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
+import AgentDemoRoute from './routes/agent-demo'
 import DemoFormAddress from './routes/demo.form.address'
 import DemoFormSimple from './routes/demo.form.simple'
 import DemoStore from './routes/demo.store'
 import DemoTable from './routes/demo.table'
 import DemoTanstackQuery from './routes/demo.tanstack-query'
-import AgentDemoRoute from './routes/agent-demo'
 
 import Header from './components/Header'
 
@@ -21,8 +21,8 @@ import TanstackQueryLayout from './integrations/tanstack-query/layout'
 
 import * as TanstackQuery from './integrations/tanstack-query/root-provider'
 
-import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
+import './styles.css'
 
 import App from './App.tsx'
 
