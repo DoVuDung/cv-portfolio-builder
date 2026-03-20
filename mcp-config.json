@@ -1,0 +1,102 @@
+{
+  "mcpServers": {
+    "cv-design-viewer": {
+      "command": "bun",
+      "args": ["run", "src/mcp/design-viewer-server.ts"],
+      "cwd": "/Users/andydo/Desktop/cv-portfolio-builder",
+      "env": {},
+      "description": "View and analyze CV portfolio design with ATS optimization"
+    },
+    "stitch-context-server": {
+      "command": "bun",
+      "args": ["run", "src/mcp/stitch-context-server.ts"],
+      "cwd": "/Users/andydo/Desktop/cv-portfolio-builder",
+      "env": {},
+      "description": "Clone and sync CV data with Google Stitch UI"
+    }
+  },
+  "tools": {
+    "cv-design-viewer": [
+      {
+        "name": "view-cv-design",
+        "description": "View complete CV design structure with formatting and layout analysis",
+        "inputSchema": {}
+      },
+      {
+        "name": "analyze-ats-design",
+        "description": "Analyze CV design for ATS (Applicant Tracking System) compatibility",
+        "inputSchema": {}
+      },
+      {
+        "name": "export-design-spec",
+        "description": "Export complete CV design specification as JSON or Markdown",
+        "inputSchema": {
+          "format": {
+            "type": "string",
+            "enum": ["json", "markdown"]
+          }
+        }
+      },
+      {
+        "name": "compare-design-versions",
+        "description": "Compare current CV design with a previous version",
+        "inputSchema": {
+          "previousCV": {
+            "type": "string",
+            "description": "Previous CV data as JSON string"
+          }
+        }
+      },
+      {
+        "name": "generate-design-docs",
+        "description": "Generate comprehensive design documentation",
+        "inputSchema": {}
+      }
+    ],
+    "stitch-context-server": [
+      {
+        "name": "clone-stitch-context",
+        "description": "Clone CV data from Google Stitch UI context",
+        "inputSchema": {
+          "stitchUrl": {
+            "type": "string",
+            "description": "Google Stitch UI base URL"
+          },
+          "contextId": {
+            "type": "string",
+            "description": "Stitch context or project ID"
+          }
+        }
+      },
+      {
+        "name": "push-to-stitch",
+        "description": "Push CV data to Google Stitch UI as context",
+        "inputSchema": {
+          "stitchUrl": {
+            "type": "string",
+            "description": "Google Stitch UI base URL"
+          },
+          "cvData": {
+            "type": "object",
+            "description": "CV data to push"
+          }
+        }
+      }
+    ]
+  },
+  "capabilities": {
+    "design_analysis": true,
+    "ats_optimization": true,
+    "version_comparison": true,
+    "documentation_generation": true,
+    "stitch_integration": true,
+    "real_time_preview": true
+  },
+  "settings": {
+    "debug": false,
+    "autoSave": true,
+    "defaultFormat": "json",
+    "atsThreshold": 75,
+    "enableLogging": true
+  }
+}
