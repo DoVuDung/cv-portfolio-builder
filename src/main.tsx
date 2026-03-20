@@ -13,6 +13,7 @@ import DemoFormSimple from './routes/demo.form.simple'
 import DemoStore from './routes/demo.store'
 import DemoTable from './routes/demo.table'
 import DemoTanstackQuery from './routes/demo.tanstack-query'
+import AgentDemoRoute from './routes/agent-demo'
 
 import Header from './components/Header'
 
@@ -49,6 +50,7 @@ const routeTree = rootRoute.addChildren([
   DemoStore(rootRoute),
   DemoTable(rootRoute),
   DemoTanstackQuery(rootRoute),
+  AgentDemoRoute(rootRoute),
 ])
 
 const router = createRouter({
