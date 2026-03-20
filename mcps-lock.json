@@ -1,0 +1,538 @@
+{
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "description": "MCP Servers Lock File - CV Portfolio Builder",
+  "servers": {
+    "cv-design-viewer": {
+      "version": "1.0.0",
+      "resolved": "src/mcp/design-viewer-server.ts",
+      "integrity": "sha512-cv-design-viewer-mcp-server",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "zod": "^3.22.4"
+      },
+      "devDependencies": {},
+      "peerDependencies": {
+        "typescript": "^5.0.0"
+      },
+      "bin": {
+        "cv-design-viewer": "dist/mcp/design-viewer-server.js"
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.mcp.json",
+        "start": "bun run src/mcp/design-viewer-server.ts",
+        "dev": "bun --watch run src/mcp/design-viewer-server.ts"
+      },
+      "engines": {
+        "node": ">=18.0.0",
+        "bun": ">=1.0.0"
+      },
+      "os": [
+        "darwin",
+        "linux",
+        "win32"
+      ],
+      "cpu": [
+        "x64",
+        "arm64"
+      ],
+      "tools": [
+        {
+          "name": "view-cv-design",
+          "version": "1.0.0",
+          "description": "View complete CV design structure with formatting and layout analysis",
+          "inputSchema": {},
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "data": { "type": "object" },
+              "analysis": { "type": "object" }
+            }
+          }
+        },
+        {
+          "name": "analyze-ats-design",
+          "version": "1.0.0",
+          "description": "Analyze CV design for ATS (Applicant Tracking System) compatibility",
+          "inputSchema": {},
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "analysis": {
+                "type": "object",
+                "properties": {
+                  "score": { "type": "number", "minimum": 0, "maximum": 100 },
+                  "strengths": { "type": "array", "items": { "type": "string" } },
+                  "weaknesses": { "type": "array", "items": { "type": "string" } },
+                  "recommendations": { "type": "array", "items": { "type": "string" } },
+                  "keywords": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "export-design-spec",
+          "version": "1.0.0",
+          "description": "Export complete CV design specification as JSON or Markdown",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "format": {
+                "type": "string",
+                "enum": ["json", "markdown"]
+              }
+            },
+            "required": ["format"]
+          },
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "specification": { "type": "string" }
+            }
+          }
+        },
+        {
+          "name": "compare-design-versions",
+          "version": "1.0.0",
+          "description": "Compare current CV design with a previous version",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "previousCV": {
+                "type": "string",
+                "description": "Previous CV data as JSON string"
+              }
+            },
+            "required": ["previousCV"]
+          },
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "comparison": { "type": "object" }
+            }
+          }
+        },
+        {
+          "name": "generate-design-docs",
+          "version": "1.0.0",
+          "description": "Generate comprehensive design documentation",
+          "inputSchema": {},
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "documentation": { "type": "object" }
+            }
+          }
+        }
+      ],
+      "capabilities": {
+        "design_analysis": true,
+        "ats_optimization": true,
+        "version_comparison": true,
+        "documentation_generation": true,
+        "real_time_preview": true,
+        "keyword_extraction": true
+      },
+      "configuration": {
+        "debug": false,
+        "autoSave": true,
+        "defaultFormat": "json",
+        "atsThreshold": 75,
+        "enableLogging": true,
+        "maxConcurrentOperations": 10,
+        "cacheEnabled": true,
+        "cacheTTL": 3600
+      },
+      "metadata": {
+        "author": "Dung Do (Andy)",
+        "license": "MIT",
+        "repository": "github:DoVuDung/cv-portfolio-builder",
+        "homepage": "https://dungdo.site",
+        "keywords": [
+          "mcp",
+          "cv",
+          "design",
+          "ats",
+          "portfolio",
+          "analyzer"
+        ]
+      }
+    },
+    "stitch-context-server": {
+      "version": "1.0.0",
+      "resolved": "src/mcp/stitch-context-server.ts",
+      "integrity": "sha512-stitch-context-server-mcp",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "zod": "^3.22.4"
+      },
+      "devDependencies": {},
+      "peerDependencies": {
+        "typescript": "^5.0.0"
+      },
+      "bin": {
+        "stitch-context-server": "dist/mcp/stitch-context-server.js"
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.mcp.json",
+        "start": "bun run src/mcp/stitch-context-server.ts",
+        "dev": "bun --watch run src/mcp/stitch-context-server.ts"
+      },
+      "engines": {
+        "node": ">=18.0.0",
+        "bun": ">=1.0.0"
+      },
+      "os": [
+        "darwin",
+        "linux",
+        "win32"
+      ],
+      "cpu": [
+        "x64",
+        "arm64"
+      ],
+      "tools": [
+        {
+          "name": "clone-stitch-context",
+          "version": "1.0.0",
+          "description": "Clone CV data from Google Stitch UI context",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "stitchUrl": {
+                "type": "string",
+                "description": "Google Stitch UI base URL"
+              },
+              "contextId": {
+                "type": "string",
+                "description": "Stitch context or project ID"
+              }
+            },
+            "required": ["stitchUrl", "contextId"]
+          },
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "data": { "type": "object" }
+            }
+          }
+        },
+        {
+          "name": "push-to-stitch",
+          "version": "1.0.0",
+          "description": "Push CV data to Google Stitch UI as context",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "stitchUrl": {
+                "type": "string",
+                "description": "Google Stitch UI base URL"
+              },
+              "cvData": {
+                "type": "object",
+                "description": "CV data to push"
+              }
+            },
+            "required": ["stitchUrl", "cvData"]
+          },
+          "outputSchema": {
+            "type": "object",
+            "properties": {
+              "message": { "type": "string" },
+              "result": { "type": "object" }
+            }
+          }
+        }
+      ],
+      "capabilities": {
+        "stitch_integration": true,
+        "context_cloning": true,
+        "data_sync": true,
+        "bidirectional_transfer": true
+      },
+      "configuration": {
+        "defaultStitchUrl": "",
+        "autoSync": false,
+        "syncInterval": 300,
+        "retryAttempts": 3,
+        "timeout": 30000
+      },
+      "metadata": {
+        "author": "Dung Do (Andy)",
+        "license": "MIT",
+        "repository": "github:DoVuDung/cv-portfolio-builder",
+        "homepage": "https://dungdo.site",
+        "keywords": [
+          "mcp",
+          "stitch",
+          "google",
+          "context",
+          "sync"
+        ]
+      }
+    },
+    "skill-agent-server": {
+      "version": "1.0.0",
+      "resolved": "src/agent/core/agent.ts",
+      "integrity": "sha512-skill-agent-mcp-core",
+      "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "zod": "^3.22.4",
+        "@tanstack/store": "^0.5.0"
+      },
+      "devDependencies": {},
+      "peerDependencies": {
+        "react": "^18.0.0 || ^19.0.0",
+        "typescript": "^5.0.0"
+      },
+      "scripts": {
+        "build": "tsc",
+        "test": "vitest run src/agent/**/*.test.ts"
+      },
+      "engines": {
+        "node": ">=18.0.0",
+        "bun": ">=1.0.0"
+      },
+      "os": [
+        "darwin",
+        "linux",
+        "win32"
+      ],
+      "cpu": [
+        "x64",
+        "arm64"
+      ],
+      "tools": [
+        {
+          "name": "analyze-cv",
+          "version": "1.0.0",
+          "description": "Analyze CV and provide intelligent feedback",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "cvData": { "type": "object" }
+            },
+            "required": ["cvData"]
+          }
+        },
+        {
+          "name": "optimize-ats",
+          "version": "1.0.0",
+          "description": "Optimize CV for ATS systems",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "cvData": { "type": "object" },
+              "jobDescription": { "type": "string" }
+            }
+          }
+        },
+        {
+          "name": "generate-summary",
+          "version": "1.0.0",
+          "description": "Generate professional summary",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "experience": { "type": "array" },
+              "skills": { "type": "array" }
+            }
+          }
+        },
+        {
+          "name": "improve-experience",
+          "version": "1.0.0",
+          "description": "Improve experience bullet points",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "achievements": { "type": "array" }
+            }
+          }
+        },
+        {
+          "name": "extract-skills",
+          "version": "1.0.0",
+          "description": "Extract and categorize skills",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "cvData": { "type": "object" }
+            }
+          }
+        },
+        {
+          "name": "map-to-sections",
+          "version": "1.0.0",
+          "description": "Map CV data to UI sections",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "cvData": { "type": "object" }
+            }
+          }
+        }
+      ],
+      "capabilities": {
+        "cv_analysis": true,
+        "ats_optimization": true,
+        "content_generation": true,
+        "skill_extraction": true,
+        "memory_management": true,
+        "context_awareness": true,
+        "debug_mode": true
+      },
+      "configuration": {
+        "debugMode": false,
+        "llmProvider": "mock",
+        "autoSave": true,
+        "versioning": true,
+        "maxVersions": 10
+      },
+      "metadata": {
+        "author": "Dung Do (Andy)",
+        "license": "MIT",
+        "repository": "github:DoVuDung/cv-portfolio-builder",
+        "homepage": "https://dungdo.site",
+        "keywords": [
+          "mcp",
+          "ai",
+          "agent",
+          "cv",
+          "optimizer",
+          "skill"
+        ]
+      }
+    }
+  },
+  "packages": {
+    "@modelcontextprotocol/sdk": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.0.0.tgz",
+      "integrity": "sha512-md-Uf4KPcHjmvB9xzjkNYEmV5RqZFrbwsWCQbGtpWIJajKDMwmYvqgoZwViEW8E6TGMoPEnCkjOAg4F7dxJCXg==",
+      "dependencies": {
+        "content-type": "^1.0.5",
+        "raw-body": "^2.5.2",
+        "zod": "^3.22.4"
+      }
+    },
+    "zod": {
+      "version": "3.22.4",
+      "resolved": "https://registry.npmjs.org/zod/-/zod-3.22.4.tgz",
+      "integrity": "sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==",
+      "funding": {
+        "url": "https://github.com/sponsors/colinhacks"
+      }
+    },
+    "@tanstack/store": {
+      "version": "0.5.0",
+      "resolved": "https://registry.npmjs.org/@tanstack/store/-/store-0.5.0.tgz",
+      "integrity": "sha512-Q1dEvESqOwkooO0A0BiS0MeoExGLBkoxLSWM47aJ8DFdFC3IfsCyOpZhPZRbdhUiitm9cLTDSLe/W9WPS7NoSA==",
+      "peerDependencies": {
+        "react": ">=16.8.0"
+      }
+    }
+  },
+  "toolRegistry": {
+    "totalTools": 13,
+    "byServer": {
+      "cv-design-viewer": 5,
+      "stitch-context-server": 2,
+      "skill-agent-server": 6
+    },
+    "byCategory": {
+      "analysis": 3,
+      "optimization": 2,
+      "generation": 2,
+      "extraction": 2,
+      "integration": 2,
+      "documentation": 1,
+      "comparison": 1
+    },
+    "capabilities": {
+      "design_analysis": ["view-cv-design", "analyze-ats-design"],
+      "ats_optimization": ["analyze-ats-design", "optimize-ats"],
+      "content_generation": ["generate-summary", "improve-experience"],
+      "data_sync": ["clone-stitch-context", "push-to-stitch"],
+      "documentation": ["generate-design-docs", "export-design-spec"]
+    }
+  },
+  "compatibility": {
+    "mcpProtocol": "1.0.0",
+    "minClientVersion": "0.1.0",
+    "supportedClients": [
+      "cursor-ide",
+      "claude-desktop",
+      "windsurf",
+      "custom-mcp-client"
+    ],
+    "transportProtocols": [
+      "stdio",
+      "http",
+      "websocket"
+    ]
+  },
+  "security": {
+    "sandboxed": true,
+    "requiresAuth": false,
+    "allowedOrigins": ["*"],
+    "rateLimiting": {
+      "enabled": true,
+      "maxRequestsPerMinute": 60,
+      "maxRequestsPerHour": 1000
+    },
+    "dataPrivacy": {
+      "localOnly": true,
+      "noExternalCalls": true,
+      "encryptAtRest": false
+    }
+  },
+  "performance": {
+    "avgResponseTime": {
+      "view-cv-design": "50ms",
+      "analyze-ats-design": "100ms",
+      "export-design-spec": "150ms",
+      "compare-design-versions": "200ms",
+      "generate-design-docs": "300ms"
+    },
+    "memoryUsage": {
+      "base": "20MB",
+      "perOperation": "5-15MB",
+      "maxConcurrent": "10 operations"
+    },
+    "caching": {
+      "enabled": true,
+      "strategy": "lru",
+      "ttl": 3600,
+      "maxSize": "100MB"
+    }
+  },
+  "environment": {
+    "NODE_ENV": "production",
+    "DEBUG": "false",
+    "LOG_LEVEL": "info",
+    "CACHE_ENABLED": "true",
+    "AUTO_SAVE": "true"
+  },
+  "checksums": {
+    "cv-design-viewer-server.ts": "sha256-abc123def456",
+    "stitch-context-server.ts": "sha256-xyz789ghi012",
+    "agent.ts": "sha256-jkl345mno678"
+  },
+  "installationTimestamp": "2026-03-20T00:00:00.000Z",
+  "lastUpdated": "2026-03-20T00:00:00.000Z",
+  "maintainer": {
+    "name": "Dung Do (Andy)",
+    "email": "vudung05032000@gmail.com",
+    "github": "DoVuDung",
+    "website": "https://dungdo.site"
+  }
+}
