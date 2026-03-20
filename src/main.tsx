@@ -8,7 +8,7 @@ import {
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import AgentDemoRoute from './routes/agent-demo'
+import CVBuilderRoute from './routes/cv-builder'
 import DemoFormAddress from './routes/demo.form.address'
 import DemoFormSimple from './routes/demo.form.simple'
 import DemoStore from './routes/demo.store'
@@ -45,12 +45,12 @@ const indexRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  CVBuilderRoute(rootRoute),
   DemoFormAddress(rootRoute),
   DemoFormSimple(rootRoute),
   DemoStore(rootRoute),
   DemoTable(rootRoute),
   DemoTanstackQuery(rootRoute),
-  AgentDemoRoute(rootRoute),
 ])
 
 const router = createRouter({
