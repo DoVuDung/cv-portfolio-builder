@@ -1,0 +1,325 @@
+{
+  "version": 1,
+  "skills": {
+    "1password": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "bc52479bf8f290750f7cebf3a9cd9e9624dbecb21c7d5bbfbd2cde6092bbb970"
+    },
+    "apple-notes": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "371c0a5c483e44e0718d1d991324b7198a317173a3507fc331cb4aa3d11ec2be"
+    },
+    "apple-reminders": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "4e29c2edc9ab2134376dfa37fad62bc66bb2186a8a18697c2d7d722307bf48ca"
+    },
+    "bear-notes": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "3bbe9a4ff745749e2f273cdded717a8a6901c9c94c298bd75aeb9977fdf69b11"
+    },
+    "blogwatcher": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "f74dd900af73d9e8887dde74d939a59b65229b6d05bf6abfcdaa0508e08fad8c"
+    },
+    "blucli": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "721e0c59582e1f35d9d6d7118870f7e5910036f7aadb0df77fb2e4709144f1da"
+    },
+    "bluebubbles": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "75c9497b1deeb97acbdbff067e0b01b26082c241eccc890ae274276050e1c518"
+    },
+    "camsnap": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "fe845409d0fb9d0d44125829958c085b10c2af2f80aa3a3fd6933405af79da16"
+    },
+    "clawhub": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "39ecd276b845daa26201ee6d4e230958bf6307941cec7b134a00f2def1b20c27"
+    },
+    "coding-agent": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "17667d3d9d3a7965a3992755b26223cc52f7d3c3c0d3e95538417752a802d2cc"
+    },
+    "discord": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "92a82a8b558dce67a63b3815ef58d12d9bd6afe698340c44d9ee7b9461da5df9"
+    },
+    "eightctl": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "a99ace97db56aa9d5619ba7cc2e749278a05d7154b4add8b50be237d6fcf6578"
+    },
+    "extract-errors": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "b088123d854e6e3c57ab74746bce30c9231daec33dc73782ac57d7b3121519bc"
+    },
+    "feature-flags": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "c5335a86f91e81ce4e7035ab48209a4dbb09ef32822796d4778388472f0b0b39"
+    },
+    "fix": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "d68147149e12e8358926a58ef51b25d88a1e889233284c5ad849e1ee2b521206"
+    },
+    "flags": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "de69ba8631439d952ce7148c7d438a9de1e6387e7ecd2680b8d406ed31f64e9e"
+    },
+    "flow": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "3358c67bbdee529ceb49a37f260fab3cb507be2dfbdedd073295fcae7f16bc7e"
+    },
+    "gemini": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "e55fc6c2095152b5d35029ac69a34a9d858b09cebe3b7b6469d8a42816640bee"
+    },
+    "gh-issues": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "3f06130ae1cdc25648f6e9f9f3eed8108152eae01e24aa2d8543f164a389bb22"
+    },
+    "gifgrep": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "bea65b55990bb65a95fe518102f33260bc17044fce1d91854177615f71236272"
+    },
+    "github": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "78c25ef4dbe70f5ec149b7a5d55aadd4b2cb1aa6246c0cfcea66d316bdb5b171"
+    },
+    "gog": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "e428c2ff5b716ac41da72c3218ddf494b0b47f1997f03d21677097d7f07fd12d"
+    },
+    "goplaces": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "733246a4bba4984113bfeb87129c544f88c921b273ccf91280a6e3e1217227b1"
+    },
+    "healthcheck": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "53ae8b581b83e4c222d332372e826d8524196641755ee432fffc72fcef50168e"
+    },
+    "himalaya": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "0d3baf6039b8f2d19266ec535b114cacca8a6ab1d288b8373a83b1a1585cefb8"
+    },
+    "imsg": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "8540b54fc8c989e0f7eb202e3192717cb11e62759f0ddbb3d4c4964938094bd7"
+    },
+    "mcporter": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "295be6858c69890f9566e849aade58e2d8db93c3ce49e11dba40b8ae33dd2419"
+    },
+    "model-usage": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "ba8e5a28704806436a891b140f42c794faaf1df5fcadc2f76d877f77d99facba"
+    },
+    "nano-pdf": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "5334fa859b3f536d58d1143fd794307ea3d020f436ae284caae98ed8b670d50d"
+    },
+    "node-connect": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "2ef4f36510e39d455d5c922fa19bf6b611451d3d0206607097a61a5e2448336c"
+    },
+    "notion": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "ad9238421952899e618c4fbe3e786029d41655e6f69fbe0c19e636ba8905a4bc"
+    },
+    "obsidian": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "17e940782ac1862b15a161fc7bd65e8c47c287792dfe2a746bb691f9f9c68556"
+    },
+    "openai-image-gen": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "2fd26d4893d7c08fc03f3126b54a7a9aa5e87ea9a293771376948c81bdc87ee0"
+    },
+    "openai-whisper": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "2f04fe7900baaecfdc63a978cb18239a1ba987497d7c6b85e578622ed6ea82b9"
+    },
+    "openai-whisper-api": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "02727c8e0de4552a8a8748d59842b7969de0410a79114e6a9c502c9f231b717b"
+    },
+    "openclaw-ghsa-maintainer": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "8830ca04ef01be34ac6c3ec6a2d2c6686cf21cd5f8ca1d3723ec44e922acae87"
+    },
+    "openclaw-parallels-smoke": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "d0193cd46c396c5df21c96d0b8925efbceb8d770e8835eeda2a60302b295c821"
+    },
+    "openclaw-pr-maintainer": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "04884f1a0749525fd09f5034630384bf85499b211c21ca758a37a992cb3dc8ed"
+    },
+    "openclaw-release-maintainer": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "93b2c96b9f4eb9ffbdfeff02c2f2bd397d00f37c9272433a3dbb8521f1e19723"
+    },
+    "openclaw-test-heap-leaks": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "99f74b96192f2bee46a7ea775fe259a9e55d47bef6da41ab0ecbddba5fa0c88f"
+    },
+    "openhue": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "931ff98a9e3115f655d9949f6efc8f977cc1905e230ae789c8cbe541c6c1b7c0"
+    },
+    "oracle": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "23bf8a9697b6dba9e93d386dc7d886747c9785a3a8499f3605b228831e869def"
+    },
+    "ordercli": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "a220e038b283f28e33158b6cacce2cae563d38c69596031fa84a73025ebef6e3"
+    },
+    "parallels-discord-roundtrip": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "6778f79e6d5bc03c7e9ebc260c4638126509b4d8aaee6593f6857f921a6f6702"
+    },
+    "peekaboo": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "904404fca6618cbf0ccf87c1a18a40e779c5c6ddf46f6c59884cd8d3b0f07b9c"
+    },
+    "sag": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "6134b57afff4284526a5b069fd1331e005b3055f1b0ad2080cb33448599c77cc"
+    },
+    "session-logs": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "66226da5840d5e85c69ffcdad29c7bf23c260fbbcf3782e663d791500899e2f4"
+    },
+    "sherpa-onnx-tts": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "10783ad94b4df1f31668af96f6eb893f27f2abd7333a964df5113ac8a7979fb0"
+    },
+    "skill-creator": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "73b0cad4e0b65c7c29eff3f89f16a47033365637ff4d61503b44f7f5deceeff5"
+    },
+    "slack": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "c99ed5e9b78bd150e2c9ec59bbac178ce7f97885efd007821fac2b3442c3212a"
+    },
+    "songsee": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "b40f15c8c4b486c8e0559ffc249818a8509bb56bf956de6efc71faddf7d45e61"
+    },
+    "sonoscli": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "e1c45d3b5ff4982b721eb0eaad0fbfe6782c13412db1bb769ea7bc17e8a3c971"
+    },
+    "spotify-player": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "a40d4ba23f032f1931325cc80a220c0bdf07e6767b1c4103a88e3e9582109037"
+    },
+    "summarize": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "3d4b495c2e6071506ce5e57d4908eff37a3f5506d236f94836e0535c235f9b27"
+    },
+    "test": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "14fabeabacc8be3ea52f7dc209f45d132b2a81d4bdf2a67a73687865594a4d76"
+    },
+    "things-mac": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "41108bcf14e132da6f3d822c2084a367b3494209fa1ff5c4c19cd6020bf2c7c0"
+    },
+    "tmux": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "5c7ec7158f7d7283befbac1ada02ab35fd61cf1c8683fc9adab8674317fa116a"
+    },
+    "trello": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "4aaab2d3443b2275fc6b9b53d29bcef5d41e3a54f1b97e3f19c1a4434d76e86a"
+    },
+    "verify": {
+      "source": "facebook/react",
+      "sourceType": "github",
+      "computedHash": "f8b0daa5cb09d875140d1b9fa0440d969506dfba4365a5b40ef1c4d5f4b59112"
+    },
+    "video-frames": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "a6ea4ac51aefcdc2c83b6fa2d6dc1c2a5026f581d86d27fa1ee6707a303d1451"
+    },
+    "voice-call": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "5468a126696b99614f7ce9bf1e80a8c59d5ae5078ec097c9fb9062eb5b57e145"
+    },
+    "wacli": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "755695ad55e28e03c211e018412ecae390f4a2bf73b75870f9c9a2d3b4d84457"
+    },
+    "weather": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "c34bd5365572812262743993f950bfa791d5bc39cf9df9bbb43f24eb4ecdc1ad"
+    },
+    "xurl": {
+      "source": "openclaw/openclaw",
+      "sourceType": "github",
+      "computedHash": "1aa3fee95c5fbcb0b0b98301a4058d6f67ec97c11b6d175178b8f3371e9236c3"
+    }
+  }
+}
