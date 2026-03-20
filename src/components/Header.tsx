@@ -9,23 +9,7 @@ export default function Header() {
         </div>
 
         <div className="px-2 font-bold">
-          <Link to="/demo/tanstack-query">TanStack Query</Link>
-        </div>
-
-        <div className="px-2 font-bold">
-          <Link to="/demo/table">TanStack Table</Link>
-        </div>
-
-        <div className="px-2 font-bold">
-          <Link to="/demo/store">Store</Link>
-        </div>
-
-        <div className="px-2 font-bold">
-          <Link to="/demo/form/simple">Simple Form</Link>
-        </div>
-
-        <div className="px-2 font-bold">
-          <Link to="/demo/form/address">Address Form</Link>
+          <Link to="/cv-builder">CV Builder</Link>
         </div>
       </nav>
     </header>
