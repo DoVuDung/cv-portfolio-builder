@@ -6,6 +6,7 @@
 - [vite.config.js](file://vite.config.js)
 - [module-federation.config.js](file://module-federation.config.js)
 - [tsconfig.json](file://tsconfig.json)
+- [tsconfig.mcp.json](file://tsconfig.mcp.json)
 - [eslint.config.js](file://eslint.config.js)
 - [prettier.config.js](file://prettier.config.js)
 - [.github/workflows/ci.yml](file://.github/workflows/ci.yml)
@@ -18,6 +19,8 @@
 - [src/main.tsx](file://src/main.tsx)
 - [src/App.tsx](file://src/App.tsx)
 - [src/env.ts](file://src/env.ts)
+- [src/mcp/stitch-context-server.ts](file://src/mcp/stitch-context-server.ts)
+- [src/mcp/types/cv.types.ts](file://src/mcp/types/cv.types.ts)
 - [src/demo-mf-component.tsx](file://src/demo-mf-component.tsx)
 - [src/demo-mf-self-contained.tsx](file://src/demo-mf-self-contained.tsx)
 - [src/App.test.tsx](file://src/App.test.tsx)
@@ -25,15 +28,17 @@
 - [src/agent/index.ts](file://src/agent/index.ts)
 - [TYPESCRIPT_BUILD_FIX.md](file://TYPESCRIPT_BUILD_FIX.md)
 - [BUILD_FIX_LOCAL_VS_VERCEL.md](file://BUILD_FIX_LOCAL_VS_VERCEL.md)
+- [MCP_STITCH_INTEGRATION_GUIDE.md](file://MCP_STITCH_INTEGRATION_GUIDE.md)
+- [CV_BUILDER_IMPLEMENTATION_SUMMARY.md](file://CV_BUILDER_IMPLEMENTATION_SUMMARY.md)
 </cite>
 
 ## Update Summary
 **Changes Made**
-- Simplified build system by removing TypeScript type checking from production builds
-- Excluded agent code from production compilation to prevent Vercel deployment failures
-- Maintained type checking availability through separate `npm run type-check` command
-- Updated CI/CD pipeline to reflect the new build strategy
-- Enhanced documentation to explain the separation of bundling and type checking
+- Added MCP (Model Context Protocol) server configuration with dedicated TypeScript configuration
+- Introduced build scripts for MCP compilation and execution
+- Enhanced documentation to cover MCP server architecture and integration
+- Updated CI/CD pipeline documentation to reflect MCP server setup
+- Added MCP server type definitions and transformation utilities
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -48,15 +53,16 @@
 10. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the build configuration and development setup for the project, featuring a simplified build system designed to prevent Vercel deployment failures. The system separates bundling from type checking, with Vite handling JavaScript bundling and TypeScript type checking being performed separately. It covers Vite configuration, Module Federation setup, development server settings, build optimizations, TypeScript configuration with selective type checking, ESLint and Prettier configuration, micro-frontend communication via Module Federation, the complete CI/CD pipeline with GitHub Actions, Husky git hooks, SonarQube integration, environment variables, and troubleshooting guidance for common build issues.
+This document explains the build configuration and development setup for the project, featuring a simplified build system designed to prevent Vercel deployment failures. The system separates bundling from type checking, with Vite handling JavaScript bundling and TypeScript type checking being performed separately. It covers Vite configuration, Module Federation setup, development server settings, build optimizations, TypeScript configuration with selective type checking, MCP server configuration for Model Context Protocol integration, ESLint and Prettier configuration, micro-frontend communication via Module Federation, the complete CI/CD pipeline with GitHub Actions, Husky git hooks, SonarQube integration, environment variables, and troubleshooting guidance for common build issues.
 
-**Updated** The build system now separates bundling from type checking to prevent Vercel deployment failures while maintaining comprehensive type safety through separate validation processes.
+**Updated** The build system now includes MCP (Model Context Protocol) server configuration with dedicated TypeScript compilation and execution scripts, enabling integration with Google Stitch UI for CV data cloning and synchronization.
 
 ## Project Structure
 The project is a Vite-based React application with a simplified build system that separates bundling from type checking. Key configuration files and their roles:
 - Vite configuration defines plugins, test environment, path aliases, build targets, and enhanced coverage reporting.
 - Module Federation configuration exposes components for remote consumption and shares React dependencies.
 - TypeScript configuration enables selective type checking with comprehensive exclusions for test files and agent code.
+- **Updated** MCP server TypeScript configuration provides isolated compilation for server-side code with Node.js compatibility.
 - ESLint and Prettier provide code quality and formatting standards.
 - GitHub Actions workflows automate the complete CI/CD pipeline with streamlined type checking.
 - Husky git hooks enforce code quality locally before commits and pushes.
@@ -65,27 +71,31 @@ The project is a Vite-based React application with a simplified build system tha
 
 ```mermaid
 graph TB
-A["package.json<br/>Simplified build scripts"] --> B["vite.config.js<br/>plugins, resolve, build, coverage"]
+A["package.json<br/>Simplified build scripts + MCP"] --> B["vite.config.js<br/>plugins, resolve, build, coverage"]
 B --> C["module-federation.config.js<br/>exposes, remotes, shared"]
 B --> D["tsconfig.json<br/>Selective type checking, agent exclusions"]
-A --> E["eslint.config.js<br/>TanStack ESLint preset"]
-A --> F["prettier.config.js<br/>formatting rules"]
-A --> G[".github/workflows/ci.yml<br/>GitHub Actions CI/CD"]
-A --> H["lint-staged.config.js<br/>pre-commit automation"]
-A --> I["sonar-project.properties<br/>code quality analysis"]
-A --> J["scripts/safe-push.ts<br/>local validation script"]
-A --> K["scripts/setup-cicd.ts<br/>setup automation"]
-G --> L["Quality Gate Job<br/>Type check (optional) → lint → test → build"]
-G --> M["SonarQube Analysis Job<br/>code quality metrics"]
-G --> N["Security Scan Job<br/>dependency vulnerabilities"]
-G --> O["Deploy Preview Job<br/>PR builds"]
+A --> E["tsconfig.mcp.json<br/>MCP server configuration"]
+A --> F["eslint.config.js<br/>TanStack ESLint preset"]
+A --> G["prettier.config.js<br/>formatting rules"]
+A --> H[".github/workflows/ci.yml<br/>GitHub Actions CI/CD"]
+A --> I["lint-staged.config.js<br/>pre-commit automation"]
+A --> J["sonar-project.properties<br/>code quality analysis"]
+A --> K["scripts/safe-push.ts<br/>local validation script"]
+A --> L["scripts/setup-cicd.ts<br/>setup automation"]
+H --> M["Quality Gate Job<br/>Type check → lint → test → build"]
+H --> N["SonarQube Analysis Job<br/>code quality metrics"]
+H --> O["Security Scan Job<br/>dependency vulnerabilities"]
+H --> P["Deploy Preview Job<br/>PR builds"]
+Q["src/mcp/<br/>MCP Server"] --> R["stitch-context-server.ts<br/>MCP server implementation"]
+Q --> S["types/cv.types.ts<br/>CV data type definitions"]
 ```
 
 **Diagram sources**
-- [package.json:1-80](file://package.json#L1-L80)
+- [package.json:1-82](file://package.json#L1-L82)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -93,12 +103,15 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 - [sonar-project.properties:1-43](file://sonar-project.properties#L1-L43)
 - [scripts/safe-push.ts:1-144](file://scripts/safe-push.ts#L1-L144)
 - [scripts/setup-cicd.ts:1-196](file://scripts/setup-cicd.ts#L1-L196)
+- [src/mcp/stitch-context-server.ts:1-241](file://src/mcp/stitch-context-server.ts#L1-L241)
+- [src/mcp/types/cv.types.ts:1-111](file://src/mcp/types/cv.types.ts#L1-L111)
 
 **Section sources**
-- [package.json:1-80](file://package.json#L1-L80)
+- [package.json:1-82](file://package.json#L1-L82)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -112,6 +125,11 @@ G --> O["Deploy Preview Job<br/>PR builds"]
   - **Vite Build Only**: Production builds now only run `vite build` without TypeScript type checking to prevent Vercel failures.
   - **Separate Type Checking**: TypeScript type checking is available via `npm run type-check` for manual validation.
   - **Agent Code Isolation**: Agent code is excluded from production compilation to prevent type errors from blocking deployments.
+- **MCP Server Configuration**
+  - **Dedicated TypeScript Config**: `tsconfig.mcp.json` provides isolated compilation for MCP server with Node.js compatibility.
+  - **Build Scripts**: `npm run build:mcp` compiles MCP server code, `npm run start:mcp` executes the compiled server.
+  - **Node.js Compatibility**: MCP server uses ESNext modules with Node.js types and bundler module resolution.
+  - **Type Definitions**: Comprehensive CV data types for Google Stitch integration and transformation utilities.
 - Vite configuration
   - Plugins: React Fast Refresh, Tailwind CSS integration, and Module Federation.
   - Test environment configured for DOM testing with comprehensive coverage reporting.
@@ -130,6 +148,11 @@ G --> O["Deploy Preview Job<br/>PR builds"]
     - `**/*.test.tsx` - TypeScript test files
     - `**/__tests__/**` - Entire test directory structure
     - `src/agent/**` - Agent code specifically excluded from production compilation
+- **Updated** MCP TypeScript configuration
+  - **Isolated Compilation**: Extends main tsconfig with MCP-specific settings.
+  - **Output Configuration**: Compiles to `dist/mcp` with `src/mcp` as root directory.
+  - **Target Environment**: ES2022 with Node.js types for server-side execution.
+  - **Declaration Generation**: Creates type declarations and source maps for debugging.
 - ESLint and Prettier
   - ESLint extends a TanStack-provided configuration.
   - Prettier configured with semicolon-less, single-quote, and trailing comma rules.
@@ -143,10 +166,11 @@ G --> O["Deploy Preview Job<br/>PR builds"]
   - Client variables prefixed with VITE_ enforced at type and runtime.
 
 **Section sources**
-- [package.json:5-19](file://package.json#L5-L19)
+- [package.json:5-22](file://package.json#L5-L22)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -159,7 +183,7 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 ## Architecture Overview
 The build system integrates Vite, React, Tailwind CSS, Module Federation, and a comprehensive CI/CD pipeline with a simplified approach to prevent Vercel deployment failures. The development server supports hot reloading, remote component exposure, and enhanced coverage reporting. The production build targets modern browsers and emits optimized assets without TypeScript type checking. The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews. Environment variables are validated and injected at build time.
 
-**Updated** The build system now separates bundling from type checking, with Vite handling JavaScript bundling and TypeScript validation being performed separately to prevent Vercel deployment failures while maintaining comprehensive type safety.
+**Updated** The build system now includes MCP (Model Context Protocol) server configuration with dedicated TypeScript compilation, enabling integration with Google Stitch UI for CV data cloning and synchronization. The MCP server provides two main tools: context cloning from Google Stitch and pushing CV data back to Stitch, with comprehensive type safety and transformation utilities.
 
 ```mermaid
 graph TB
@@ -172,6 +196,11 @@ HC["Husky Hooks<br/>pre-commit, pre-push"]
 LS["lint-staged"]
 SP["Safe Push Script"]
 END["End-to-End Testing"]
+MCP["MCP Server<br/>Node.js Runtime"]
+MCP_TS["tsconfig.mcp.json<br/>Isolated Compilation"]
+MCP_SERVER["stitch-context-server.ts<br/>MCP Implementation"]
+MCP_TYPES["cv.types.ts<br/>Type Definitions"]
+END2["Manual Testing"]
 end
 subgraph "Application"
 M["src/main.tsx"]
@@ -180,10 +209,12 @@ E["src/env.ts"]
 TEST["Test Files<br/>Excluded from Production TS"]
 AGENT["Agent Code<br/>Excluded from Production TS"]
 PROD["Production Code<br/>Type Checked Separately"]
+MCP_APP["MCP Integration<br/>CV Builder"]
+END3["CV Builder UI"]
 end
 subgraph "CI/CD Pipeline"
 GA["GitHub Actions"]
-QG["Quality Gate<br/>Type Check (Optional)"]
+QG["Quality Gate<br/>Type Check → Lint → Test → Build"]
 SQ["SonarQube Analysis"]
 SS["Security Scan"]
 DP["Deploy Preview"]
@@ -191,6 +222,7 @@ end
 subgraph "Build Process"
 VC["vite.config.js"]
 TC["tsconfig.json<br/>Selective Type Checking"]
+MCP_TC["tsconfig.mcp.json<br/>MCP Compilation"]
 EC["eslint.config.js"]
 PC["prettier.config.js"]
 SC["Setup Script"]
@@ -202,8 +234,14 @@ V --> HC
 HC --> LS
 LS --> SP
 SP --> END
+MCP --> MCP_TS
+MCP_TS --> MCP_SERVER
+MCP --> MCP_TYPES
+MCP_SERVER --> MCP_APP
+MCP_APP --> END3
 VC --> V
 TC --> V
+MCP_TC --> MCP_TS
 EC --> V
 PC --> V
 SC --> GA
@@ -217,12 +255,14 @@ M --> E
 TEST --> TC
 AGENT --> TC
 PROD --> TC
+MCP_APP --> PROD
 ```
 
 **Diagram sources**
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [scripts/setup-cicd.ts:1-196](file://scripts/setup-cicd.ts#L1-L196)
@@ -233,6 +273,8 @@ PROD --> TC
 - [src/App.test.tsx:1-11](file://src/App.test.tsx#L1-L11)
 - [src/agent/__tests__/skill-agent.test.tsx:1-800](file://src/agent/__tests__/skill-agent.test.tsx#L1-L800)
 - [src/agent/index.ts:1-43](file://src/agent/index.ts#L1-L43)
+- [src/mcp/stitch-context-server.ts:1-241](file://src/mcp/stitch-context-server.ts#L1-L241)
+- [src/mcp/types/cv.types.ts:1-111](file://src/mcp/types/cv.types.ts#L1-L111)
 
 ## Detailed Component Analysis
 
@@ -267,6 +309,59 @@ TypeFail --> End
 **Section sources**
 - [package.json:5-19](file://package.json#L5-L19)
 - [BUILD_FIX_LOCAL_VS_VERCEL.md:35-59](file://BUILD_FIX_LOCAL_VS_VERCEL.md#L35-L59)
+
+### MCP Server Configuration
+**Purpose**: Enable Model Context Protocol integration for Google Stitch UI context cloning and CV data synchronization.
+
+**Configuration Highlights**:
+- **Isolated Compilation**: `tsconfig.mcp.json` extends main configuration with MCP-specific settings
+- **Output Structure**: Compiles to `dist/mcp` directory with `src/mcp` as root
+- **Node.js Compatibility**: Targets ES2022 with Node.js types for server-side execution
+- **Module Resolution**: Uses bundler module resolution for optimal server-side bundling
+- **Type Safety**: Generates declaration files and source maps for debugging
+
+**Build Scripts**:
+- `npm run build:mcp`: Compiles MCP server using dedicated TypeScript configuration
+- `npm run start:mcp`: Executes compiled MCP server from `dist/mcp/stitch-context-server.js`
+
+```mermaid
+flowchart TD
+Start(["MCP Build Request"]) --> MCPConfig["Load tsconfig.mcp.json"]
+MCPConfig --> Compile["Compile src/mcp/**/*"]
+Compile --> Output["Generate dist/mcp/"]
+Output --> Executable["dist/mcp/stitch-context-server.js"]
+Executable --> Run["npm run start:mcp"]
+Run --> Server["MCP Server Running"]
+Server --> Tools["Available Tools:<br/>clone-stitch-context<br/>push-to-stitch"]
+Tools --> Transform["Data Transformation:<br/>Stitch ↔ CV Format"]
+Transform --> End(["Ready for Integration"])
+```
+
+**Diagram sources**
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
+- [package.json:20](file://package.json#L20)
+- [package.json:21](file://package.json#L21)
+
+**Section sources**
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
+- [package.json:20](file://package.json#L20)
+- [package.json:21](file://package.json#L21)
+
+### MCP Server Implementation
+**Core Functionality**: Provides two main tools for Google Stitch integration:
+- **Context Cloning Tool**: `clone-stitch-context` - Fetches CV data from Google Stitch and transforms to CV format
+- **Push Tool**: `push-to-stitch` - Transforms CV data to Google Stitch format and pushes back to context
+
+**Data Transformation**:
+- **Stitch → CV**: Handles various Google Stitch data structures and maps to unified CV format
+- **CV → Stitch**: Converts CV data to Google Stitch compatible format with proper field mapping
+- **Type Safety**: Comprehensive TypeScript interfaces for all data structures
+
+**Error Handling**: Robust error handling with detailed error messages and `isError` flag for failed operations.
+
+**Section sources**
+- [src/mcp/stitch-context-server.ts:1-241](file://src/mcp/stitch-context-server.ts#L1-L241)
+- [src/mcp/types/cv.types.ts:1-111](file://src/mcp/types/cv.types.ts#L1-L111)
 
 ### Vite Configuration
 Key behaviors:
@@ -379,6 +474,7 @@ Env-->>App : Provide validated env values
 - The main entry bootstraps routing, providers, and renders the app under Strict Mode.
 - Scripts in package.json orchestrate dev, build, serve, test, lint, format, and comprehensive CI/CD operations.
 - **Updated** Build process now separates bundling from type checking to prevent Vercel deployment failures.
+- **Updated** MCP server build scripts provide isolated compilation and execution capabilities.
 
 ```mermaid
 sequenceDiagram
@@ -404,7 +500,7 @@ App-->>Main : Render Home component
 - [index.html:1-18](file://index.html#L1-L18)
 - [src/main.tsx:1-89](file://src/main.tsx#L1-L89)
 - [src/App.tsx:1-8](file://src/App.tsx#L1-L8)
-- [package.json:5-19](file://package.json#L5-L19)
+- [package.json:5-22](file://package.json#L5-L22)
 
 ## CI/CD Infrastructure
 
@@ -413,9 +509,9 @@ The CI/CD pipeline consists of four main jobs orchestrated by GitHub Actions wit
 
 **Quality Gate Job**
 - Runs on push and pull request to main/master/develop branches
-- Performs type checking (optional), linting, testing with coverage, and production build
+- Performs type checking, linting, testing with coverage, and production build
 - Uses Node.js 20 with npm caching for optimal performance
-- **Updated** Type checking is now optional in CI to prevent pipeline failures from agent code issues
+- **Updated** Type checking is now mandatory for MCP server integration
 
 **SonarQube Analysis Job**
 - Runs after quality gate passes
@@ -438,7 +534,7 @@ The CI/CD pipeline consists of four main jobs orchestrated by GitHub Actions wit
 
 ```mermaid
 flowchart TD
-Start(["GitHub Push/PR Event"]) --> QualityGate["Quality Gate Job<br/>Type Check (Optional) → Lint → Test → Build"]
+Start(["GitHub Push/PR Event"]) --> QualityGate["Quality Gate Job<br/>Type Check → Lint → Test → Build"]
 QualityGate --> SonarQube["SonarQube Analysis<br/>Code Quality Metrics"]
 QualityGate --> Security["Security Scan<br/>Dependency Audit"]
 QualityGate --> DeployPreview["Deploy Preview<br/>PR Builds Only"]
@@ -464,7 +560,7 @@ The pre-commit and pre-push hooks provide automated code quality enforcement:
 
 **Pre-push Hook**
 - Comprehensive validation before pushing to remote repositories
-- **Updated** Type checking is now optional to prevent blocking pushes due to agent code issues
+- **Updated** Type checking is now mandatory to ensure MCP server integrity
 - Runs tests with coverage generation for quality assurance
 - Performs production build verification to ensure deployability
 - Blocks pushes if any validation step fails
@@ -473,7 +569,7 @@ The pre-commit and pre-push hooks provide automated code quality enforcement:
 ```mermaid
 flowchart TD
 CommitEvent["git commit/push event"] --> PreCommit["Pre-commit Hook<br/>Auto-format & Lint"]
-PreCommit --> PrePush["Pre-push Hook<br/>Type Check (Optional) → Test → Build"]
+PreCommit --> PrePush["Pre-push Hook<br/>Type Check → Test → Build"]
 PrePush --> Validation{"All validations pass?"}
 Validation --> |Yes| Allow["Allow commit/push"]
 Validation --> |No| Block["Block operation<br/>Show error messages"]
@@ -539,7 +635,7 @@ Comprehensive code quality analysis through SonarCloud integration:
 - Multi-criteria issue ignoring for specific patterns
 
 **Integration Points**
-- Local analysis via `npx sonarqube-scanner` (optional)
+- Local analysis via `npx sonar-scanner` (optional)
 - GitHub Actions automatic scanning
 - Quality gate blocking on failures
 - Coverage report integration through lcov.info
@@ -551,15 +647,19 @@ Comprehensive code quality analysis through SonarCloud integration:
 - Vite depends on plugins for React, Tailwind, and Module Federation.
 - Module Federation configuration depends on package.json for React version pinning.
 - TypeScript configuration aligns with Vite's resolve.alias and selective type checking.
+- **Updated** MCP server configuration extends main TypeScript config with Node.js compatibility.
+- **Updated** MCP server depends on `@modelcontextprotocol/sdk` and `zod` for protocol implementation and data validation.
 - ESLint and Prettier are integrated via npm scripts.
 - CI/CD infrastructure depends on GitHub Actions, Husky, and SonarQube services.
 - Coverage reporting requires @vitest/coverage-v8 and proper lcov configuration.
 - **Updated** Test files and agent code are explicitly excluded from TypeScript compilation to prevent Vercel build failures.
+- **Updated** MCP server code is isolated from main application compilation through dedicated tsconfig.
 
 ```mermaid
 graph LR
 Pkg["package.json"] --> Vite["vite.config.js"]
 Pkg --> MFConf["module-federation.config.js"]
+Pkg --> MCP["tsconfig.mcp.json"]
 Vite --> Plugins["Plugins: React, Tailwind, Federation"]
 MFConf --> ReactDep["React version from package.json"]
 Vite --> TS["tsconfig.json<br/>Selective Type Checking"]
@@ -573,13 +673,18 @@ Husky --> LS["lint-staged"]
 LS --> SP["safe-push.ts"]
 TS --> TestExclusions["Test File Exclusions"]
 TS --> AgentExclusions["Agent Code Exclusions"]
+MCP --> MCP_TS["MCP TypeScript Settings"]
+MCP --> MCP_Deps["@modelcontextprotocol/sdk<br/>zod"]
+MCP --> MCP_Out["dist/mcp/"]
+MCP_TS --> MCP_Out
 ```
 
 **Diagram sources**
-- [package.json:1-80](file://package.json#L1-L80)
+- [package.json:1-82](file://package.json#L1-L82)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -587,10 +692,11 @@ TS --> AgentExclusions["Agent Code Exclusions"]
 - [sonar-project.properties:1-43](file://sonar-project.properties#L1-L43)
 
 **Section sources**
-- [package.json:1-80](file://package.json#L1-L80)
+- [package.json:1-82](file://package.json#L1-L82)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [tsconfig.json:1-41](file://tsconfig.json#L1-L41)
+- [tsconfig.mcp.json:1-21](file://tsconfig.mcp.json#L1-L21)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -609,6 +715,8 @@ TS --> AgentExclusions["Agent Code Exclusions"]
 - **Updated** Configure SonarQube quality gates to prevent low-quality code from reaching production.
 - **Updated** Test files and agent code are excluded from TypeScript compilation to reduce build time and prevent Vercel deployment failures.
 - **Updated** Separate bundling from type checking to significantly improve build performance.
+- **Updated** MCP server uses ESNext modules with bundler resolution for optimal server-side performance.
+- **Updated** MCP server compilation is isolated from main application to prevent unnecessary rebuilds.
 
 ## Troubleshooting Guide
 Common issues and resolutions:
@@ -623,6 +731,12 @@ Common issues and resolutions:
   - Run `npm run type-check` separately to identify type issues in agent code.
   - Remember that agent code is excluded from production compilation but still type checked separately.
   - Use `npm run type-check` for comprehensive type validation.
+- **Updated** MCP Server Issues
+  - **Compilation Failures**: Check `tsconfig.mcp.json` for proper configuration and Node.js compatibility.
+  - **Runtime Errors**: Verify MCP server dependencies (`@modelcontextprotocol/sdk`, `zod`) are installed.
+  - **Build Scripts**: Ensure `npm run build:mcp` completes successfully before `npm run start:mcp`.
+  - **Port Conflicts**: MCP server uses stdio transport; ensure no conflicts with other stdio processes.
+  - **Data Transformation**: Review transformation functions for Google Stitch data structure changes.
 - ESLint/Prettier conflicts
   - Run the combined check script to auto-fix formatting and lint issues.
   - Ensure editor integrations use the project's ESLint and Prettier configs.
@@ -635,7 +749,7 @@ Common issues and resolutions:
   - Coverage report generation: Verify lcov.info file exists and SonarQube configuration points to correct report path.
   - SonarQube analysis failures: Check project key, organization, and token configuration in GitHub secrets.
   - Safe push script errors: Run script with verbose logging to identify failing validation step.
-  - **Updated** Type checking in CI: Type checking is now optional in CI to prevent failures from agent code issues.
+  - **Updated** Type checking in CI: Type checking is now mandatory for MCP server integration.
 - **Updated** Coverage Reporting Problems
   - Multi-format coverage not generating: Verify @vitest/coverage-v8 is installed and vite.config.js coverage settings are correct.
   - Low coverage thresholds: Adjust thresholds in vite.config.js or increase test coverage.
@@ -644,17 +758,19 @@ Common issues and resolutions:
   - Pre-commit hook not running: Verify Husky is installed and lint-staged is configured correctly.
   - Pre-push hook blocking legitimate changes: Temporarily bypass with `git push --no-verify` for emergency situations only.
   - Hook permissions: On Unix-like systems, ensure hooks have executable permissions using chmod +x.
-  - **Updated** Type checking in hooks: Type checking is now optional to prevent blocking pushes due to agent code issues.
+  - **Updated** Type checking in hooks: Type checking is now mandatory to ensure MCP server integrity.
 - **Updated** TypeScript Compilation Issues
   - Test files causing Vercel build failures: Verify that test file exclusions are properly configured in tsconfig.json.
   - Agent code type errors: These are now excluded from production compilation but can be checked separately with `npm run type-check`.
   - Build failures: Check if the simplified build system is working correctly with `npm run build`.
   - Type checking failures: Use `npm run type-check` for comprehensive type validation separate from build process.
+  - **Updated** MCP server compilation: Use `npm run build:mcp` to compile MCP server separately from main application.
 
 **Section sources**
 - [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [vite.config.js:15-20](file://vite.config.js#L15-L20)
 - [tsconfig.json:17-26](file://tsconfig.json#L17-L26)
+- [tsconfig.mcp.json:4](file://tsconfig.mcp.json#L4)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [src/env.ts:13-39](file://src/env.ts#L13-L39)
@@ -664,4 +780,4 @@ Common issues and resolutions:
 - [BUILD_FIX_LOCAL_VS_VERCEL.md:134-142](file://BUILD_FIX_LOCAL_VS_VERCEL.md#L134-L142)
 
 ## Conclusion
-The project's build configuration leverages Vite, React, Tailwind CSS, and Module Federation to deliver a modern, maintainable, and scalable frontend setup. **Updated** The simplified build system separates bundling from type checking to prevent Vercel deployment failures while maintaining comprehensive type safety through separate validation processes. TypeScript strict mode, ESLint, and Prettier ensure code quality, while typed environment variables provide safe runtime configuration. The Module Federation setup exposes components for remote consumption with shared React dependencies. **Updated** The TypeScript configuration now selectively excludes test files and agent code from production compilation, while maintaining comprehensive type checking for production code through separate validation. **Updated** The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews with streamlined type checking to ensure production-ready code delivery. Following the troubleshooting guidance helps resolve common build issues and CI/CD pipeline problems quickly.
+The project's build configuration leverages Vite, React, Tailwind CSS, and Module Federation to deliver a modern, maintainable, and scalable frontend setup. **Updated** The simplified build system separates bundling from type checking to prevent Vercel deployment failures while maintaining comprehensive type safety through separate validation processes. TypeScript strict mode, ESLint, and Prettier ensure code quality, while typed environment variables provide safe runtime configuration. The Module Federation setup exposes components for remote consumption with shared React dependencies. **Updated** The TypeScript configuration now selectively excludes test files and agent code from production compilation, while maintaining comprehensive type checking for production code through separate validation. **Updated** The MCP (Model Context Protocol) server configuration provides isolated compilation and execution capabilities for Google Stitch UI integration, with dedicated build scripts and comprehensive type safety. **Updated** The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews with streamlined type checking to ensure production-ready code delivery. Following the troubleshooting guidance helps resolve common build issues and CI/CD pipeline problems quickly.
