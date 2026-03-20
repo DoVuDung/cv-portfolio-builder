@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useStore } from '@tanstack/react-store'
-import type { CV } from '../schemas/cv.schema'
-import type { AgentResponse, AgentTask } from '../core/agent'
-import type { CVAnalysis, ImprovedExperience, SkillExtraction, ATSOptimization } from '../tools/core-tools'
 import { cvMemory } from '../memory/cv-memory'
 import { createSkillAgent } from '../core/agent'
 import { createLLMService } from '../services/llm'
+import type { CV, Experience } from '../schemas/cv.schema'
+import type { AgentTask } from '../core/agent'
+import type { ATSOptimization, CVAnalysis, ImprovedExperience, SkillExtraction } from '../tools/core-tools'
 
 interface UseSkillAgentOptions {
   debugMode?: boolean
@@ -23,7 +23,7 @@ interface UseSkillAgentReturn {
   analyzeCV: (cv: CV) => Promise<CVAnalysis>
   optimizeCV: (cv: CV, jobDescription?: string) => Promise<ATSOptimization>
   generateSummary: (cv: CV, targetRole: string) => Promise<string>
-  improveExperience: (experience: Parameters<ImprovedExperience>[0]) => Promise<ImprovedExperience>
+  improveExperience: (experience: Experience) => Promise<ImprovedExperience>
   extractSkills: (cv: CV) => Promise<SkillExtraction>
   
   // Utilities
@@ -117,7 +117,7 @@ export function useSkillAgent(options: UseSkillAgentOptions = {}): UseSkillAgent
 
   // Action: Improve Experience
   const improveExperience = useCallback(async (
-    experience: Parameters<ImprovedExperience>[0]
+    experience: Experience
   ): Promise<ImprovedExperience> => {
     return executeTask<ImprovedExperience>('improve_experience', { experience })
   }, [executeTask])

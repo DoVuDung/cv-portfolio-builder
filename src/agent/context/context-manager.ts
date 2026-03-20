@@ -6,7 +6,7 @@ import type { AgentContext, SeniorityLevel, Tone, Emphasis } from '../schemas/ag
  */
 export class ContextManager {
   private store: Store<AgentContext>
-  
+
   // Derived states
   public isComplete: Derived<boolean>
   public targetRole: Derived<string | undefined>
@@ -22,29 +22,26 @@ export class ContextManager {
         emphasis: [],
       },
     }
-    
+
     this.store = new Store<AgentContext>(initialContext)
-    
+
     // Setup derived states
     this.isComplete = new Derived({
-      fn: () => !!(
-        this.store.state.targetRole &&
-        this.store.state.seniority &&
-        this.store.state.domain
-      ),
+      fn: () =>
+        !!(this.store.state.targetRole && this.store.state.seniority && this.store.state.domain),
       deps: [this.store],
     })
-    
+
     this.targetRole = new Derived({
       fn: () => this.store.state.targetRole,
       deps: [this.store],
     })
-    
+
     this.seniority = new Derived({
       fn: () => this.store.state.seniority,
       deps: [this.store],
     })
-    
+
     // Mount derived states
     this.isComplete.mount()
     this.targetRole.mount()
@@ -55,7 +52,7 @@ export class ContextManager {
    * Update context
    */
   update(context: Partial<AgentContext>): void {
-    this.store.setState(prev => ({
+    this.store.setState((prev) => ({
       ...prev,
       ...context,
       preferences: {
@@ -121,7 +118,7 @@ export class ContextManager {
     this.update({
       preferences: {
         ...this.store.state.preferences,
-        emphasis: current.filter(e => e !== emphasis),
+        emphasis: current.filter((e) => e !== emphasis),
       },
     })
   }
@@ -183,10 +180,10 @@ export class ContextManager {
    */
   validateWithCV(cv: unknown): Array<string> {
     const warnings: Array<string> = []
-    
+
     // This would be implemented with actual CV validation
     // For now, just a placeholder
-    
+
     return warnings
   }
 
@@ -214,7 +211,7 @@ export class ContextManager {
    * Subscribe to context changes
    */
   subscribe(callback: (context: AgentContext) => void): () => void {
-    return this.store.subscribe(state => {
+    return this.store.subscribe((state) => {
       callback({ ...state })
     })
   }

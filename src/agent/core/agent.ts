@@ -1,4 +1,4 @@
-import { cvMemory, preferenceMemory, sessionMemory } from '../memory/cv-memory'
+import { cvMemory, sessionMemory } from '../memory/cv-memory'
 import { contextManager } from '../context/context-manager'
 import type { AgentAction, AgentContext } from '../schemas/agent.schema'
 import type { CV } from '../schemas/cv.schema'
@@ -9,7 +9,7 @@ import type { LLMProvider } from '../services/llm'
  * Tool Registry - Manages available tools
  */
 export class ToolRegistry {
-  private tools: Map<string, ITool> = new Map()
+  private readonly tools: Map<string, ITool> = new Map()
 
   /**
    * Register a tool
@@ -58,7 +58,7 @@ export class ToolRegistry {
  * Agent Orchestrator - Coordinates tool execution and state management
  */
 export class AgentOrchestrator {
-  private toolRegistry: ToolRegistry
+  private readonly toolRegistry: ToolRegistry
   private llmService?: LLMProvider
   private debugMode: boolean
 
@@ -171,8 +171,8 @@ export class AgentOrchestrator {
  * Skill Agent - Main agent interface
  */
 export class SkillAgent {
-  private orchestrator: AgentOrchestrator
-  private context: typeof contextManager
+  private readonly orchestrator: AgentOrchestrator
+  private readonly context: typeof contextManager
 
   constructor(options?: {
     orchestrator?: AgentOrchestrator

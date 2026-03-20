@@ -42,11 +42,11 @@ All documentation files have been cleaned of emojis and icons to meet profession
 
 ### Before
 ```markdown
-# 🤖 Skill Agent - MCP Implementation Guide
+# Skill Agent - MCP Implementation Guide
 
-## 🎯 Key Features
-- ✅ **CV Analysis** - Automated feedback
-- ✅ **ATS Optimization** - Keyword matching
+## Key Features
+- **CV Analysis** - Automated feedback
+- **ATS Optimization** - Keyword matching
 ```
 
 ### After

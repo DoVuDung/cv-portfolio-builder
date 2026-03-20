@@ -498,21 +498,21 @@ Files prefixed with `demo` can be safely deleted. They are there to provide a st
 
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
 
-# CV & Portfolio Builder 🧑‍💻
+# CV & Portfolio Builder 
 
 A modern CV and portfolio builder built with **React 19**, **Vite**, **Tailwind CSS**, and **Bun**. Inspired by [cv.fullstack.edu.vn](https://cv.fullstack.edu.vn), this tool lets users input data and instantly preview their CV using customizable templates. It also supports creating personal portfolio sections.
 
-## ✨ Features
+## Features
 
-- 🧱 Live CV builder with preview
-- 🎨 Multiple templates (customizable with React components)
-- 📦 Built with React 19 + Tailwind CSS + Radix UI
-- 📤 Export CV as HTML or PDF
-- 🌐 Share public CV via unique link
-- 🧑‍🎨 Add personal portfolio projects
-- 💾 Save data to localStorage or database (future)
+- Live CV builder with preview
+- Multiple templates (customizable with React components)
+- Built with React 19 + Tailwind CSS + Radix UI
+- Export CV as HTML or PDF
+- Share public CV via unique link
+- Add personal portfolio projects
+- Save data to localStorage or database (future)
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework**: React 19, Vite, Bun
 - **Styling**: Tailwind CSS, Radix UI, `clsx`, `tailwind-merge`
@@ -522,7 +522,7 @@ A modern CV and portfolio builder built with **React 19**, **Vite**, **Tailwind 
 - **Testing**: Vitest, Testing Library
 - **Dev Tools**: Eslint, Prettier, Typescript
 
-## 📦 Installation
+## Installation
 
 ```bash
 bun install
