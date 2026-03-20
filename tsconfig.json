@@ -1,5 +1,6 @@
 {
   "include": ["**/*.ts", "**/*.tsx", "eslint.config.js", "prettier.config.js", "vite.config.js"],
+  "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"],
   "compilerOptions": {
     "target": "ESNext",
     "jsx": "react-jsx",

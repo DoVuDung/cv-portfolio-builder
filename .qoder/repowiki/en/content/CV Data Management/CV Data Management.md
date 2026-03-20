@@ -7,6 +7,7 @@
 - [agent.schema.ts](file://src/agent/schemas/agent.schema.ts)
 - [cv-memory.ts](file://src/agent/memory/cv-memory.ts)
 - [context-manager.ts](file://src/agent/memory/context-manager.ts)
+- [useSkillAgent.ts](file://src/agent/hooks/useSkillAgent.ts)
 - [preview.store.ts](file://src/templates/store/preview.store.ts)
 - [useCVPreview.ts](file://src/templates/hooks/useCVPreview.ts)
 - [profile-tools.ts](file://src/agent/tools/profile-tools.ts)
@@ -16,6 +17,15 @@
 - [analysis-tools.ts](file://src/agent/tools/analysis-tools.ts)
 - [prompts.ts](file://src/agent/services/prompts.ts)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive documentation for the useCVMemory hook integration with CV Builder application
+- Enhanced state management documentation with TanStack Store and reactive updates
+- Expanded AI Skill Agent integration coverage for CV optimization workflows
+- Updated version control capabilities documentation with CVMemoryManager
+- Added JSON import/export functionality documentation
+- Enhanced context management system documentation for job targets and professional context
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -32,6 +42,8 @@
 ## Introduction
 This document provides comprehensive data model documentation for CV data management in the CV Portfolio Builder. It covers the CV schema design for Profile, Experience, Projects, Skills, and Education entities, validation rules using Zod schemas and TypeScript interfaces, state management via TanStack Store and derived values, persistence strategies (localStorage and JSON import/export), context management for job targeting and professional context, and data transformation patterns. It also documents validation workflows, error handling, examples of data manipulation, schema evolution, and migration strategies.
 
+**Updated** Enhanced with integration through useCVMemory hook for seamless CV Builder application connectivity and comprehensive AI Skill Agent system integration for CV optimization workflows.
+
 ## Project Structure
 The CV data management system spans several modules:
 - Schema definitions for CV and agent context
@@ -39,6 +51,7 @@ The CV data management system spans several modules:
 - Tools for manipulating CV data and generating insights
 - Preview store and hooks for rendering and editing
 - Template types and CV-related type extensions
+- AI Skill Agent integration for optimization workflows
 
 ```mermaid
 graph TB
@@ -50,6 +63,10 @@ end
 subgraph "Memory"
 M1["cv-memory.ts"]
 M2["context-manager.ts"]
+end
+subgraph "Hooks"
+H1["useSkillAgent.ts"]
+H2["useCVMemory"]
 end
 subgraph "Tools"
 P["profile-tools.ts"]
@@ -72,14 +89,17 @@ M1 --> S
 M1 --> AN
 PS --> PH
 T --> PS
+H1 --> M1
+H2 --> M1
 ```
 
 **Diagram sources**
 - [cv.schema.ts:1-79](file://src/agent/schemas/cv.schema.ts#L1-L79)
 - [agent.schema.ts:1-62](file://src/agent/schemas/agent.schema.ts#L1-L62)
 - [cv.types.ts:1-16](file://src/templates/types/cv.types.ts#L1-L16)
-- [cv-memory.ts:1-291](file://src/agent/memory/cv-memory.ts#L1-L291)
+- [cv-memory.ts:1-290](file://src/agent/memory/cv-memory.ts#L1-L290)
 - [context-manager.ts:1-141](file://src/agent/memory/context-manager.ts#L1-L141)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 - [profile-tools.ts:1-142](file://src/agent/tools/profile-tools.ts#L1-L142)
 - [experience-tools.ts:1-194](file://src/agent/tools/experience-tools.ts#L1-L194)
 - [project-tools.ts:1-168](file://src/agent/tools/project-tools.ts#L1-L168)
@@ -92,8 +112,9 @@ T --> PS
 - [cv.schema.ts:1-79](file://src/agent/schemas/cv.schema.ts#L1-L79)
 - [agent.schema.ts:1-62](file://src/agent/schemas/agent.schema.ts#L1-L62)
 - [cv.types.ts:1-16](file://src/templates/types/cv.types.ts#L1-L16)
-- [cv-memory.ts:1-291](file://src/agent/memory/cv-memory.ts#L1-L291)
+- [cv-memory.ts:1-290](file://src/agent/memory/cv-memory.ts#L1-L290)
 - [context-manager.ts:1-141](file://src/agent/memory/context-manager.ts#L1-L141)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 - [preview.store.ts:1-100](file://src/templates/store/preview.store.ts#L1-L100)
 - [useCVPreview.ts:1-60](file://src/templates/hooks/useCVPreview.ts#L1-L60)
 
@@ -103,6 +124,9 @@ T --> PS
 - Context Manager: Centralizes job target, domain, experience level, and application goals; exposes import/export and contextual suggestions.
 - Tools: Feature-specific tools for updating profile, enhancing experiences, generating project highlights, linking skills, and analyzing CV completeness and keyword alignment.
 - Preview Store: Manages rendering settings and modes for CV preview/edit/print workflows.
+- AI Skill Agent Integration: Seamless integration with AI-powered CV optimization workflows through useSkillAgent hook.
+
+**Updated** Enhanced with useCVMemory hook for state management integration and comprehensive AI Skill Agent system for CV optimization.
 
 **Section sources**
 - [cv.schema.ts:1-79](file://src/agent/schemas/cv.schema.ts#L1-L79)
@@ -110,28 +134,34 @@ T --> PS
 - [cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
 - [preview.store.ts:24-95](file://src/templates/store/preview.store.ts#L24-L95)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 ## Architecture Overview
-The CV data lifecycle integrates schema validation, reactive state, tool-driven mutations, and context-aware transformations.
+The CV data lifecycle integrates schema validation, reactive state, tool-driven mutations, and context-aware transformations with AI-powered optimization workflows.
 
 ```mermaid
 sequenceDiagram
 participant UI as "UI Layer"
+participant Hook as "useCVMemory Hook"
 participant Tools as "Tool Layer"
 participant Mem as "CVMemoryManager"
 participant Store as "TanStack Store"
-participant Der as "Derived Values"
+participant Agent as "AI Skill Agent"
+UI->>Hook : "Access CV state and actions"
+Hook->>Mem : "Get currentCV/versionCount/lastUpdated"
 UI->>Tools : "Invoke tool with validated params"
 Tools->>Mem : "cvActions.updateProfile/addExperience/etc."
 Mem->>Store : "setState(prev => merged state)"
-Store-->>Der : "Trigger derived recomputation"
-Der-->>UI : "Reactive updates (hasCV/versionCount/lastUpdated)"
-UI->>Mem : "Export/Import JSON"
-Mem-->>UI : "Serialized CV or context"
+Store-->>Hook : "Reactive updates via useStore"
+Hook-->>UI : "Updated state and actions"
+UI->>Agent : "Request CV optimization"
+Agent->>Mem : "Access CV data"
+Agent-->>UI : "AI-generated optimizations"
 ```
 
 **Diagram sources**
 - [cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 - [profile-tools.ts:29-44](file://src/agent/tools/profile-tools.ts#L29-L44)
 - [experience-tools.ts:38-67](file://src/agent/tools/experience-tools.ts#L38-L67)
 - [project-tools.ts:36-63](file://src/agent/tools/project-tools.ts#L36-L63)
@@ -210,6 +240,8 @@ CV ||--o{ EDUCATION : "contains"
 - SessionMemoryManager tracks sessionId, action logs, and session duration.
 - PreferenceMemoryManager stores tone, emphasis, and formatting preferences with update/reset capabilities.
 
+**Updated** Enhanced with useCVMemory hook that provides reactive access to CV state through TanStack Store integration.
+
 ```mermaid
 classDiagram
 class CVMemoryManager {
@@ -227,6 +259,15 @@ class CVMemoryManager {
 +importJSON(json) boolean
 +subscribe(cb) () => void
 }
+class UseCVMemoryHook {
++currentCV : CV|null
++hasCV : boolean
++versionCount : number
++lastUpdated : Date|null
++saveCV(cv, changes) void
++getHistory() CVVersion[]
++restoreVersion(versionNumber) boolean
+}
 class SessionMemoryManager {
 -store : Store
 +logTool(tool, params, result) void
@@ -242,6 +283,7 @@ class PreferenceMemoryManager {
 +reset() void
 }
 CVMemoryManager --> "uses" Store
+UseCVMemoryHook --> "uses" CVMemoryManager
 SessionMemoryManager --> "uses" Store
 PreferenceMemoryManager --> "uses" Store
 ```
@@ -250,11 +292,13 @@ PreferenceMemoryManager --> "uses" Store
 - [cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [cv-memory.ts:165-227](file://src/agent/memory/cv-memory.ts#L165-L227)
 - [cv-memory.ts:251-284](file://src/agent/memory/cv-memory.ts#L251-L284)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 **Section sources**
 - [cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [cv-memory.ts:165-227](file://src/agent/memory/cv-memory.ts#L165-L227)
 - [cv-memory.ts:251-284](file://src/agent/memory/cv-memory.ts#L251-L284)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 ### Context Management for Job Targets and Professional Context
 - ContextManager centralizes jobTarget, domain, experienceLevel, and applicationGoals.
@@ -279,6 +323,34 @@ Complete --> |No| Incomplete["Incomplete context"]
 **Section sources**
 - [context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
 - [agent.schema.ts:4-12](file://src/agent/schemas/agent.schema.ts#L4-L12)
+
+### AI Skill Agent Integration for CV Optimization
+- useSkillAgent hook provides comprehensive AI-powered CV optimization capabilities.
+- Supports CV analysis, ATS optimization, summary generation, experience improvement, and skill extraction.
+- Integrates with LLM services for advanced AI-powered features.
+- Includes loading states, error handling, and utility functions for managing AI interactions.
+
+**Updated** New comprehensive AI Skill Agent integration for CV optimization workflows.
+
+```mermaid
+sequenceDiagram
+participant UI as "UI Layer"
+participant AgentHook as "useSkillAgent"
+participant Agent as "Skill Agent"
+participant LLM as "LLM Service"
+UI->>AgentHook : "analyzeCV/optimizeCV/generateSummary"
+AgentHook->>Agent : "run(task, input)"
+Agent->>LLM : "Process with AI model"
+LLM-->>Agent : "AI-generated results"
+Agent-->>AgentHook : "Structured response"
+AgentHook-->>UI : "Optimized CV data"
+```
+
+**Diagram sources**
+- [useSkillAgent.ts:38-184](file://src/agent/hooks/useSkillAgent.ts#L38-L184)
+
+**Section sources**
+- [useSkillAgent.ts:38-184](file://src/agent/hooks/useSkillAgent.ts#L38-L184)
 
 ### Tools: Data Manipulation and Validation Workflows
 - Profile Tools: Update profile fields, generate AI-like summaries, and optimize contact info with suggestions.
@@ -349,6 +421,8 @@ Init --> Reset["resetSettings()"]
 - LocalStorage: While not explicitly implemented in the referenced files, the JSON export/import pattern enables straightforward integration with localStorage by persisting the exported string and restoring on load.
 - Database Integration: The CVVersion structure and metadata support versioning and timestamping, enabling future database-backed persistence with migrations and rollbacks.
 
+**Updated** Enhanced with comprehensive version control capabilities through CVMemoryManager for seamless persistence.
+
 ```mermaid
 flowchart TD
 Start(["Persist CV"]) --> Export["exportJSON() -> string"]
@@ -403,6 +477,9 @@ Apply --> End(["State Updated"])
 - Tools depend on cv-actions and cv-store to mutate and read state.
 - Context manager depends on cv-store for context and cv-actions for updates.
 - Preview store is independent but consumed by UI hooks.
+- useCVMemory hook integrates CVMemoryManager with React components.
+
+**Updated** Enhanced dependency graph with useCVMemory hook integration and AI Skill Agent dependencies.
 
 ```mermaid
 graph LR
@@ -416,12 +493,14 @@ CM --> ST["skills-tools.ts"]
 CM --> AN["analysis-tools.ts"]
 CM --> CTX["context-manager.ts"]
 PS["preview.store.ts"] --> PH["useCVPreview.ts"]
+H1["useSkillAgent.ts"] --> CM
+H2["useCVMemory"] --> CM
 ```
 
 **Diagram sources**
 - [cv.schema.ts:1-79](file://src/agent/schemas/cv.schema.ts#L1-L79)
 - [cv.types.ts:1-16](file://src/templates/types/cv.types.ts#L1-L16)
-- [cv-memory.ts:1-291](file://src/agent/memory/cv-memory.ts#L1-L291)
+- [cv-memory.ts:1-290](file://src/agent/memory/cv-memory.ts#L1-L290)
 - [agent.schema.ts:1-62](file://src/agent/schemas/agent.schema.ts#L1-L62)
 - [profile-tools.ts:1-142](file://src/agent/tools/profile-tools.ts#L1-L142)
 - [experience-tools.ts:1-194](file://src/agent/tools/experience-tools.ts#L1-L194)
@@ -431,11 +510,12 @@ PS["preview.store.ts"] --> PH["useCVPreview.ts"]
 - [context-manager.ts:1-141](file://src/agent/memory/context-manager.ts#L1-L141)
 - [preview.store.ts:1-100](file://src/templates/store/preview.store.ts#L1-L100)
 - [useCVPreview.ts:1-60](file://src/templates/hooks/useCVPreview.ts#L1-L60)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 **Section sources**
 - [cv.schema.ts:1-79](file://src/agent/schemas/cv.schema.ts#L1-L79)
 - [cv.types.ts:1-16](file://src/templates/types/cv.types.ts#L1-L16)
-- [cv-memory.ts:1-291](file://src/agent/memory/cv-memory.ts#L1-L291)
+- [cv-memory.ts:1-290](file://src/agent/memory/cv-memory.ts#L1-L290)
 - [agent.schema.ts:1-62](file://src/agent/schemas/agent.schema.ts#L1-L62)
 - [profile-tools.ts:1-142](file://src/agent/tools/profile-tools.ts#L1-L142)
 - [experience-tools.ts:1-194](file://src/agent/tools/experience-tools.ts#L1-L194)
@@ -445,29 +525,40 @@ PS["preview.store.ts"] --> PH["useCVPreview.ts"]
 - [context-manager.ts:1-141](file://src/agent/memory/context-manager.ts#L1-L141)
 - [preview.store.ts:1-100](file://src/templates/store/preview.store.ts#L1-L100)
 - [useCVPreview.ts:1-60](file://src/templates/hooks/useCVPreview.ts#L1-L60)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 ## Performance Considerations
 - Derived recomputation: Minimize expensive computations inside Derived; cache intermediate results when possible.
 - Batch updates: Group related cvActions to reduce re-renders.
 - Tool validation: Perform lightweight client-side checks before invoking heavy operations.
 - Preview store: Keep derived values minimal; avoid unnecessary deep equality checks.
+- AI Agent caching: Implement caching strategies for repeated AI operations to improve performance.
+
+**Updated** Added performance considerations for AI Skill Agent integration and caching strategies.
 
 ## Troubleshooting Guide
 - Validation Failures: Ensure required fields meet Zod constraints; review ToolResult messages for guidance.
 - Import Errors: Verify JSON validity; importJSON returns false on parse failure.
 - Context Issues: Confirm jobTarget, domain, and experienceLevel are set; use isContextComplete to validate readiness.
 - State Drift: Use getLatest/getHistory to inspect current state and version timeline.
+- AI Agent Errors: Check useSkillAgent hook for proper initialization and error handling.
+- Hook Integration: Ensure useCVMemory hook is properly integrated with React components.
+
+**Updated** Enhanced troubleshooting guide with AI Agent and hook integration issues.
 
 **Section sources**
 - [cv-memory.ts:131-139](file://src/agent/memory/cv-memory.ts#L131-L139)
 - [context-manager.ts:112-115](file://src/agent/memory/context-manager.ts#L112-L115)
 - [analysis-tools.ts:21-72](file://src/agent/tools/analysis-tools.ts#L21-L72)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 ## Conclusion
-The CV Portfolio Builder employs a robust, schema-driven architecture with reactive state management, comprehensive validation, and modular tools for data manipulation. The design supports versioning, context-aware transformations, and extensible persistence strategies, enabling efficient CV authoring and optimization workflows.
+The CV Portfolio Builder employs a robust, schema-driven architecture with reactive state management, comprehensive validation, and modular tools for data manipulation. The design supports versioning, context-aware transformations, and extensible persistence strategies, enabling efficient CV authoring and optimization workflows. The integration with AI Skill Agent system provides advanced optimization capabilities, while the useCVMemory hook ensures seamless connectivity with the CV Builder application.
+
+**Updated** Enhanced conclusion reflecting the comprehensive AI integration and improved state management capabilities.
 
 ## Appendices
 - Prompt Templates: Reusable prompt builders for summary generation, achievement enhancement, skill gap analysis, CV analysis, and project highlights.
 
 **Section sources**
-- [prompts.ts:14-279](file://src/agent/services/prompts.ts#L14-L279)
+- [prompts.ts:14-280](file://src/agent/services/prompts.ts#L14-L280)

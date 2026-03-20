@@ -14,9 +14,9 @@ import {
   OptimizeATSTool,
   MapToUISectionsTool,
 } from '../tools/core-tools'
-import { CVMemoryManager, SessionMemoryManager, PreferenceMemoryManager } from '../memory/cv-memory'
+import { CVMemoryManager, PreferenceMemoryManager, SessionMemoryManager } from '../memory/cv-memory'
 import { ContextManager } from '../context/context-manager'
-import { ToolRegistry, AgentOrchestrator, SkillAgent } from '../core/agent'
+import { AgentOrchestrator, ToolRegistry } from '../core/agent'
 import { MockLLMService } from '../services/llm'
 import { AgentLogger, DebugManager } from '../services/logger'
 
@@ -305,7 +305,7 @@ describe('MCP Tools', () => {
       }
       const result = await tool.execute({ experience })
 
-      expect(result.achievements[0][0]).toBeUpperCase()
+      expect(result.achievements[0].charAt(0)).toBe(result.achievements[0].charAt(0).toUpperCase())
     })
 
     it('should provide suggestions', async () => {

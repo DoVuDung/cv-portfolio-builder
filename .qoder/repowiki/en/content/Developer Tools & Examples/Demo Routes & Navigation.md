@@ -5,22 +5,29 @@
 - [src/main.tsx](file://src/main.tsx)
 - [src/App.tsx](file://src/App.tsx)
 - [src/components/Header.tsx](file://src/components/Header.tsx)
-- [src/routes/agent-demo.tsx](file://src/routes/agent-demo.tsx)
+- [src/components/CVBuilder.tsx](file://src/components/CVBuilder.tsx)
+- [src/components/Home.tsx](file://src/components/Home.tsx)
+- [src/routes/cv-builder.tsx](file://src/routes/cv-builder.tsx)
 - [src/routes/demo.form.simple.tsx](file://src/routes/demo.form.simple.tsx)
+- [src/routes/demo.form.address.tsx](file://src/routes/demo.form.address.tsx)
 - [src/routes/demo.store.tsx](file://src/routes/demo.store.tsx)
 - [src/routes/demo.table.tsx](file://src/routes/demo.table.tsx)
 - [src/routes/demo.tanstack-query.tsx](file://src/routes/demo.tanstack-query.tsx)
-- [src/components/agent/AgentChat.tsx](file://src/components/agent/AgentChat.tsx)
-- [src/components/agent/CVDashboard.tsx](file://src/components/agent/CVDashboard.tsx)
-- [src/components/AgentProvider.tsx](file://src/components/AgentProvider.tsx)
-- [src/hooks/use-cv-agent.ts](file://src/hooks/use-cv-agent.ts)
-- [src/components/demo.FormComponents.tsx](file://src/components/demo.FormComponents.tsx)
 - [src/hooks/demo.form.ts](file://src/hooks/demo.form.ts)
+- [src/components/demo.FormComponents.tsx](file://src/components/demo.FormComponents.tsx)
 - [src/lib/demo-store.ts](file://src/lib/demo-store.ts)
 - [src/integrations/tanstack-query/root-provider.tsx](file://src/integrations/tanstack-query/root-provider.tsx)
 - [src/integrations/tanstack-query/layout.tsx](file://src/integrations/tanstack-query/layout.tsx)
 - [src/data/demo-table-data.ts](file://src/data/demo-table-data.ts)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Removed all references to the experimental AI agent demo route (agent-demo.tsx)
+- Updated routing architecture to focus on production-ready CV Builder application
+- Revised component analysis to exclude agent dashboard and chat interface
+- Updated navigation structure to reflect current demo routes only
+- Removed agent-related dependencies and providers from routing configuration
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -35,14 +42,14 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-This document explains the Demo Routes system that showcases CV Portfolio Builder functionality. It covers the routing architecture built with TanStack Router, component composition patterns, and navigation flows. It documents each demo route, including:
-- Agent demo: AI agent demonstration with a dashboard and chat interface
+This document explains the Demo Routes system that showcases CV Portfolio Builder functionality. The system focuses on production-ready components and demonstrates:
 - Form examples: UI component testing with typed forms and validation
 - Store management examples: Reactive state management with TanStack Store
 - Table operations: Advanced client-side filtering, sorting, pagination, and fuzzy search
 - TanStack Query integration: Data fetching and caching with devtools
+- CV Builder application: Complete resume/portfolio creation workflow
 
-It also provides practical guidance on extending the demo system with new routes and components, route configuration, lazy loading strategies, and integration with the main application.
+The routing architecture is built with TanStack Router, featuring component composition patterns and navigation flows. Each demo route serves as a focused example of specific functionality, demonstrating best practices for form handling, state management, data visualization, and integration patterns.
 
 ## Project Structure
 The demo routes are defined under the routes directory and mounted into the TanStack Router tree in the application entry point. The main application integrates TanStack Router with TanStack Query providers and a shared header for navigation.
@@ -50,35 +57,33 @@ The demo routes are defined under the routes directory and mounted into the TanS
 ```mermaid
 graph TB
 A["src/main.tsx<br/>Router bootstrap"] --> B["src/components/Header.tsx<br/>Navigation links"]
-A --> C["src/routes/agent-demo.tsx<br/>Agent demo route"]
+A --> C["src/routes/cv-builder.tsx<br/>CV Builder route"]
 A --> D["src/routes/demo.form.simple.tsx<br/>Simple form route"]
-A --> E["src/routes/demo.store.tsx<br/>Store example route"]
-A --> F["src/routes/demo.table.tsx<br/>Table demo route"]
-A --> G["src/routes/demo.tanstack-query.tsx<br/>TanStack Query demo route"]
-A --> H["src/integrations/tanstack-query/root-provider.tsx<br/>QueryClient provider"]
-A --> I["src/integrations/tanstack-query/layout.tsx<br/>Devtools layout"]
-C --> J["src/components/AgentProvider.tsx<br/>Agent context"]
-C --> K["src/components/agent/CVDashboard.tsx<br/>Dashboard widget"]
-C --> L["src/components/agent/AgentChat.tsx<br/>Chat interface"]
-D --> M["src/hooks/demo.form.ts<br/>Form hook factory"]
-D --> N["src/components/demo.FormComponents.tsx<br/>Form UI components"]
-E --> O["src/lib/demo-store.ts<br/>TanStack Store"]
-F --> P["src/data/demo-table-data.ts<br/>Demo data generator"]
+A --> E["src/routes/demo.form.address.tsx<br/>Address form route"]
+A --> F["src/routes/demo.store.tsx<br/>Store example route"]
+A --> G["src/routes/demo.table.tsx<br/>Table demo route"]
+A --> H["src/routes/demo.tanstack-query.tsx<br/>TanStack Query demo route"]
+A --> I["src/integrations/tanstack-query/root-provider.tsx<br/>QueryClient provider"]
+A --> J["src/integrations/tanstack-query/layout.tsx<br/>Devtools layout"]
+D --> K["src/hooks/demo.form.ts<br/>Form hook factory"]
+D --> L["src/components/demo.FormComponents.tsx<br/>Form UI components"]
+E --> M["src/hooks/demo.form.ts<br/>Form hook factory"]
+E --> N["src/components/demo.FormComponents.tsx<br/>Form UI components"]
+F --> O["src/lib/demo-store.ts<br/>TanStack Store"]
+G --> P["src/data/demo-table-data.ts<br/>Demo data generator"]
 ```
 
 **Diagram sources**
 - [src/main.tsx:29-65](file://src/main.tsx#L29-L65)
 - [src/components/Header.tsx:1-34](file://src/components/Header.tsx#L1-L34)
-- [src/routes/agent-demo.tsx:1-138](file://src/routes/agent-demo.tsx#L1-L138)
+- [src/routes/cv-builder.tsx:1-15](file://src/routes/cv-builder.tsx#L1-L15)
 - [src/routes/demo.form.simple.tsx:1-69](file://src/routes/demo.form.simple.tsx#L1-L69)
+- [src/routes/demo.form.address.tsx:1-200](file://src/routes/demo.form.address.tsx#L1-L200)
 - [src/routes/demo.store.tsx:1-62](file://src/routes/demo.store.tsx#L1-L62)
 - [src/routes/demo.table.tsx:1-341](file://src/routes/demo.table.tsx#L1-L341)
 - [src/routes/demo.tanstack-query.tsx:1-31](file://src/routes/demo.tanstack-query.tsx#L1-L31)
 - [src/integrations/tanstack-query/root-provider.tsx:1-14](file://src/integrations/tanstack-query/root-provider.tsx#L1-L14)
 - [src/integrations/tanstack-query/layout.tsx:1-6](file://src/integrations/tanstack-query/layout.tsx#L1-L6)
-- [src/components/AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
-- [src/components/agent/CVDashboard.tsx:1-175](file://src/components/agent/CVDashboard.tsx#L1-L175)
-- [src/components/agent/AgentChat.tsx:1-239](file://src/components/agent/AgentChat.tsx#L1-L239)
 - [src/hooks/demo.form.ts:1-18](file://src/hooks/demo.form.ts#L1-L18)
 - [src/components/demo.FormComponents.tsx:1-159](file://src/components/demo.FormComponents.tsx#L1-L159)
 - [src/lib/demo-store.ts:1-14](file://src/lib/demo-store.ts#L1-L14)
@@ -90,17 +95,18 @@ F --> P["src/data/demo-table-data.ts<br/>Demo data generator"]
 
 ## Core Components
 - Routing and navigation: TanStack Router defines routes and mounts them under a root route with a shared outlet and devtools. The header provides navigational links to demo pages.
-- Agent demo: Composed of a dashboard widget and a chat interface, both powered by agent hooks and a shared AgentProvider.
-- Form examples: Demonstrates typed form creation, validation, and submission via a form hook factory and reusable UI components.
+- Form examples: Demonstrates typed form creation, validation, and submission via a form hook factory and reusable UI components. Includes both simple and complex nested form scenarios.
 - Store management: Uses TanStack Store for reactive state with derived values and direct updates.
 - Table operations: Implements advanced table features including client-side filtering, fuzzy search, sorting, pagination, and debounced inputs.
 - TanStack Query integration: Provides a QueryClient provider and devtools layout for data fetching and caching.
+- CV Builder application: Complete resume/portfolio creation workflow with AI assistant integration and template rendering.
 
 **Section sources**
 - [src/main.tsx:29-65](file://src/main.tsx#L29-L65)
 - [src/components/Header.tsx:1-34](file://src/components/Header.tsx#L1-L34)
-- [src/routes/agent-demo.tsx:17-137](file://src/routes/agent-demo.tsx#L17-L137)
+- [src/routes/cv-builder.tsx:9-14](file://src/routes/cv-builder.tsx#L9-L14)
 - [src/routes/demo.form.simple.tsx:13-68](file://src/routes/demo.form.simple.tsx#L13-L68)
+- [src/routes/demo.form.address.tsx:7-199](file://src/routes/demo.form.address.tsx#L7-L199)
 - [src/routes/demo.store.tsx:37-61](file://src/routes/demo.store.tsx#L37-L61)
 - [src/routes/demo.table.tsx:66-340](file://src/routes/demo.table.tsx#L66-L340)
 - [src/routes/demo.tanstack-query.tsx:6-30](file://src/routes/demo.tanstack-query.tsx#L6-L30)
@@ -108,8 +114,8 @@ F --> P["src/data/demo-table-data.ts<br/>Demo data generator"]
 ## Architecture Overview
 The demo system is structured around a single-page application with:
 - A root route that renders a shared header and outlet
-- Child routes for each demo area
-- Providers for agent state and TanStack Query
+- Child routes for each demo area including CV Builder
+- Providers for TanStack Query
 - Reusable UI components and hooks
 
 ```mermaid
@@ -117,70 +123,69 @@ graph TB
 subgraph "Routing Layer"
 R["Root Route<br/>src/main.tsx:29-44"] --> O1["Outlet<br/>src/main.tsx:30-36"]
 O1 --> IDX["Index Route '/'<br/>src/main.tsx:40-44"]
+O1 --> CV["/cv-builder<br/>src/routes/cv-builder.tsx:9-14"]
 O1 --> DEMO1["/demo/tanstack-query<br/>src/routes/demo.tanstack-query.tsx:25-30"]
 O1 --> DEMO2["/demo/table<br/>src/routes/demo.table.tsx:335-340"]
 O1 --> DEMO3["/demo/store<br/>src/routes/demo.store.tsx:56-61"]
 O1 --> DEMO4["/demo/form/simple<br/>src/routes/demo.form.simple.tsx:63-68"]
-O1 --> AGENT["/agent-demo<br/>src/routes/agent-demo.tsx:7-15"]
+O1 --> DEMO5["/demo/form/address<br/>src/routes/demo.form.address.tsx:194-199"]
 end
 subgraph "Providers"
 QP["QueryClientProvider<br/>src/integrations/tanstack-query/root-provider.tsx:11-13"]
-AP["AgentProvider<br/>src/components/AgentProvider.tsx:12-29"]
 end
 subgraph "UI Shell"
 HDR["Header<br/>src/components/Header.tsx:3-33"]
+END["Home<br/>src/components/Home.tsx:4-48"]
+CVB["CVBuilder<br/>src/components/CVBuilder.tsx:14-209"]
 end
 R --> QP
-R --> AP
 R --> HDR
+R --> END
+CV --> CVB
 ```
 
 **Diagram sources**
 - [src/main.tsx:29-65](file://src/main.tsx#L29-L65)
+- [src/routes/cv-builder.tsx:9-14](file://src/routes/cv-builder.tsx#L9-L14)
 - [src/routes/demo.tanstack-query.tsx:25-30](file://src/routes/demo.tanstack-query.tsx#L25-L30)
 - [src/routes/demo.table.tsx:335-340](file://src/routes/demo.table.tsx#L335-L340)
 - [src/routes/demo.store.tsx:56-61](file://src/routes/demo.store.tsx#L56-L61)
 - [src/routes/demo.form.simple.tsx:63-68](file://src/routes/demo.form.simple.tsx#L63-L68)
-- [src/routes/agent-demo.tsx:7-15](file://src/routes/agent-demo.tsx#L7-L15)
+- [src/routes/demo.form.address.tsx:194-199](file://src/routes/demo.form.address.tsx#L194-L199)
 - [src/integrations/tanstack-query/root-provider.tsx:11-13](file://src/integrations/tanstack-query/root-provider.tsx#L11-L13)
-- [src/components/AgentProvider.tsx:12-29](file://src/components/AgentProvider.tsx#L12-L29)
 - [src/components/Header.tsx:3-33](file://src/components/Header.tsx#L3-L33)
+- [src/components/Home.tsx:4-48](file://src/components/Home.tsx#L4-L48)
+- [src/components/CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
 
 ## Detailed Component Analysis
 
-### Agent Demo Route
-The agent demo route composes a dashboard and chat interface inside an AgentProvider. The dashboard displays CV metrics and quick actions; the chat handles user messages, intent recognition, and tool execution via agent hooks.
+### CV Builder Application
+The CV Builder route provides a complete resume/portfolio creation workflow with AI assistant integration and template rendering capabilities.
 
 ```mermaid
 sequenceDiagram
 participant U as "User"
-participant Chat as "AgentChat.tsx"
-participant Hooks as "use-cv-agent.ts"
-participant Prov as "AgentProvider.tsx"
-participant Dash as "CVDashboard.tsx"
-U->>Prov : Mount AgentProvider
-Prov->>Prov : Initialize ToolRegistry and Session
-U->>Dash : Click Quick Action
-Dash->>Hooks : executeTool("analyze"|"categorize"|"consistencyCheck")
-Hooks-->>Dash : Tool result
-U->>Chat : Type message
-Chat->>Hooks : executeTool(intent-based)
-Hooks-->>Chat : Agent response
-Chat-->>U : Render message + suggestions
+participant CVB as "CVBuilder.tsx"
+participant TA as "TemplateEngine"
+participant AI as "useSkillAgent"
+U->>CVB : Navigate to /cv-builder
+CVB->>TA : Initialize template engine
+CVB->>AI : Setup AI assistant hooks
+U->>CVB : Edit CV fields
+CVB->>CVB : Update local state
+U->>CVB : Click Save
+CVB->>CVB : Save to local storage
+CVB->>TA : Render template with CV data
+TA-->>U : Display formatted CV
 ```
 
 **Diagram sources**
-- [src/components/AgentProvider.tsx:12-29](file://src/components/AgentProvider.tsx#L12-L29)
-- [src/hooks/use-cv-agent.ts:20-104](file://src/hooks/use-cv-agent.ts#L20-L104)
-- [src/components/agent/AgentChat.tsx:32-122](file://src/components/agent/AgentChat.tsx#L32-L122)
-- [src/components/agent/CVDashboard.tsx:11-23](file://src/components/agent/CVDashboard.tsx#L11-L23)
+- [src/routes/cv-builder.tsx:9-14](file://src/routes/cv-builder.tsx#L9-L14)
+- [src/components/CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
 
 **Section sources**
-- [src/routes/agent-demo.tsx:17-137](file://src/routes/agent-demo.tsx#L17-L137)
-- [src/components/AgentProvider.tsx:12-29](file://src/components/AgentProvider.tsx#L12-L29)
-- [src/components/agent/AgentChat.tsx:16-238](file://src/components/agent/AgentChat.tsx#L16-L238)
-- [src/components/agent/CVDashboard.tsx:7-174](file://src/components/agent/CVDashboard.tsx#L7-L174)
-- [src/hooks/use-cv-agent.ts:13-184](file://src/hooks/use-cv-agent.ts#L13-L184)
+- [src/routes/cv-builder.tsx:9-14](file://src/routes/cv-builder.tsx#L9-L14)
+- [src/components/CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
 
 ### Form Examples Route
 The simple form route demonstrates typed validation, controlled field updates, and submission handling using a form hook factory and reusable UI components.
@@ -207,6 +212,37 @@ Alert --> End
 - [src/routes/demo.form.simple.tsx:13-68](file://src/routes/demo.form.simple.tsx#L13-L68)
 - [src/hooks/demo.form.ts:6-17](file://src/hooks/demo.form.ts#L6-L17)
 - [src/components/demo.FormComponents.tsx:13-159](file://src/components/demo.FormComponents.tsx#L13-L159)
+
+### Address Form Route
+The address form demonstrates complex nested form handling with conditional validation and multi-field coordination.
+
+```mermaid
+flowchart TD
+Start(["Mount AddressForm"]) --> Init["Initialize nested form with default values"]
+Init --> Render["Render hierarchical form fields"]
+Render --> Validate["Validate on blur with custom rules"]
+Validate --> Field1["Validate email format"]
+Validate --> Field2["Validate address completeness"]
+Validate --> Field3["Validate phone format"]
+Field1 --> Success{"All validations pass?"}
+Field2 --> Success
+Field3 --> Success
+Success --> |Yes| Submit["Execute onSubmit callback"]
+Success --> |No| ShowErrors["Display field-specific errors"]
+ShowErrors --> End(["Idle"])
+Submit --> Alert["Show success message"]
+Alert --> End
+```
+
+**Diagram sources**
+- [src/routes/demo.form.address.tsx:7-199](file://src/routes/demo.form.address.tsx#L7-L199)
+- [src/hooks/demo.form.ts:6-17](file://src/hooks/demo.form.ts#L6-L17)
+- [src/components/demo.FormComponents.tsx:82-118](file://src/components/demo.FormComponents.tsx#L82-L118)
+
+**Section sources**
+- [src/routes/demo.form.address.tsx:7-199](file://src/routes/demo.form.address.tsx#L7-L199)
+- [src/hooks/demo.form.ts:6-17](file://src/hooks/demo.form.ts#L6-L17)
+- [src/components/demo.FormComponents.tsx:82-118](file://src/components/demo.FormComponents.tsx#L82-L118)
 
 ### Store Management Example
 The store route demonstrates reactive state updates and derived values using TanStack Store.
@@ -282,29 +318,29 @@ Hook-->>Comp : Provide data to render
 - [src/integrations/tanstack-query/layout.tsx:3-5](file://src/integrations/tanstack-query/layout.tsx#L3-L5)
 
 ## Dependency Analysis
-The routing tree is constructed in the application entry point and includes all demo routes. Providers are attached at the root to make QueryClient and agent context available to all routes.
+The routing tree is constructed in the application entry point and includes all demo routes. Providers are attached at the root to make QueryClient available to all routes.
 
 ```mermaid
 graph LR
 Root["Root Route<br/>src/main.tsx:29-44"] --> Index["Index '/'<br/>src/main.tsx:40-44"]
-Root --> Agent["/agent-demo<br/>src/routes/agent-demo.tsx:7-15"]
-Root --> Form["/demo/form/simple<br/>src/routes/demo.form.simple.tsx:63-68"]
+Root --> CV["/cv-builder<br/>src/routes/cv-builder.tsx:9-14"]
+Root --> Form1["/demo/form/simple<br/>src/routes/demo.form.simple.tsx:63-68"]
+Root --> Form2["/demo/form/address<br/>src/routes/demo.form.address.tsx:194-199"]
 Root --> Store["/demo/store<br/>src/routes/demo.store.tsx:56-61"]
 Root --> Table["/demo/table<br/>src/routes/demo.table.tsx:335-340"]
 Root --> Query["/demo/tanstack-query<br/>src/routes/demo.tanstack-query.tsx:25-30"]
 Root --> ProvQ["QueryClientProvider<br/>src/integrations/tanstack-query/root-provider.tsx:11-13"]
-Root --> ProvA["AgentProvider<br/>src/components/AgentProvider.tsx:12-29"]
 ```
 
 **Diagram sources**
 - [src/main.tsx:46-54](file://src/main.tsx#L46-L54)
-- [src/routes/agent-demo.tsx:7-15](file://src/routes/agent-demo.tsx#L7-L15)
+- [src/routes/cv-builder.tsx:9-14](file://src/routes/cv-builder.tsx#L9-L14)
 - [src/routes/demo.form.simple.tsx:63-68](file://src/routes/demo.form.simple.tsx#L63-L68)
+- [src/routes/demo.form.address.tsx:194-199](file://src/routes/demo.form.address.tsx#L194-L199)
 - [src/routes/demo.store.tsx:56-61](file://src/routes/demo.store.tsx#L56-L61)
 - [src/routes/demo.table.tsx:335-340](file://src/routes/demo.table.tsx#L335-L340)
 - [src/routes/demo.tanstack-query.tsx:25-30](file://src/routes/demo.tanstack-query.tsx#L25-L30)
 - [src/integrations/tanstack-query/root-provider.tsx:11-13](file://src/integrations/tanstack-query/root-provider.tsx#L11-L13)
-- [src/components/AgentProvider.tsx:12-29](file://src/components/AgentProvider.tsx#L12-L29)
 
 **Section sources**
 - [src/main.tsx:46-65](file://src/main.tsx#L46-L65)
@@ -322,12 +358,7 @@ Root --> ProvA["AgentProvider<br/>src/components/AgentProvider.tsx:12-29"]
   - Configure staleTime and cacheTime appropriately to balance freshness and performance.
   - Use placeholder initialData to improve perceived performance during hydration.
 
-[No sources needed since this section provides general guidance]
-
 ## Troubleshooting Guide
-- Agent demo not working
-  - Ensure AgentProvider is mounted at the route level so hooks can access the tool registry and session.
-  - Verify agent hooks are used within the AgentProvider boundary.
 - Form validation not triggering
   - Confirm validators are defined and bound to the form hook factory.
   - Ensure field wrappers are used to propagate meta state and errors.
@@ -339,21 +370,21 @@ Root --> ProvA["AgentProvider<br/>src/components/AgentProvider.tsx:12-29"]
 - TanStack Query not rendering data
   - Confirm QueryClientProvider is present at the root.
   - Verify queryKey uniqueness and queryFn correctness.
+- CV Builder not displaying templates
+  - Ensure TemplateEngine is properly initialized and templates are loaded.
+  - Verify CV data structure matches template expectations.
 
 **Section sources**
-- [src/components/AgentProvider.tsx:12-29](file://src/components/AgentProvider.tsx#L12-L29)
-- [src/hooks/use-cv-agent.ts:13-184](file://src/hooks/use-cv-agent.ts#L13-L184)
 - [src/hooks/demo.form.ts:6-17](file://src/hooks/demo.form.ts#L6-L17)
 - [src/components/demo.FormComponents.tsx:26-39](file://src/components/demo.FormComponents.tsx#L26-L39)
 - [src/lib/demo-store.ts:3-14](file://src/lib/demo-store.ts#L3-L14)
 - [src/routes/demo.table.tsx:29-64](file://src/routes/demo.table.tsx#L29-L64)
 - [src/routes/demo.tanstack-query.tsx:6-23](file://src/routes/demo.tanstack-query.tsx#L6-L23)
 - [src/integrations/tanstack-query/root-provider.tsx:11-13](file://src/integrations/tanstack-query/root-provider.tsx#L11-L13)
+- [src/components/CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
 
 ## Conclusion
-The Demo Routes system demonstrates a cohesive pattern for building interactive, component-driven demos with TanStack Router, TanStack Store, TanStack Table, and TanStack Query. The architecture supports clear separation of concerns, reusable components, and scalable navigation. Extending the system involves adding new routes, composing components, and integrating providers as needed.
-
-[No sources needed since this section summarizes without analyzing specific files]
+The Demo Routes system demonstrates a cohesive pattern for building interactive, component-driven demos with TanStack Router, TanStack Store, TanStack Table, and TanStack Query. The architecture supports clear separation of concerns, reusable components, and scalable navigation. The system now focuses exclusively on production-ready functionality while maintaining extensibility for future enhancements.
 
 ## Appendices
 
@@ -362,8 +393,8 @@ The Demo Routes system demonstrates a cohesive pattern for building interactive,
   - Create a new route module exporting a function that accepts the root route and returns a configured route.
   - Import the route module in the application entry point and add it to the route tree.
 - Compose components
-  - Build reusable UI components and hooks similar to the existing form components and agent widgets.
-  - Wrap components with appropriate providers when state or external services are required.
+  - Build reusable UI components and hooks similar to the existing form components.
+  - Wrap components with appropriate providers when external services are required.
 - Integrate TanStack Query
   - Wrap the router with the QueryClientProvider at the root.
   - Use useQuery in route components to fetch and render data.

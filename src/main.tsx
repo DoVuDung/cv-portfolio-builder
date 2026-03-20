@@ -9,11 +9,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import CVBuilderRoute from './routes/cv-builder'
-import DemoFormAddress from './routes/demo.form.address'
-import DemoFormSimple from './routes/demo.form.simple'
-import DemoStore from './routes/demo.store'
-import DemoTable from './routes/demo.table'
-import DemoTanstackQuery from './routes/demo.tanstack-query'
 
 import Header from './components/Header'
 
@@ -46,11 +41,6 @@ const indexRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   CVBuilderRoute(rootRoute),
-  DemoFormAddress(rootRoute),
-  DemoFormSimple(rootRoute),
-  DemoStore(rootRoute),
-  DemoTable(rootRoute),
-  DemoTanstackQuery(rootRoute),
 ])
 
 const router = createRouter({

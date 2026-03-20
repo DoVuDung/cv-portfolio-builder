@@ -2,8 +2,9 @@
 
 <cite>
 **Referenced Files in This Document**
-- [AgentChat.tsx](file://src/components/agent/AgentChat.tsx)
-- [CVDashboard.tsx](file://src/components/agent/CVDashboard.tsx)
+- [CVBuilder.tsx](file://src/components/CVBuilder.tsx)
+- [CVEditorSections.tsx](file://src/components/CVEditorSections.tsx)
+- [TemplateSwitcher.tsx](file://src/components/TemplateSwitcher.tsx)
 - [AgentProvider.tsx](file://src/components/AgentProvider.tsx)
 - [button.tsx](file://src/components/ui/button.tsx)
 - [input.tsx](file://src/components/ui/input.tsx)
@@ -12,13 +13,27 @@
 - [slider.tsx](file://src/components/ui/slider.tsx)
 - [switch.tsx](file://src/components/ui/switch.tsx)
 - [textarea.tsx](file://src/components/ui/textarea.tsx)
-- [use-cv-agent.ts](file://src/hooks/use-cv-agent.ts)
+- [useSkillAgent.ts](file://src/agent/hooks/useSkillAgent.ts)
+- [useTemplateEngine.ts](file://src/templates/hooks/useTemplateEngine.ts)
+- [TemplateRenderer.tsx](file://src/templates/core/TemplateRenderer.tsx)
+- [template.store.ts](file://src/templates/store/template.store.ts)
+- [template-registry.ts](file://src/templates/core/template-registry.ts)
+- [cv-builder.tsx](file://src/routes/cv-builder.tsx)
 - [demo.FormComponents.tsx](file://src/components/demo.FormComponents.tsx)
 - [demo.form.simple.tsx](file://src/routes/demo.form.simple.tsx)
 - [demo.form.address.tsx](file://src/routes/demo.form.address.tsx)
 - [utils.ts](file://src/lib/utils.ts)
 - [styles.css](file://src/styles.css)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive documentation for the CV Builder main interface (CVBuilder.tsx)
+- Documented the CV Editor Sections component for structured CV editing
+- Added Template Switcher component documentation with template management capabilities
+- Integrated AI Skill Agent system documentation showing real-time editing and preview functionality
+- Updated architecture diagrams to reflect the new CV Builder workflow
+- Enhanced component composition patterns and prop interfaces for the new components
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -33,9 +48,11 @@
 10. [Appendices](#appendices)
 
 ## Introduction
-This document describes the User Interface components that power the CV Portfolio Builder’s interactive experience. It covers:
-- The Agent Chat Interface for AI-powered CV assistance
-- The CV Dashboard for data management and quick insights
+This document describes the User Interface components that power the CV Portfolio Builder's interactive experience. It covers:
+- The CV Builder main interface for real-time CV editing and preview
+- CV Editor Sections for structured data entry and validation
+- The Template Switcher for dynamic template selection and management
+- The AI Skill Agent integration for intelligent CV assistance
 - The UI component library (buttons, inputs, forms, and layout helpers)
 - The Agent Provider system for managing AI interactions and state
 - Form components with validation, error handling, and user feedback
@@ -45,7 +62,9 @@ This document describes the User Interface components that power the CV Portfoli
 
 ## Project Structure
 The UI layer is organized around:
-- Agent-facing components under src/components/agent
+- CV Builder components under src/components
+- Template management system under src/templates
+- Agent integration under src/agent
 - Reusable UI primitives under src/components/ui
 - Hooks for agent state and CV data under src/hooks
 - Demo forms and routing under src/routes
@@ -53,10 +72,20 @@ The UI layer is organized around:
 
 ```mermaid
 graph TB
-subgraph "Agent UI"
-AC["AgentChat.tsx"]
-CD["CVDashboard.tsx"]
+subgraph "CV Builder Interface"
+CVB["CVBuilder.tsx"]
+CVES["CVEditorSections.tsx"]
+TS["TemplateSwitcher.tsx"]
+TR["TemplateRenderer.tsx"]
+end
+subgraph "Agent Integration"
 AP["AgentProvider.tsx"]
+USA["useSkillAgent.ts"]
+end
+subgraph "Template System"
+UTE["useTemplateEngine.ts"]
+TSSTORE["template.store.ts"]
+TSREG["template-registry.ts"]
 end
 subgraph "UI Library"
 BTN["button.tsx"]
@@ -67,8 +96,8 @@ SLI["slider.tsx"]
 SW["switch.tsx"]
 TAREA["textarea.tsx"]
 end
-subgraph "Hooks"
-UCA["use-cv-agent.ts"]
+subgraph "Routing"
+CBR["cv-builder.tsx"]
 end
 subgraph "Forms"
 DFC["demo.FormComponents.tsx"]
@@ -79,10 +108,13 @@ subgraph "Styling"
 UTIL["utils.ts"]
 CSS["styles.css"]
 end
-AP --> AC
-AP --> CD
-AC --> UCA
-CD --> UCA
+CVB --> TS
+CVB --> TR
+CVB --> USA
+TS --> UTE
+TR --> TSREG
+UTE --> TSSTORE
+AP --> USA
 DFC --> BTN
 DFC --> INP
 DFC --> SEL
@@ -106,71 +138,68 @@ CSS --> TAREA
 ```
 
 **Diagram sources**
-- [AgentChat.tsx:1-238](file://src/components/agent/AgentChat.tsx#L1-L238)
-- [CVDashboard.tsx:1-175](file://src/components/agent/CVDashboard.tsx#L1-L175)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [CVEditorSections.tsx:1-122](file://src/components/CVEditorSections.tsx#L1-L122)
+- [TemplateSwitcher.tsx:1-50](file://src/components/TemplateSwitcher.tsx#L1-L50)
+- [TemplateRenderer.tsx:1-74](file://src/templates/core/TemplateRenderer.tsx#L1-L74)
 - [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
-- [button.tsx:1-58](file://src/components/ui/button.tsx#L1-L58)
-- [input.tsx:1-22](file://src/components/ui/input.tsx#L1-L22)
-- [label.tsx:1-22](file://src/components/ui/label.tsx#L1-L22)
-- [select.tsx:1-169](file://src/components/ui/select.tsx#L1-L169)
-- [slider.tsx:1-59](file://src/components/ui/slider.tsx#L1-L59)
-- [switch.tsx:1-27](file://src/components/ui/switch.tsx#L1-L27)
-- [textarea.tsx:1-19](file://src/components/ui/textarea.tsx#L1-L19)
-- [use-cv-agent.ts:1-185](file://src/hooks/use-cv-agent.ts#L1-L185)
-- [demo.FormComponents.tsx:1-159](file://src/components/demo.FormComponents.tsx#L1-L159)
-- [demo.form.simple.tsx:1-69](file://src/routes/demo.form.simple.tsx#L1-L69)
-- [demo.form.address.tsx:1-200](file://src/routes/demo.form.address.tsx#L1-L200)
-- [utils.ts:1-8](file://src/lib/utils.ts#L1-L8)
-- [styles.css:1-138](file://src/styles.css#L1-L138)
+- [useSkillAgent.ts:1-243](file://src/agent/hooks/useSkillAgent.ts#L1-L243)
+- [useTemplateEngine.ts:1-57](file://src/templates/hooks/useTemplateEngine.ts#L1-L57)
+- [template.store.ts:1-103](file://src/templates/store/template.store.ts#L1-L103)
+- [template-registry.ts:1-92](file://src/templates/core/template-registry.ts#L1-L92)
+- [cv-builder.tsx:1-15](file://src/routes/cv-builder.tsx#L1-L15)
 
 **Section sources**
-- [AgentChat.tsx:1-238](file://src/components/agent/AgentChat.tsx#L1-L238)
-- [CVDashboard.tsx:1-175](file://src/components/agent/CVDashboard.tsx#L1-L175)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [CVEditorSections.tsx:1-122](file://src/components/CVEditorSections.tsx#L1-L122)
+- [TemplateSwitcher.tsx:1-50](file://src/components/TemplateSwitcher.tsx#L1-L50)
+- [TemplateRenderer.tsx:1-74](file://src/templates/core/TemplateRenderer.tsx#L1-L74)
 - [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
-- [button.tsx:1-58](file://src/components/ui/button.tsx#L1-L58)
-- [input.tsx:1-22](file://src/components/ui/input.tsx#L1-L22)
-- [label.tsx:1-22](file://src/components/ui/label.tsx#L1-L22)
-- [select.tsx:1-169](file://src/components/ui/select.tsx#L1-L169)
-- [slider.tsx:1-59](file://src/components/ui/slider.tsx#L1-L59)
-- [switch.tsx:1-27](file://src/components/ui/switch.tsx#L1-L27)
-- [textarea.tsx:1-19](file://src/components/ui/textarea.tsx#L1-L19)
-- [use-cv-agent.ts:1-185](file://src/hooks/use-cv-agent.ts#L1-L185)
-- [demo.FormComponents.tsx:1-159](file://src/components/demo.FormComponents.tsx#L1-L159)
-- [demo.form.simple.tsx:1-69](file://src/routes/demo.form.simple.tsx#L1-L69)
-- [demo.form.address.tsx:1-200](file://src/routes/demo.form.address.tsx#L1-L200)
-- [utils.ts:1-8](file://src/lib/utils.ts#L1-L8)
-- [styles.css:1-138](file://src/styles.css#L1-L138)
+- [useSkillAgent.ts:1-243](file://src/agent/hooks/useSkillAgent.ts#L1-L243)
+- [useTemplateEngine.ts:1-57](file://src/templates/hooks/useTemplateEngine.ts#L1-L57)
+- [template.store.ts:1-103](file://src/templates/store/template.store.ts#L1-L103)
+- [template-registry.ts:1-92](file://src/templates/core/template-registry.ts#L1-L92)
+- [cv-builder.tsx:1-15](file://src/routes/cv-builder.tsx#L1-L15)
 
 ## Core Components
 This section introduces the primary UI components and their responsibilities.
 
-- Agent Chat Interface
-  - Provides a chat-like UI for interacting with the CV agent.
-  - Manages messages, user input, and quick actions.
-  - Integrates with hooks for agent orchestration and CV data.
-  - Renders suggestions as clickable quick actions.
+- CV Builder Main Interface
+  - Provides a split-pane editor with live preview functionality
+  - Manages CV data state with real-time editing capabilities
+  - Integrates AI assistant for CV analysis and optimization
+  - Supports template switching with instant preview updates
 
-- CV Dashboard
-  - Presents a quick overview of CV completeness, counts, and skills breakdown.
-  - Offers quick action buttons to trigger agent tools.
-  - Displays target profile context for personalized assistance.
+- CV Editor Sections
+  - Structured form components for different CV sections
+  - Comprehensive validation and error handling
+  - Responsive grid layouts for optimal editing experience
+  - Integration with CV data model for seamless updates
+
+- Template Switcher
+  - Dynamic template selection with visual previews
+  - Category-based filtering and search capabilities
+  - Real-time template application with live preview
+  - Custom template management support
 
 - Agent Provider
-  - Initializes the tool registry and starts the session lifecycle.
-  - Exposes global access to tools for hook consumption.
+  - Initializes the tool registry and starts the session lifecycle
+  - Exposes global access to tools for hook consumption
+  - Manages AI Skill Agent integration and state
 
 - UI Component Library
-  - Buttons, Inputs, Labels, Selects, Sliders, Switches, and Textareas.
-  - Variants and sizes for consistent styling.
-  - Accessibility attributes and focus states.
+  - Buttons, Inputs, Labels, Selects, Sliders, Switches, and Textareas
+  - Variants and sizes for consistent styling
+  - Accessibility attributes and focus states
 
 - Form Components and Validation
-  - Demo form components wrap UI primitives with field context and validation.
-  - Routes demonstrate simple and address forms with Zod-like validation patterns.
+  - Demo form components wrap UI primitives with field context and validation
+  - Routes demonstrate simple and address forms with Zod-like validation patterns
 
 **Section sources**
-- [AgentChat.tsx:12-121](file://src/components/agent/AgentChat.tsx#L12-L121)
-- [CVDashboard.tsx:4-23](file://src/components/agent/CVDashboard.tsx#L4-L23)
+- [CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
+- [CVEditorSections.tsx:12-121](file://src/components/CVEditorSections.tsx#L12-L121)
+- [TemplateSwitcher.tsx:10-49](file://src/components/TemplateSwitcher.tsx#L10-L49)
 - [AgentProvider.tsx:9-26](file://src/components/AgentProvider.tsx#L9-L26)
 - [button.tsx:8-34](file://src/components/ui/button.tsx#L8-L34)
 - [input.tsx:5-18](file://src/components/ui/input.tsx#L5-L18)
@@ -179,117 +208,170 @@ This section introduces the primary UI components and their responsibilities.
 - [demo.form.address.tsx:7-39](file://src/routes/demo.form.address.tsx#L7-L39)
 
 ## Architecture Overview
-The UI architecture centers on a Provider pattern that initializes agent state and exposes it via React hooks. Components consume hooks to render agent-driven experiences and manage CV data.
+The UI architecture centers on a Provider pattern that initializes agent state and exposes it via React hooks. Components consume hooks to render agent-driven experiences and manage CV data with real-time editing capabilities.
 
 ```mermaid
 sequenceDiagram
 participant User as "User"
-participant Chat as "AgentChat.tsx"
-participant Hook as "use-cv-agent.ts"
-participant Orchestrator as "agentOrchestrator"
-participant Store as "cvStore/sessionManager"
-User->>Chat : "Type message / Click quick action"
-Chat->>Hook : "executeTool(name, params)"
-Hook->>Store : "Set isProcessing=true"
-Hook->>Orchestrator : "executeTool(name, params)"
-Orchestrator-->>Hook : "ToolResult"
-Hook->>Store : "Update session stats"
-Hook-->>Chat : "ToolResult"
-Chat-->>User : "Render response + suggestions"
+participant Builder as "CVBuilder.tsx"
+participant Editor as "CVEditorSections.tsx"
+participant Template as "TemplateSwitcher.tsx"
+participant Agent as "useSkillAgent.ts"
+participant Renderer as "TemplateRenderer.tsx"
+participant Store as "template.store.ts"
+User->>Builder : "Edit CV data / Select template"
+Builder->>Editor : "Update CV state"
+Builder->>Template : "Switch template"
+Template->>Store : "Set active template"
+Store-->>Renderer : "Template change event"
+Renderer-->>Builder : "Re-render preview"
+User->>Agent : "Click AI assistant button"
+Agent-->>Builder : "Analysis result / Generated content"
+Builder-->>User : "Live preview updates"
 ```
 
 **Diagram sources**
-- [AgentChat.tsx:31-58](file://src/components/agent/AgentChat.tsx#L31-L58)
-- [use-cv-agent.ts:20-49](file://src/hooks/use-cv-agent.ts#L20-L49)
-- [AgentProvider.tsx:13-19](file://src/components/AgentProvider.tsx#L13-L19)
+- [CVBuilder.tsx:15-209](file://src/components/CVBuilder.tsx#L15-L209)
+- [CVEditorSections.tsx:12-121](file://src/components/CVEditorSections.tsx#L12-L121)
+- [TemplateSwitcher.tsx:10-49](file://src/components/TemplateSwitcher.tsx#L10-L49)
+- [useSkillAgent.ts:38-184](file://src/agent/hooks/useSkillAgent.ts#L38-L184)
+- [TemplateRenderer.tsx:13-53](file://src/templates/core/TemplateRenderer.tsx#L13-L53)
+- [template.store.ts:46-98](file://src/templates/store/template.store.ts#L46-L98)
 
 **Section sources**
-- [AgentChat.tsx:1-238](file://src/components/agent/AgentChat.tsx#L1-L238)
-- [use-cv-agent.ts:1-185](file://src/hooks/use-cv-agent.ts#L1-L185)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [useSkillAgent.ts:1-243](file://src/agent/hooks/useSkillAgent.ts#L1-L243)
 - [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
 
 ## Detailed Component Analysis
 
-### Agent Chat Interface
-The Agent Chat renders a conversation history, suggestion chips, and a typed input. It integrates with agent hooks to process messages and surface actionable suggestions.
+### CV Builder Main Interface
+The CV Builder provides a comprehensive editing experience with split-pane layout, real-time preview, and AI assistance integration.
 
-Key behaviors:
-- Maintains a local message list with user, agent, and system messages.
-- Processes natural-language intents to route to specific tools.
-- Displays a “thinking” indicator while processing.
-- Provides quick-action buttons mapped to common intents.
+Key features:
+- Split-pane layout with editor on left and live preview on right
+- Real-time CV data binding with automatic saving
+- AI assistant panel with analysis and generation capabilities
+- Template switching with instant preview updates
+- Demo data loading for quick prototyping
 
-Prop interface and composition:
-- Props: none (self-contained state)
-- Composition: Uses useCVAgent for execution and suggestions, useCVData for context, useSession for stats.
-
-Accessibility and UX:
-- Focus states and disabled states for input and buttons.
-- Timestamps and suggestion chips with hover affordances.
-- Disabled input during processing.
+Component architecture:
+- State management for CV data and editing mode
+- Integration with CV memory for persistence
+- Template engine integration for preview rendering
+- AI Skill Agent integration for intelligent assistance
 
 ```mermaid
 flowchart TD
-Start(["User sends message"]) --> Validate["Trim and validate input"]
-Validate --> Empty{"Empty?"}
-Empty --> |Yes| End(["Ignore"])
-Empty --> |No| AddUser["Add user message to state"]
-AddUser --> Route["Intent recognition"]
-Route --> Analyze{"Contains 'analyze'?"}
-Analyze --> |Yes| ExecAnalyze["executeTool('analyzeCV')"]
-Analyze --> |No| Gaps{"Contains 'skill gap'?"}
-Gaps --> |Yes| ExecGaps["executeTool('identifyGaps')"]
-Gaps --> |No| Suggests{"Contains 'suggest'?"}
-Suggests --> |Yes| GetSugg["getSuggestions()"]
-Suggests --> |No| DefaultResp["Default help message"]
-ExecAnalyze --> Render["Render agent response + suggestions"]
-ExecGaps --> Render
-GetSugg --> Render
-DefaultResp --> Render
-Render --> End
+Start(["CV Builder Mount"]) --> Init["Initialize CV Data State"]
+Init --> Editor["Render Editor Panel"]
+Editor --> Preview["Render Live Preview"]
+Preview --> Template["Template Switcher"]
+Template --> Renderer["TemplateRenderer"]
+Renderer --> Agent["AI Assistant Panel"]
+Agent --> Analysis["CV Analysis"]
+Agent --> Summary["Summary Generation"]
+Analysis --> Update["Update Preview"]
+Summary --> Update
+Update --> Save["Auto-save to Memory"]
+Save --> End(["Ready for Editing"])
 ```
 
 **Diagram sources**
-- [AgentChat.tsx:31-121](file://src/components/agent/AgentChat.tsx#L31-L121)
+- [CVBuilder.tsx:14-209](file://src/components/CVBuilder.tsx#L14-L209)
 
 **Section sources**
-- [AgentChat.tsx:1-238](file://src/components/agent/AgentChat.tsx#L1-L238)
-- [use-cv-agent.ts:13-104](file://src/hooks/use-cv-agent.ts#L13-L104)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [useSkillAgent.ts:38-184](file://src/agent/hooks/useSkillAgent.ts#L38-L184)
+- [useTemplateEngine.ts:10-56](file://src/templates/hooks/useTemplateEngine.ts#L10-L56)
 
-### CV Dashboard
-The CV Dashboard presents a compact overview of CV completeness, counts, and skills distribution, plus quick actions to run agent tools.
+### CV Editor Sections
+The CV Editor Sections component provides structured, validated editing for different CV sections with responsive layouts.
 
-Highlights:
-- Circular progress for completeness with color-coded thresholds.
-- Counts for experiences, projects, and skills.
-- Skills breakdown bars per category.
-- Quick action buttons for analysis, categorization, consistency checks, and suggestions.
-- Target profile context display.
+Key features:
+- Grid-based responsive layouts for optimal editing experience
+- Comprehensive form validation with required field enforcement
+- Contact information management with social media integration
+- Professional summary editing with character limits
+- Integration with CV data model for seamless updates
+
+Validation patterns:
+- Required field validation with asterisk indicators
+- Email format validation for contact information
+- Dynamic field updates with proper state propagation
+- Placeholder text for better user guidance
 
 ```mermaid
 flowchart TD
-Init["Load CV data"] --> Score["Compute completeness %"]
-Score --> Stats["Render counts grid"]
-Stats --> Bars["Render skills bars"]
-Bars --> Actions["Render quick action buttons"]
-Actions --> Context["Render target profile"]
-Context --> End["Ready"]
+Profile["Profile Section"] --> Grid["Responsive Grid Layout"]
+Grid --> Fields["Individual Form Fields"]
+Fields --> Validation["Field Validation"]
+Validation --> Update["State Update"]
+Update --> Parent["Parent Component Update"]
+Contact["Contact Section"] --> Social["Social Media Fields"]
+Social --> ContactUpdate["Contact State Update"]
+Education["Education Section"] --> Experience["Experience Section"]
+Experience --> Projects["Projects Section"]
+Projects --> Skills["Skills Section"]
+Skills --> Complete["Complete CV Update"]
 ```
 
 **Diagram sources**
-- [CVDashboard.tsx:25-172](file://src/components/agent/CVDashboard.tsx#L25-L172)
+- [CVEditorSections.tsx:12-121](file://src/components/CVEditorSections.tsx#L12-L121)
 
 **Section sources**
-- [CVDashboard.tsx:1-175](file://src/components/agent/CVDashboard.tsx#L1-L175)
-- [use-cv-agent.ts:109-123](file://src/hooks/use-cv-agent.ts#L109-L123)
+- [CVEditorSections.tsx:1-122](file://src/components/CVEditorSections.tsx#L1-L122)
+- [input.tsx:5-18](file://src/components/ui/input.tsx#L5-L18)
+- [label.tsx:8-18](file://src/components/ui/label.tsx#L8-L18)
+- [textarea.tsx:5-15](file://src/components/ui/textarea.tsx#L5-L15)
+
+### Template Switcher
+The Template Switcher enables dynamic template selection with visual previews and real-time application.
+
+Key features:
+- Grid-based template visualization with category filtering
+- Active template highlighting with visual indicators
+- Template metadata display (layout, sections, category)
+- Real-time template application with instant preview updates
+- Custom template support with CRUD operations
+
+Template management:
+- Registry-based template discovery and loading
+- Custom template storage and retrieval
+- Template validation and metadata management
+- Category-based filtering and search capabilities
+
+```mermaid
+flowchart TD
+TemplateSwitcher["TemplateSwitcher"] --> Registry["Template Registry"]
+Registry --> Templates["Available Templates"]
+Templates --> Grid["Visual Grid Display"]
+Grid --> Selection["Template Selection"]
+Selection --> Active["Active Template Update"]
+Active --> Store["Template Store Update"]
+Store --> Renderer["Template Renderer"]
+Renderer --> Preview["Live Preview Update"]
+```
+
+**Diagram sources**
+- [TemplateSwitcher.tsx:10-49](file://src/components/TemplateSwitcher.tsx#L10-L49)
+- [useTemplateEngine.ts:10-56](file://src/templates/hooks/useTemplateEngine.ts#L10-L56)
+- [template.store.ts:46-98](file://src/templates/store/template.store.ts#L46-L98)
+- [template-registry.ts:10-92](file://src/templates/core/template-registry.ts#L10-L92)
+
+**Section sources**
+- [TemplateSwitcher.tsx:1-50](file://src/components/TemplateSwitcher.tsx#L1-L50)
+- [useTemplateEngine.ts:1-57](file://src/templates/hooks/useTemplateEngine.ts#L1-L57)
+- [template.store.ts:1-103](file://src/templates/store/template.store.ts#L1-L103)
+- [template-registry.ts:1-92](file://src/templates/core/template-registry.ts#L1-L92)
 
 ### Agent Provider System
 The Agent Provider initializes the tool registry and starts the session, exposing global tool access for hooks.
 
 Responsibilities:
-- Initialize ToolRegistry singleton and attach to window for hook access.
-- Start session lifecycle.
-- Cleanup on unmount.
+- Initialize ToolRegistry singleton and attach to window for hook access
+- Start session lifecycle
+- Cleanup on unmount
 
 ```mermaid
 sequenceDiagram
@@ -310,7 +392,7 @@ Provider->>Provider : "Cleanup logs"
 
 **Section sources**
 - [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
-- [use-cv-agent.ts:128-152](file://src/hooks/use-cv-agent.ts#L128-L152)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
 
 ### UI Component Library
 
@@ -427,23 +509,33 @@ The UI components depend on:
 - Radix UI primitives for accessible controls
 - TanStack Form for form state and validation
 - Agent hooks for orchestration and session stats
+- Template engine for dynamic rendering
+- AI Skill Agent for intelligent assistance
 
 ```mermaid
 graph LR
-AC["AgentChat.tsx"] --> UCA["use-cv-agent.ts"]
-CD["CVDashboard.tsx"] --> UCA
+CVB["CVBuilder.tsx"] --> USA["useSkillAgent.ts"]
+CVB --> UTE["useTemplateEngine.ts"]
+CVB --> TR["TemplateRenderer.tsx"]
+CVES["CVEditorSections.tsx"] --> INP["input.tsx"]
+CVES --> LAB["label.tsx"]
+CVES --> TAREA["textarea.tsx"]
+TS["TemplateSwitcher.tsx"] --> UTE
+TR --> TSREG["template-registry.ts"]
+UTE --> TSSTORE["template.store.ts"]
+USA --> AP["AgentProvider.tsx"]
 DFC["demo.FormComponents.tsx"] --> BTN["button.tsx"]
-DFC --> INP["input.tsx"]
+DFC --> INP
 DFC --> SEL["select.tsx"]
 DFC --> SLI["slider.tsx"]
 DFC --> SW["switch.tsx"]
-DFC --> LAB["label.tsx"]
+DFC --> LAB
 BTN --> UTIL["utils.ts"]
 INP --> UTIL
 SEL --> UTIL
 SLI --> UTIL
 SW --> UTIL
-TAREA["textarea.tsx"] --> UTIL
+TAREA --> UTIL
 CSS["styles.css"] --> BTN
 CSS --> INP
 CSS --> SEL
@@ -453,30 +545,26 @@ CSS --> TAREA
 ```
 
 **Diagram sources**
-- [AgentChat.tsx:1-30](file://src/components/agent/AgentChat.tsx#L1-L30)
-- [CVDashboard.tsx:1-10](file://src/components/agent/CVDashboard.tsx#L1-L10)
-- [demo.FormComponents.tsx:1-12](file://src/components/demo.FormComponents.tsx#L1-L12)
-- [button.tsx:1-7](file://src/components/ui/button.tsx#L1-L7)
-- [input.tsx:1-4](file://src/components/ui/input.tsx#L1-L4)
-- [select.tsx:1-6](file://src/components/ui/select.tsx#L1-L6)
-- [slider.tsx:1-4](file://src/components/ui/slider.tsx#L1-L4)
-- [switch.tsx:1-4](file://src/components/ui/switch.tsx#L1-L4)
-- [textarea.tsx:1-4](file://src/components/ui/textarea.tsx#L1-L4)
-- [utils.ts:1-8](file://src/lib/utils.ts#L1-L8)
-- [styles.css:1-138](file://src/styles.css#L1-L138)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [CVEditorSections.tsx:1-122](file://src/components/CVEditorSections.tsx#L1-L122)
+- [TemplateSwitcher.tsx:1-50](file://src/components/TemplateSwitcher.tsx#L1-L50)
+- [TemplateRenderer.tsx:1-74](file://src/templates/core/TemplateRenderer.tsx#L1-L74)
+- [useSkillAgent.ts:1-243](file://src/agent/hooks/useSkillAgent.ts#L1-L243)
+- [useTemplateEngine.ts:1-57](file://src/templates/hooks/useTemplateEngine.ts#L1-L57)
+- [template.store.ts:1-103](file://src/templates/store/template.store.ts#L1-L103)
+- [template-registry.ts:1-92](file://src/templates/core/template-registry.ts#L1-L92)
+- [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
 
 **Section sources**
-- [AgentChat.tsx:1-30](file://src/components/agent/AgentChat.tsx#L1-L30)
-- [CVDashboard.tsx:1-10](file://src/components/agent/CVDashboard.tsx#L1-L10)
-- [demo.FormComponents.tsx:1-12](file://src/components/demo.FormComponents.tsx#L1-L12)
-- [button.tsx:1-7](file://src/components/ui/button.tsx#L1-L7)
-- [input.tsx:1-4](file://src/components/ui/input.tsx#L1-L4)
-- [select.tsx:1-6](file://src/components/ui/select.tsx#L1-L6)
-- [slider.tsx:1-4](file://src/components/ui/slider.tsx#L1-L4)
-- [switch.tsx:1-4](file://src/components/ui/switch.tsx#L1-L4)
-- [textarea.tsx:1-4](file://src/components/ui/textarea.tsx#L1-L4)
-- [utils.ts:1-8](file://src/lib/utils.ts#L1-L8)
-- [styles.css:1-138](file://src/styles.css#L1-L138)
+- [CVBuilder.tsx:1-270](file://src/components/CVBuilder.tsx#L1-L270)
+- [CVEditorSections.tsx:1-122](file://src/components/CVEditorSections.tsx#L1-L122)
+- [TemplateSwitcher.tsx:1-50](file://src/components/TemplateSwitcher.tsx#L1-L50)
+- [TemplateRenderer.tsx:1-74](file://src/templates/core/TemplateRenderer.tsx#L1-L74)
+- [useSkillAgent.ts:1-243](file://src/agent/hooks/useSkillAgent.ts#L1-L243)
+- [useTemplateEngine.ts:1-57](file://src/templates/hooks/useTemplateEngine.ts#L1-L57)
+- [template.store.ts:1-103](file://src/templates/store/template.store.ts#L1-L103)
+- [template-registry.ts:1-92](file://src/templates/core/template-registry.ts#L1-L92)
+- [AgentProvider.tsx:1-30](file://src/components/AgentProvider.tsx#L1-L30)
 
 ## Performance Considerations
 - Prefer memoized callbacks in hooks to avoid unnecessary re-renders.
@@ -484,28 +572,42 @@ CSS --> TAREA
 - Use virtualized lists for long message histories if scaling up.
 - Keep DOM updates minimal by rendering only visible suggestions and truncated lists.
 - Lazy-load heavy tool results and cache computed metrics (e.g., completeness score).
+- Implement proper state normalization for CV data to prevent excessive re-renders.
+- Use React.memo for template renderer components to optimize preview updates.
+- Implement efficient template switching with proper cleanup of previous templates.
 
 ## Troubleshooting Guide
 Common issues and resolutions:
-- Tools not available in hooks
+- Templates not loading in Template Switcher
+  - Ensure template registry is properly initialized and populated.
+  - Verify template IDs match between registry and store.
+  - Check template metadata and category assignments.
+- AI assistant not responding
   - Ensure AgentProvider is mounted and ToolRegistry is initialized.
   - Verify the registry is attached to the window for hook access.
+  - Check LLM service configuration and API keys.
+- CV data not persisting
+  - Confirm CV memory is properly configured and accessible.
+  - Verify saveCV function is being called with proper parameters.
+  - Check for localStorage or memory store availability.
+- Live preview not updating
+  - Ensure TemplateRenderer receives proper template and CV data props.
+  - Verify template engine is properly configured.
+  - Check for React key changes that might prevent updates.
 - Forms not validating
   - Confirm field wrappers subscribe to meta.errors and handle blur/change.
   - Check validator functions return either undefined or an error message.
-- Disabled states not applying
-  - Ensure disabled props are passed to UI components and state flags are respected.
-- Styling inconsistencies
-  - Verify Tailwind theme tokens and the cn utility merge classes correctly.
+  - Ensure required field attributes are properly set.
 
 **Section sources**
 - [AgentProvider.tsx:13-19](file://src/components/AgentProvider.tsx#L13-L19)
-- [use-cv-agent.ts:128-152](file://src/hooks/use-cv-agent.ts#L128-L152)
+- [useSkillAgent.ts:189-215](file://src/agent/hooks/useSkillAgent.ts#L189-L215)
+- [useTemplateEngine.ts:10-56](file://src/templates/hooks/useTemplateEngine.ts#L10-L56)
 - [demo.FormComponents.tsx:26-39](file://src/components/demo.FormComponents.tsx#L26-L39)
 - [utils.ts:5-7](file://src/lib/utils.ts#L5-L7)
 
 ## Conclusion
-The CV Portfolio Builder’s UI combines agent-driven interactions with a robust, accessible component library. The Agent Chat and Dashboard deliver immediate value, while the Provider and hooks encapsulate state and orchestration. The form components demonstrate scalable validation and feedback patterns. Together, these pieces enable a responsive, customizable, and inclusive user experience.
+The CV Portfolio Builder's UI combines agent-driven interactions with a robust, accessible component library. The CV Builder provides comprehensive real-time editing capabilities with instant preview functionality, while the CV Editor Sections ensure structured and validated data entry. The Template Switcher enables dynamic template management with visual previews, and the AI Skill Agent integration delivers intelligent assistance. Together, these components create a responsive, customizable, and inclusive user experience for building professional CV portfolios.
 
 ## Appendices
 
@@ -515,13 +617,19 @@ The CV Portfolio Builder’s UI combines agent-driven interactions with a robust
 - Announce dynamic content updates (e.g., suggestions) to assistive technologies.
 - Maintain sufficient color contrast for completeness indicators and status messages.
 - Use aria-invalid and aria-describedby for validation feedback.
+- Implement proper focus management for modal dialogs and form sections.
+- Ensure template switching is accessible via keyboard navigation.
 
 ### Responsive Design Notes
 - Components use relative units and grid layouts for adaptive spacing.
 - Inputs and buttons scale with size variants and viewport-aware text sizes.
 - Long content areas (chat messages, dashboards) use overflow and scrollable containers.
+- Template switcher adapts to different screen sizes with responsive grid layouts.
+- CV builder maintains optimal editing experience across mobile, tablet, and desktop.
 
 ### Cross-Browser Compatibility
 - Radix UI primitives provide consistent behavior across browsers.
 - Tailwind utilities and CSS custom properties are broadly supported.
 - Test form controls and focus rings on Safari, Firefox, and Chromium-based browsers.
+- Template rendering works consistently across modern browsers with CSS custom properties support.
+- AI assistant functionality tested on latest browser versions with proper fallbacks.

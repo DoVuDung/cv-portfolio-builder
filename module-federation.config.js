@@ -13,10 +13,7 @@ function remoteConfig(name, url) {
 export default {
   filename: 'remoteEntry.js',
   name: 'cv-portfolio-builder',
-  exposes: {
-    './DemoMfComponent': './src/demo-mf-component.tsx',
-    './DemoMfSelfContained': './src/demo-mf-self-contained.tsx',
-  },
+  exposes: {},
   remotes: {},
   shared: {
     react: {

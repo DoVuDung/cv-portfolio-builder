@@ -1,0 +1,10 @@
+{
+  "latestErrorEvent": {
+    "code": "TYPE-001",
+    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"npx tsc --project /Users/andydo/Desktop/cv-portfolio-builder/node_modules/.federation/tsconfig.7a40e42d5675f7b7ed201ebe31576415.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
+    "args": {
+      "cmd": "npx tsc --project /Users/andydo/Desktop/cv-portfolio-builder/node_modules/.federation/tsconfig.7a40e42d5675f7b7ed201ebe31576415.json"
+    },
+    "timestamp": 1773975400460
+  }
+}
