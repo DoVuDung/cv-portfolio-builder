@@ -20,17 +20,17 @@
 - [src/env.ts](file://src/env.ts)
 - [src/demo-mf-component.tsx](file://src/demo-mf-component.tsx)
 - [src/demo-mf-self-contained.tsx](file://src/demo-mf-self-contained.tsx)
+- [src/App.test.tsx](file://src/App.test.tsx)
+- [src/agent/__tests__/skill-agent.test.tsx](file://src/agent/__tests__/skill-agent.test.tsx)
 </cite>
 
 ## Update Summary
 **Changes Made**
-- Enhanced CI/CD infrastructure with comprehensive GitHub Actions workflows
-- Added Husky git hooks with pre-commit and pre-push automation
-- Integrated safe-push automation script for local validation
-- Expanded Vite configuration with multi-format coverage reporting
-- Added SonarQube integration for code quality analysis
-- Updated package.json with new scripts for type checking, testing, and CI/CD operations
-- Added comprehensive documentation for the complete CI/CD pipeline
+- Enhanced TypeScript configuration to exclude test files from compilation process
+- Updated build pipeline to explicitly invoke TypeScript compilation after Vite build
+- Improved test file organization with comprehensive exclusion patterns
+- Enhanced Vite test configuration with detailed coverage exclusions
+- Updated CI/CD infrastructure to support the new TypeScript configuration
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -47,11 +47,13 @@
 ## Introduction
 This document explains the build configuration and development setup for the project, including the newly enhanced CI/CD infrastructure. It covers Vite configuration, Module Federation setup, development server settings, build optimizations, TypeScript strict mode and path aliases, ESLint and Prettier configuration, micro-frontend communication via Module Federation, the complete CI/CD pipeline with GitHub Actions, Husky git hooks, SonarQube integration, environment variables, and troubleshooting guidance for common build issues.
 
+**Updated** The TypeScript configuration now explicitly excludes test files from compilation to prevent Vercel build failures during production deployments, while maintaining comprehensive type checking for production code.
+
 ## Project Structure
 The project is a Vite-based React application with comprehensive CI/CD infrastructure, optional Module Federation capabilities, and a modern TypeScript setup. Key configuration files and their roles:
 - Vite configuration defines plugins, test environment, path aliases, build targets, and enhanced coverage reporting.
 - Module Federation configuration exposes components for remote consumption and shares React dependencies.
-- TypeScript configuration enables strict mode and path aliases aligned with Vite's resolve.alias.
+- TypeScript configuration enables strict mode and path aliases aligned with Vite's resolve.alias, with comprehensive test file exclusions.
 - ESLint and Prettier provide code quality and formatting standards.
 - GitHub Actions workflows automate the complete CI/CD pipeline.
 - Husky git hooks enforce code quality locally before commits and pushes.
@@ -62,7 +64,7 @@ The project is a Vite-based React application with comprehensive CI/CD infrastru
 graph TB
 A["package.json<br/>scripts and dependencies"] --> B["vite.config.js<br/>plugins, resolve, build, coverage"]
 B --> C["module-federation.config.js<br/>exposes, remotes, shared"]
-B --> D["tsconfig.json<br/>strict mode, paths"]
+B --> D["tsconfig.json<br/>strict mode, paths, test exclusions"]
 A --> E["eslint.config.js<br/>TanStack ESLint preset"]
 A --> F["prettier.config.js<br/>formatting rules"]
 A --> G[".github/workflows/ci.yml<br/>GitHub Actions CI/CD"]
@@ -79,8 +81,8 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 **Diagram sources**
 - [package.json:1-80](file://package.json#L1-L80)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -92,8 +94,8 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 **Section sources**
 - [package.json:1-80](file://package.json#L1-L80)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -110,13 +112,13 @@ G --> O["Deploy Preview Job<br/>PR builds"]
   - Build target set to ESNext for modern JavaScript features.
   - Multi-format coverage reporting (text, json, html, lcov) with 70% thresholds.
 - Module Federation configuration
-  - Exposes two components for remote consumption.
-  - Shares React and ReactDOM as singletons with required versions.
+  - Exposes components for remote consumption with singleton React dependencies.
   - Defines a remote entry filename and default share scope.
 - TypeScript configuration
   - Strict mode enabled with comprehensive checks.
   - Path aliases mapped to the src directory and components subdirectory.
   - Bundler mode with verbatim module syntax and no emit.
+  - **Updated** Comprehensive test file exclusions to prevent Vercel build failures.
 - ESLint and Prettier
   - ESLint extends a TanStack-provided configuration.
   - Prettier configured with semicolon-less, single-quote, and trailing comma rules.
@@ -131,8 +133,8 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 
 **Section sources**
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -144,6 +146,8 @@ G --> O["Deploy Preview Job<br/>PR builds"]
 
 ## Architecture Overview
 The build system integrates Vite, React, Tailwind CSS, Module Federation, and a comprehensive CI/CD pipeline. The development server supports hot reloading, remote component exposure, and enhanced coverage reporting. The production build targets modern browsers and emits optimized assets. The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews. Environment variables are validated and injected at build time.
+
+**Updated** The TypeScript configuration now explicitly excludes test files from compilation to prevent Vercel build failures, while maintaining comprehensive type checking for production code.
 
 ```mermaid
 graph TB
@@ -161,6 +165,7 @@ subgraph "Application"
 M["src/main.tsx"]
 A["src/App.tsx"]
 E["src/env.ts"]
+TEST["Test Files<br/>Excluded from TS Compilation"]
 end
 subgraph "CI/CD Pipeline"
 GA["GitHub Actions"]
@@ -171,7 +176,7 @@ DP["Deploy Preview"]
 end
 subgraph "Build"
 VC["vite.config.js"]
-TC["tsconfig.json"]
+TC["tsconfig.json<br/>Test Exclusions"]
 EC["eslint.config.js"]
 PC["prettier.config.js"]
 SC["Setup Script"]
@@ -195,12 +200,13 @@ GA --> DP
 MF --> VC
 M --> A
 M --> E
+TEST --> TC
 ```
 
 **Diagram sources**
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [scripts/setup-cicd.ts:1-196](file://scripts/setup-cicd.ts#L1-L196)
@@ -208,6 +214,8 @@ M --> E
 - [src/main.tsx:1-89](file://src/main.tsx#L1-L89)
 - [src/App.tsx:1-8](file://src/App.tsx#L1-L8)
 - [src/env.ts:1-40](file://src/env.ts#L1-L40)
+- [src/App.test.tsx:1-11](file://src/App.test.tsx#L1-L11)
+- [src/agent/__tests__/skill-agent.test.tsx:1-800](file://src/agent/__tests__/skill-agent.test.tsx#L1-L800)
 
 ## Detailed Component Analysis
 
@@ -237,7 +245,7 @@ Coverage --> End(["Export Vite config"])
 
 ### Module Federation Configuration
 Purpose and behavior:
-- Exposes two components for consumption by remote hosts.
+- Exposes components for consumption by remote hosts with singleton React dependencies.
 - Declares React and ReactDOM as shared singletons with required versions from package dependencies.
 - Sets a remote entry filename and default share scope.
 - Supports module-type entries and a global entry name for remotes.
@@ -246,17 +254,17 @@ Purpose and behavior:
 flowchart TD
 Start(["Load module-federation.config.js"]) --> Filename["Set filename for remote entry"]
 Filename --> Name["Set module name"]
-Name --> Exposes["Expose components:<br/>DemoMfComponent, DemoMfSelfContained"]
+Name --> Exposes["Expose components:<br/>None currently configured"]
 Exposes --> Remotes["Define remotes (currently empty)"]
 Remotes --> Shared["Share React and ReactDOM as singletons"]
 Shared --> End(["Export federation config"])
 ```
 
 **Diagram sources**
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 
 **Section sources**
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [src/demo-mf-component.tsx:1-4](file://src/demo-mf-component.tsx#L1-L4)
 - [src/demo-mf-self-contained.tsx:1-11](file://src/demo-mf-self-contained.tsx#L1-L11)
 
@@ -265,21 +273,27 @@ Highlights:
 - Strict mode enabled with comprehensive checks (unused locals, unused parameters, fallthrough switches, unchecked side-effect imports).
 - Bundler mode with verbatim module syntax and no emit to prevent extra compilation steps.
 - Path aliases aligned with Vite's resolve.alias for seamless IDE support and build-time resolution.
+- **Updated** Comprehensive test file exclusions to prevent Vercel build failures:
+  - `**/*.test.ts` - Individual test files
+  - `**/*.test.tsx` - TypeScript test files
+  - `**/__tests__/**` - Entire test directory structure
+  - `src/agent/**` - Agent test files specifically excluded
 
 ```mermaid
 flowchart TD
 Start(["Load tsconfig.json"]) --> Compiler["Enable strict mode and checks"]
 Compiler --> Bundler["Set bundler mode and verbatim syntax"]
 Bundler --> Paths["Define path aliases for src and components"]
-Paths --> NoEmit["Disable emitting compiled JS"]
+Paths --> Exclusions["Configure test file exclusions:<br/>*.test.ts, *.test.tsx,<br/>__tests__/**, src/agent/**"]
+Exclusions --> NoEmit["Disable emitting compiled JS"]
 NoEmit --> End(["Export TS config"])
 ```
 
 **Diagram sources**
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 
 **Section sources**
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 
 ### ESLint and Prettier Configuration
 - ESLint: Extends a TanStack ESLint preset for React and TypeScript best practices.
@@ -327,6 +341,7 @@ Env-->>App : Provide validated env values
 - Entry HTML loads the main script pointing to the TypeScript entry file.
 - The main entry bootstraps routing, providers, and renders the app under Strict Mode.
 - Scripts in package.json orchestrate dev, build, serve, test, lint, format, and comprehensive CI/CD operations.
+- **Updated** Build process now explicitly invokes TypeScript compilation after Vite build to ensure proper type checking.
 
 ```mermaid
 sequenceDiagram
@@ -487,7 +502,7 @@ Comprehensive code quality analysis through SonarCloud integration:
 - Multi-criteria issue ignoring for specific patterns
 
 **Integration Points**
-- Local analysis via `npx sonar-scanner`
+- Local analysis via `npx sonarqube-scanner` (optional)
 - GitHub Actions automatic scanning
 - Quality gate blocking on failures
 - Coverage report integration through lcov.info
@@ -502,6 +517,7 @@ Comprehensive code quality analysis through SonarCloud integration:
 - ESLint and Prettier are integrated via npm scripts.
 - CI/CD infrastructure depends on GitHub Actions, Husky, and SonarQube services.
 - Coverage reporting requires @vitest/coverage-v8 and proper lcov configuration.
+- **Updated** Test files are explicitly excluded from TypeScript compilation to prevent Vercel build failures.
 
 ```mermaid
 graph LR
@@ -509,7 +525,7 @@ Pkg["package.json"] --> Vite["vite.config.js"]
 Pkg --> MFConf["module-federation.config.js"]
 Vite --> Plugins["Plugins: React, Tailwind, Federation"]
 MFConf --> ReactDep["React version from package.json"]
-Vite --> TS["tsconfig.json"]
+Vite --> TS["tsconfig.json<br/>Test Exclusions"]
 Pkg --> ESL["eslint.config.js"]
 Pkg --> PRET["prettier.config.js"]
 Pkg --> GA["GitHub Actions"]
@@ -518,13 +534,14 @@ Pkg --> SQ["SonarQube"]
 GA --> SQ
 Husky --> LS["lint-staged"]
 LS --> SP["safe-push.ts"]
+TS --> TestExclusions["Test File Exclusions"]
 ```
 
 **Diagram sources**
 - [package.json:1-80](file://package.json#L1-L80)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -534,8 +551,8 @@ LS --> SP["safe-push.ts"]
 **Section sources**
 - [package.json:1-80](file://package.json#L1-L80)
 - [vite.config.js:1-51](file://vite.config.js#L1-L51)
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
-- [tsconfig.json:1-29](file://tsconfig.json#L1-L29)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
+- [tsconfig.json:1-38](file://tsconfig.json#L1-L38)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
 - [prettier.config.js:1-11](file://prettier.config.js#L1-L11)
 - [.github/workflows/ci.yml:1-154](file://.github/workflows/ci.yml#L1-L154)
@@ -552,6 +569,7 @@ LS --> SP["safe-push.ts"]
 - **Updated** Utilize GitHub Actions caching for npm dependencies to speed up CI/CD pipelines.
 - **Updated** Implement pre-commit hooks to catch issues early and reduce CI failure rates.
 - **Updated** Configure SonarQube quality gates to prevent low-quality code from reaching production.
+- **Updated** Test files are excluded from TypeScript compilation to reduce build time and prevent Vercel deployment failures.
 
 ## Troubleshooting Guide
 Common issues and resolutions:
@@ -585,9 +603,13 @@ Common issues and resolutions:
   - Pre-commit hook not running: Verify Husky is installed and lint-staged is configured correctly.
   - Pre-push hook blocking legitimate changes: Temporarily bypass with `git push --no-verify` for emergency situations only.
   - Hook permissions: On Unix-like systems, ensure hooks have executable permissions using chmod +x.
+- **Updated** TypeScript Compilation Issues
+  - Test files causing Vercel build failures: Verify that test file exclusions are properly configured in tsconfig.json.
+  - Type checking failures in production: Ensure the build script runs both vite build and tsc compilation.
+  - Test file organization: Move test files to appropriate __tests__ directories or ensure they match exclusion patterns.
 
 **Section sources**
-- [module-federation.config.js:1-32](file://module-federation.config.js#L1-L32)
+- [module-federation.config.js:1-29](file://module-federation.config.js#L1-L29)
 - [vite.config.js:15-20](file://vite.config.js#L15-L20)
 - [tsconfig.json:17-26](file://tsconfig.json#L17-L26)
 - [eslint.config.js:1-6](file://eslint.config.js#L1-L6)
@@ -598,4 +620,4 @@ Common issues and resolutions:
 - [lint-staged.config.js:1-7](file://lint-staged.config.js#L1-L7)
 
 ## Conclusion
-The project's build configuration leverages Vite, React, Tailwind CSS, and Module Federation to deliver a modern, maintainable, and scalable frontend setup. **Updated** The comprehensive CI/CD infrastructure includes GitHub Actions workflows, Husky git hooks, safe-push automation, and SonarQube integration for enterprise-grade quality assurance. TypeScript strict mode, ESLint, and Prettier ensure code quality, while typed environment variables provide safe runtime configuration. The Module Federation setup exposes components for remote consumption with shared React dependencies. **Updated** The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews, ensuring production-ready code delivery. Following the troubleshooting guidance helps resolve common build issues and CI/CD pipeline problems quickly.
+The project's build configuration leverages Vite, React, Tailwind CSS, and Module Federation to deliver a modern, maintainable, and scalable frontend setup. **Updated** The comprehensive CI/CD infrastructure includes GitHub Actions workflows, Husky git hooks, safe-push automation, and SonarQube integration for enterprise-grade quality assurance. TypeScript strict mode, ESLint, and Prettier ensure code quality, while typed environment variables provide safe runtime configuration. The Module Federation setup exposes components for remote consumption with shared React dependencies. **Updated** The TypeScript configuration now explicitly excludes test files from compilation to prevent Vercel build failures, while maintaining comprehensive type checking for production code. **Updated** The CI/CD pipeline automates quality gates, code analysis, security scanning, and deployment previews, ensuring production-ready code delivery. Following the troubleshooting guidance helps resolve common build issues and CI/CD pipeline problems quickly.

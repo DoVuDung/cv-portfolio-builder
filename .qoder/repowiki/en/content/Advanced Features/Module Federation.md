@@ -5,12 +5,18 @@
 - [module-federation.config.js](file://module-federation.config.js)
 - [vite.config.js](file://vite.config.js)
 - [package.json](file://package.json)
-- [src/demo-mf-component.tsx](file://src/demo-mf-component.tsx)
-- [src/demo-mf-self-contained.tsx](file://src/demo-mf-self-contained.tsx)
 - [src/main.tsx](file://src/main.tsx)
 - [src/App.tsx](file://src/App.tsx)
 - [README.md](file://README.md)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated host configuration section to reflect empty exposes configuration
+- Removed references to demo components (DemoMfComponent, DemoMfSelfContained)
+- Updated architecture overview to show current empty state
+- Revised practical examples to reflect the current configuration state
+- Updated troubleshooting guide to address empty exposes scenario
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -27,28 +33,27 @@
 12. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the Module Federation setup in the CV Portfolio Builder monorepo-style project. It covers how the host application exposes internal components for potential reuse, how the build pipeline integrates with the federation plugin, and how to reason about runtime behavior. It also provides guidance on security, performance, and troubleshooting.
+This document explains the Module Federation setup in the CV Portfolio Builder monorepo-style project. The project currently configures a host application with an empty exposes configuration, preparing it for potential future micro-frontend architecture expansion. The setup includes proper shared dependency management for React and React DOM, and the Vite plugin integration for seamless development and build processes.
 
-The project currently configures a host-like exposure of demo components and does not declare any remote federated dependencies. This makes it a good candidate to evolve into a real micro-frontend architecture by adding remote configurations and consuming external federated modules.
+**Updated** The project no longer exposes demo components as they have been removed from the codebase. The current configuration serves as a foundation for future micro-frontend implementations.
 
 ## Project Structure
 The federation-related configuration and integration live in a small set of files:
-- Host exposure configuration
+- Host exposure configuration (currently empty)
 - Vite plugin integration
-- Demo federated components
 - Application bootstrap and routing
 
 ```mermaid
 graph TB
 subgraph "Host Application"
 A["vite.config.js<br/>Plugin: @module-federation/vite"]
-B["module-federation.config.js<br/>Exposes: DemoMfComponent, DemoMfSelfContained"]
+B["module-federation.config.js<br/>Exposes: {} (empty)"]
 C["src/main.tsx<br/>Bootstraps Router and Providers"]
 D["src/App.tsx<br/>Root component"]
 end
-subgraph "Exposed Modules"
-E["src/demo-mf-component.tsx"]
-F["src/demo-mf-self-contained.tsx"]
+subgraph "Configuration"
+E["Empty Exposes Configuration"]
+F["Shared Dependencies<br/>react, react-dom (singleton)"]
 end
 A --> B
 B --> E
@@ -57,74 +62,73 @@ C --> D
 ```
 
 **Diagram sources**
-- [vite.config.js:1-27](file://vite.config.js#L1-L27)
-- [module-federation.config.js:13-31](file://module-federation.config.js#L13-L31)
-- [src/main.tsx:1-89](file://src/main.tsx#L1-L89)
+- [vite.config.js:1-51](file://vite.config.js#L1-L51)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
+- [src/main.tsx:1-79](file://src/main.tsx#L1-L79)
 - [src/App.tsx:1-8](file://src/App.tsx#L1-L8)
 
 **Section sources**
-- [vite.config.js:1-27](file://vite.config.js#L1-L27)
-- [module-federation.config.js:13-31](file://module-federation.config.js#L13-L31)
-- [src/main.tsx:1-89](file://src/main.tsx#L1-L89)
+- [vite.config.js:1-51](file://vite.config.js#L1-L51)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
+- [src/main.tsx:1-79](file://src/main.tsx#L1-L79)
 - [src/App.tsx:1-8](file://src/App.tsx#L1-L8)
 
 ## Core Components
-- Host configuration: Defines the module name, output filename, exposed modules, and shared dependencies.
+- Host configuration: Defines the module name, output filename, empty exposes configuration, and shared dependencies.
 - Vite plugin integration: Applies the federation plugin with the host configuration during development and build.
-- Demo federated components: Example components exported for federation consumption.
+- Empty exposes: Currently no components are exposed, serving as a foundation for future micro-frontend expansion.
 
 Key responsibilities:
-- Expose reusable UI components from the host for potential consumption by other hosts or remotes.
-- Ensure shared libraries (React and ReactDOM) are properly deduplicated at runtime.
-- Provide a minimal, self-contained rendering pattern for isolated federated chunks.
+- Prepare the host application for potential micro-frontend architecture by defining shared dependencies.
+- Ensure React and ReactDOM are properly deduplicated at runtime.
+- Provide a clean foundation for future component exposure.
+
+**Updated** The exposes configuration is currently empty, indicating this is a preparation phase for future micro-frontend implementation.
 
 **Section sources**
-- [module-federation.config.js:13-31](file://module-federation.config.js#L13-L31)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
 - [vite.config.js:5-10](file://vite.config.js#L5-L10)
-- [src/demo-mf-component.tsx:1-4](file://src/demo-mf-component.tsx#L1-L4)
-- [src/demo-mf-self-contained.tsx:1-11](file://src/demo-mf-self-contained.tsx#L1-L11)
 
 ## Architecture Overview
-The host application builds a remote entry with exposed modules and sets up shared dependencies. Consumers (other hosts or remotes) can consume these modules at runtime. The current configuration does not declare any remotes, so the host is effectively exposing modules for future use.
+The host application is configured with an empty exposes list, preparing it for future micro-frontend expansion. The current configuration focuses on shared dependency management and basic federation setup. When ready, additional components can be exposed through the `exposes` configuration.
 
 ```mermaid
 graph TB
 Host["Host App<br/>module-federation.config.js"]
 RemoteEntry["Remote Entry<br/>remoteEntry.js"]
-ExposedA["Exposed: ./DemoMfComponent"]
-ExposedB["Exposed: ./DemoMfSelfContained"]
-SharedReact["Shared: react"]
-SharedReactDOM["Shared: react-dom"]
+EmptyExposes["Exposes: {} (empty)"]
+SharedReact["Shared: react (singleton)"]
+SharedReactDOM["Shared: react-dom (singleton)"]
 Host --> RemoteEntry
-RemoteEntry --> ExposedA
-RemoteEntry --> ExposedB
+RemoteEntry --> EmptyExposes
 Host --> SharedReact
 Host --> SharedReactDOM
 ```
 
 **Diagram sources**
-- [module-federation.config.js:14-31](file://module-federation.config.js#L14-L31)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
 
 ## Detailed Component Analysis
 
 ### Host Configuration
 - Filename: remoteEntry.js
 - Name: cv-portfolio-builder
-- Exposed modules:
-  - ./DemoMfComponent -> src/demo-mf-component.tsx
-  - ./DemoMfSelfContained -> src/demo-mf-self-contained.tsx
+- Exposes: {} (empty - no components currently exposed)
 - Remotes: none
 - Shared:
   - react: singleton with requiredVersion pinned from dependencies
   - react-dom: singleton with requiredVersion pinned from dependencies
 
+**Updated** The exposes configuration is now empty, indicating this is a preparation state for future micro-frontend implementation.
+
 Implications:
-- Consumers can import the exposed modules under the host’s module name.
-- Singleton sharing ensures only one copy of React is loaded across the app graph.
+- No components are currently available for consumption by other hosts or remotes.
+- The configuration serves as a foundation for future micro-frontend expansion.
+- Singleton sharing ensures only one copy of React is loaded across the app graph when components are eventually exposed.
 
 **Section sources**
-- [module-federation.config.js:14-31](file://module-federation.config.js#L14-L31)
-- [package.json:38-39](file://package.json#L38-L39)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
+- [package.json:44-45](file://package.json#L44-L45)
 
 ### Vite Plugin Integration
 - Uses @module-federation/vite with the host configuration.
@@ -132,39 +136,27 @@ Implications:
 
 Effects:
 - Injects federation runtime and code transformations during dev/build.
-- Enables dynamic remote loading and shared library resolution.
+- Enables future dynamic remote loading and shared library resolution when components are exposed.
 
 **Section sources**
 - [vite.config.js:5-10](file://vite.config.js#L5-L10)
-- [vite.config.js:21-26](file://vite.config.js#L21-L26)
-
-### Demo Federated Components
-- DemoMfComponent: A simple functional component suitable for composition.
-- DemoMfSelfContained: A self-contained renderer that expects a root element and mounts its own React root.
-
-Usage patterns:
-- Composition: Import the exposed component and render it inside a host layout.
-- Self-contained: Call the exposed function with a DOM element to mount a root.
-
-**Section sources**
-- [src/demo-mf-component.tsx:1-4](file://src/demo-mf-component.tsx#L1-L4)
-- [src/demo-mf-self-contained.tsx:1-11](file://src/demo-mf-self-contained.tsx#L1-L11)
+- [vite.config.js:44-50](file://vite.config.js#L44-L50)
 
 ### Application Bootstrap
 - Routes are defined with TanStack Router.
 - Providers (TanStack Query, Devtools) are attached at the root.
 - The root component renders the main outlet and devtools.
 
-This establishes a foundation for composing federated components alongside existing routes and providers.
+This establishes a foundation for composing federated components alongside existing routes and providers when micro-frontend capabilities are added.
 
 **Section sources**
-- [src/main.tsx:29-65](file://src/main.tsx#L29-L65)
+- [src/main.tsx:24-79](file://src/main.tsx#L24-L79)
 - [src/App.tsx:1-8](file://src/App.tsx#L1-L8)
 
 ## Dependency Analysis
 - Host depends on @module-federation/vite for build-time federation support.
 - Shared dependencies react and react-dom are marked singleton and pinned to package versions.
-- No declared remotes in the current configuration imply no cross-host module consumption at runtime.
+- Empty exposes configuration indicates no cross-host module consumption at runtime.
 
 ```mermaid
 graph LR
@@ -175,44 +167,39 @@ ViteCfg["vite.config.js"]
 Pkg --> Fed
 ViteCfg --> Fed
 ViteCfg --> MFConf
-MFConf --> |Exposes| DemoA["DemoMfComponent"]
-MFConf --> |Exposes| DemoB["DemoMfSelfContained"]
+MFConf --> |Exposes| Empty["{} (empty)"]
 MFConf --> |Shares| React["react (singleton)"]
 MFConf --> |Shares| ReactDOM["react-dom (singleton)"]
 ```
 
 **Diagram sources**
-- [package.json:17-17](file://package.json#L17-L17)
+- [package.json:23](file://package.json#L23)
 - [vite.config.js:5-10](file://vite.config.js#L5-L10)
-- [module-federation.config.js:16-30](file://module-federation.config.js#L16-L30)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
 
 **Section sources**
-- [package.json:17-17](file://package.json#L17-L17)
-- [module-federation.config.js:16-30](file://module-federation.config.js#L16-L30)
+- [package.json:23](file://package.json#L23)
+- [module-federation.config.js:13-28](file://module-federation.config.js#L13-L28)
 
 ## Performance Considerations
-- Singleton shared libraries reduce duplication and memory footprint.
-- Keep exposed modules granular and focused to minimize payload for consumers.
-- Prefer lazy loading of heavy features and avoid eager imports of exposed components unless necessary.
-- Monitor chunk sizes and consider code splitting strategies in the consumer host.
-
-[No sources needed since this section provides general guidance]
+- Singleton shared libraries reduce duplication and memory footprint when components are eventually exposed.
+- Empty exposes configuration keeps the current bundle size minimal.
+- Keep the exposes configuration focused and selective when adding components in the future.
+- Monitor chunk sizes and consider code splitting strategies for future federated components.
 
 ## Security Considerations
-- Content Security Policy: Ensure the host’s CSP allows loading remoteEntry.js and subsequent federated chunks from trusted origins.
+- Content Security Policy: Ensure the host's CSP allows loading remoteEntry.js and subsequent federated chunks from trusted origins when components are exposed.
 - Integrity checks: Consider Subresource Integrity for remote assets if distributing across networks.
-- Origin verification: Validate that remote modules originate from approved sources before mounting self-contained federated roots.
-- Sandboxing: When mounting self-contained federated roots, ensure isolation and controlled props to prevent unintended side effects.
-
-[No sources needed since this section provides general guidance]
+- Origin verification: Validate that remote modules originate from approved sources before mounting federated components.
+- Sandboxing: When mounting federated components, ensure isolation and controlled props to prevent unintended side effects.
 
 ## Build and Runtime Process
 - Build-time:
-  - Vite applies the federation plugin with the host configuration.
+  - Vite applies the federation plugin with the current host configuration.
   - The plugin generates the remote entry and injects runtime wiring.
 - Runtime:
   - At startup, the host loads the remote entry and resolves shared dependencies.
-  - Consumers can import exposed modules dynamically and render them.
+  - Future components can be imported dynamically and rendered when exposed.
 
 ```mermaid
 sequenceDiagram
@@ -230,32 +217,33 @@ Host-->>Dev : Serve federated assets
 
 **Diagram sources**
 - [vite.config.js:5-10](file://vite.config.js#L5-L10)
-- [module-federation.config.js:14-14](file://module-federation.config.js#L14-L14)
+- [module-federation.config.js:13](file://module-federation.config.js#L13)
 
 **Section sources**
 - [vite.config.js:5-10](file://vite.config.js#L5-L10)
-- [module-federation.config.js:14-14](file://module-federation.config.js#L14-L14)
+- [module-federation.config.js:13](file://module-federation.config.js#L13)
 
 ## Practical Examples Across Federated Boundaries
-Below are conceptual examples of how to compose federated components. Replace placeholders with actual module names and paths after building and hosting the remote entry.
+**Updated** With the current empty exposes configuration, these examples serve as preparation for future implementation:
 
-- Compose a federated component inside a host route:
-  - Dynamically import the exposed component and render it conditionally.
+- Adding exposed components:
+  - Configure the `exposes` property in module-federation.config.js with component paths.
+  - Define component aliases for easy consumption by other hosts.
+  - Ensure proper TypeScript definitions for exposed components.
+
+- Future composition patterns:
+  - Dynamically import exposed components and render them conditionally.
   - Pass props through the host boundary carefully to maintain type safety.
+  - Implement proper error boundaries for federated component loading.
 
-- Mount a self-contained federated root:
-  - Acquire a DOM container from the host.
-  - Call the exposed self-contained function with the container element.
-  - Unmount gracefully when the route or component unmounts.
-
-- Lazy loading:
-  - Use dynamic imports for exposed components to defer loading until needed.
-  - Combine with Suspense or loading states to improve UX.
-
-[No sources needed since this section provides general guidance]
+- Future self-contained mounting:
+  - Acquire DOM containers from the host when mounting federated components.
+  - Call exposed functions with DOM elements to mount federated roots.
+  - Implement graceful unmounting when routes or components change.
 
 ## Troubleshooting Guide
-Common issues and remedies:
+**Updated** Current and future troubleshooting scenarios:
+
 - Version mismatch for shared libraries:
   - Ensure the host and consumers align on react and react-dom versions.
   - Verify requiredVersion in the host configuration matches installed versions.
@@ -268,20 +256,21 @@ Common issues and remedies:
   - Re-check singleton sharing and ensure only one version of React is loaded.
   - Clear caches and restart the dev server after changing shared configs.
 
-- Self-contained federated root not rendering:
-  - Verify the DOM element exists and is appended to the document.
-  - Ensure the root element is empty or managed exclusively by the federated root.
+- Empty exposes configuration issues:
+  - Verify that the `exposes` property is properly configured when adding components.
+  - Ensure component paths in the exposes configuration match actual file locations.
+  - Check that component exports are properly defined and accessible.
 
 - Build failures with federation plugin:
   - Confirm the plugin version is compatible with the Vite version.
-  - Review Vite’s modern JS target settings for compatibility.
+  - Review Vite's modern JS target settings for compatibility.
 
 **Section sources**
-- [module-federation.config.js:22-29](file://module-federation.config.js#L22-L29)
-- [package.json:38-39](file://package.json#L38-L39)
-- [vite.config.js:21-26](file://vite.config.js#L21-L26)
+- [module-federation.config.js:18-27](file://module-federation.config.js#L18-L27)
+- [package.json:44-45](file://package.json#L44-L45)
+- [vite.config.js:44-50](file://vite.config.js#L44-L50)
 
 ## Conclusion
-The CV Portfolio Builder includes a ready-to-evolve Module Federation setup. The host configuration exposes demo components and shares React as a singleton. The Vite plugin integrates federation seamlessly into the build. By extending the configuration to declare remotes and consuming the host’s exposed modules, teams can adopt a micro-frontend architecture incrementally. Focus on security, performance, and robust error handling to ensure reliable federation across environments.
+The CV Portfolio Builder currently maintains a clean Module Federation foundation with an empty exposes configuration. This preparation state enables future micro-frontend architecture adoption without impacting the current production functionality. The host configuration properly manages shared dependencies, and the Vite plugin integration supports seamless development and build processes.
 
-[No sources needed since this section summarizes without analyzing specific files]
+**Updated** The removal of demo components has simplified the codebase while preserving the federation infrastructure. When ready, teams can incrementally add exposed components to the `exposes` configuration, transforming this preparation state into a fully functional micro-frontend architecture. Focus on security, performance, and robust error handling to ensure reliable federation across environments when components are eventually exposed.
