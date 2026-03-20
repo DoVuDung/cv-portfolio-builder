@@ -11,9 +11,9 @@
  * 5. If all pass, commits and pushes
  */
 
-import { execSync } from 'child_process'
-import { existsSync } from 'fs'
-import { join } from 'path'
+import { execSync } from 'node:child_process'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 
 // Colors for console output
 const colors = {
@@ -105,13 +105,18 @@ async function safePush(): Promise<void> {
   
   // Optional: SonarQube local scan (if configured)
   if (checkFileExists('sonar-project.properties') && process.env.SONAR_TOKEN) {
-    const sonarPassed = executeCommand(
-      'npx sonar-scanner',
-      'Bonus: Running SonarQube Analysis (Optional)'
-    )
-    
-    if (!sonarPassed) {
-      log('⚠️  SonarQube scan failed, but continuing...', colors.yellow)
+    try {
+      const sonarPassed = executeCommand(
+        'npx --yes sonarqube-scanner',
+        'Bonus: Running SonarQube Analysis (Optional)'
+      )
+      
+      if (!sonarPassed) {
+        log('⚠️  SonarQube scan failed, but continuing...', colors.yellow)
+      }
+    } catch (error) {
+      log('⚠️  SonarQube scanner not available, skipping...', colors.yellow)
+      log('Install with: npm install -D sonarqube-scanner', colors.yellow)
     }
   }
   
