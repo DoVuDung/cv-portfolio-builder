@@ -49,6 +49,20 @@ interface CVData {
   education: Array<Education>
 }
 
+interface ATSAnalysis {
+  score: number
+  keywords: Array<string>
+  suggestions: Array<string>
+  formatting: {
+    hasContactInfo: boolean
+    hasSummary: boolean
+    hasSkills: boolean
+    hasExperience: boolean
+    hasEducation: boolean
+    isReadable: boolean
+  }
+}
+
 export function CVBuilder() {
   // Initialize with your actual CV data
   const [cvData, setCvData] = useState<CVData>({
@@ -214,12 +228,184 @@ export function CVBuilder() {
   const [activeSection, setActiveSection] = useState<'profile' | 'skills' | 'experience' | 'education'>('profile')
   const [isEditing, setIsEditing] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showATSAnalysis, setShowATSAnalysis] = useState(false)
+  const [atsAnalysis, setAtsAnalysis] = useState<ATSAnalysis | null>(null)
+  const [targetJobDescription, setTargetJobDescription] = useState('')
 
   const handleSave = () => {
     localStorage.setItem('cv-data', JSON.stringify(cvData))
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
     setIsEditing(false)
+  }
+
+  // ATS Analysis Functions
+  const analyzeATS = () => {
+    const analysis: ATSAnalysis = {
+      score: 0,
+      keywords: [],
+      suggestions: [],
+      formatting: {
+        hasContactInfo: false,
+        hasSummary: false,
+        hasSkills: false,
+        hasExperience: false,
+        hasEducation: false,
+        isReadable: false,
+      },
+    }
+
+    let score = 0
+    const maxScore = 100
+    const suggestions: Array<string> = []
+    const keywords: Array<string> = []
+
+    // Check Contact Info (15 points)
+    if (cvData.profile.email) {
+      analysis.formatting.hasContactInfo = true
+      score += 5
+    } else {
+      suggestions.push('⚠️ Add your email address')
+    }
+    
+    if (cvData.profile.phone) {
+      score += 5
+    } else {
+      suggestions.push('⚠️ Add your phone number')
+    }
+    
+    if (cvData.profile.linkedin) {
+      score += 5
+    } else {
+      suggestions.push('⚠️ Add your LinkedIn profile URL')
+    }
+
+    // Check Summary (15 points)
+    if (cvData.profile.summary && cvData.profile.summary.length > 100) {
+      analysis.formatting.hasSummary = true
+      score += 15
+      // Extract keywords from summary
+      const summaryKeywords = ['React', 'Next.js', 'TypeScript', 'frontend', 'engineer', 'developer', 'experience']
+      summaryKeywords.forEach(keyword => {
+        if (cvData.profile.summary.toLowerCase().includes(keyword.toLowerCase())) {
+          keywords.push(keyword)
+        }
+      })
+    } else {
+      suggestions.push('⚠️ Add a professional summary (at least 100 characters)')
+    }
+
+    // Check Skills (20 points)
+    if (cvData.skills.length > 0) {
+      analysis.formatting.hasSkills = true
+      const totalSkills = cvData.skills.reduce((acc, cat) => acc + cat.skills.length, 0)
+      if (totalSkills >= 10) {
+        score += 20
+        // Add top skills to keywords
+        cvData.skills.slice(0, 3).forEach(cat => {
+          cat.skills.slice(0, 3).forEach(skill => keywords.push(skill))
+        })
+      } else if (totalSkills >= 5) {
+        score += 15
+      } else {
+        score += 10
+      }
+    } else {
+      suggestions.push('⚠️ Add at least 5-10 relevant skills')
+    }
+
+    // Check Experience (25 points)
+    if (cvData.experience.length > 0) {
+      analysis.formatting.hasExperience = true
+      const totalProjects = cvData.experience.reduce((acc, exp) => acc + exp.projects.length, 0)
+      const totalAchievements = cvData.experience.reduce(
+        (acc, exp) => acc + exp.projects.reduce((pAcc, proj) => pAcc + proj.achievements.length, 0),
+        0
+      )
+      
+      if (totalProjects >= 3 && totalAchievements >= 15) {
+        score += 25
+      } else if (totalProjects >= 2 && totalAchievements >= 8) {
+        score += 20
+      } else if (totalProjects >= 1 && totalAchievements >= 4) {
+        score += 15
+      } else {
+        score += 10
+      }
+
+      if (totalAchievements < 15) {
+        suggestions.push('💡 Add more quantifiable achievements with numbers and impact')
+      }
+    } else {
+      suggestions.push('⚠️ Add at least one work experience')
+    }
+
+    // Check Education (10 points)
+    if (cvData.education.length > 0) {
+      analysis.formatting.hasEducation = true
+      score += 10
+    } else {
+      suggestions.push('⚠️ Add your education background')
+    }
+
+    // Check Readability (15 points)
+    const hasAllSections = 
+      cvData.profile.name && 
+      cvData.profile.title && 
+      cvData.profile.summary.length > 100 &&
+      cvData.skills.length > 0 &&
+      cvData.experience.length > 0
+    
+    if (hasAllSections) {
+      analysis.formatting.isReadable = true
+      score += 15
+    } else {
+      suggestions.push('💡 Ensure all major sections are complete for better readability')
+    }
+
+    // Job Description Matching (if provided)
+    if (targetJobDescription.trim()) {
+      const jdKeywords = extractKeywords(targetJobDescription)
+      const matchedKeywords = jdKeywords.filter(keyword => 
+        cvData.profile.summary.toLowerCase().includes(keyword.toLowerCase()) ||
+        cvData.skills.some(cat => cat.skills.some(s => s.toLowerCase().includes(keyword.toLowerCase())))
+      )
+      
+      if (matchedKeywords.length > 0) {
+        score += 10
+        suggestions.push(`✅ Good! Your CV matches ${matchedKeywords.length} keywords from the job description`)
+      } else {
+        suggestions.push(`⚠️ Try to include more keywords from the job description: ${jdKeywords.slice(0, 5).join(', ')}`)
+      }
+    }
+
+    analysis.score = Math.min(score, maxScore)
+    analysis.suggestions = suggestions
+    analysis.keywords = [...new Set(keywords)] // Remove duplicates
+
+    setAtsAnalysis(analysis)
+    setShowATSAnalysis(true)
+  }
+
+  const extractKeywords = (text: string): Array<string> => {
+    const commonTechKeywords = [
+      'React', 'Next.js', 'TypeScript', 'JavaScript', 'Node.js', 'Python',
+      'AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'CI/CD', 'Git',
+      'REST', 'GraphQL', 'PostgreSQL', 'MongoDB', 'Redis',
+      'frontend', 'backend', 'full-stack', 'developer', 'engineer',
+      'leader', 'lead', 'senior', 'junior', 'architect'
+    ]
+    
+    return commonTechKeywords.filter(keyword =>
+      text.toLowerCase().includes(keyword.toLowerCase())
+    )
+  }
+
+  const getATSScoreColor = (score: number) => {
+    if (score >= 90) return 'text-green-600 bg-green-50'
+    if (score >= 75) return 'text-blue-600 bg-blue-50'
+    if (score >= 60) return 'text-yellow-600 bg-yellow-50'
+    return 'text-red-600 bg-red-50'
   }
 
   const handleLoadDemo = () => {
@@ -246,6 +432,9 @@ export function CVBuilder() {
                 className="font-semibold"
               >
                 {isEditing ? '✓ Editing' : '✎ Edit'}
+              </Button>
+              <Button onClick={analyzeATS} variant="outline" className="bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 border-purple-200">
+                📊 ATS Score
               </Button>
               <Button onClick={handleLoadDemo} variant="outline">
                 📋 Load Demo
@@ -753,6 +942,151 @@ export function CVBuilder() {
           </div>
         </div>
       </main>
+
+      {/* ATS Analysis Modal */}
+      {showATSAnalysis && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-2xl">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-3xl font-bold">📊 ATS Compatibility Score</h2>
+                  <p className="text-purple-100 mt-1">Applicant Tracking System Optimization</p>
+                </div>
+                <button
+                  onClick={() => setShowATSAnalysis(false)}
+                  className="text-white hover:text-gray-200 transition-colors text-3xl"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8 space-y-6">
+              {/* Score Display */}
+              <div className="text-center p-8 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+                <div className={`inline-block px-8 py-6 rounded-full ${getATSScoreColor(atsAnalysis.score)}`}>
+                  <span className="text-6xl font-bold">{atsAnalysis.score}</span>
+                  <span className="text-2xl opacity-75">/100</span>
+                </div>
+                <p className="text-lg font-semibold mt-4 text-gray-700">
+                  {atsAnalysis.score >= 90 && '🎉 Excellent! Your CV is highly ATS-friendly'}
+                  {atsAnalysis.score >= 75 && atsAnalysis.score < 90 && '✅ Good job! Minor improvements needed'}
+                  {atsAnalysis.score >= 60 && atsAnalysis.score < 75 && '⚠️ Fair, but needs improvement'}
+                  {atsAnalysis.score < 60 && '❌ Needs significant work'}
+                </p>
+              </div>
+
+              {/* Keywords Section */}
+              {atsAnalysis.keywords.length > 0 && (
+                <div className="border-2 border-gray-200 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <span className="text-2xl mr-3">🔑</span>
+                    Detected Keywords ({atsAnalysis.keywords.length})
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {atsAnalysis.keywords.map((keyword, idx) => (
+                      <span
+                        key={idx}
+                        className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold"
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Suggestions Section */}
+              <div className="border-2 border-gray-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <span className="text-2xl mr-3">💡</span>
+                  Improvement Suggestions
+                </h3>
+                {atsAnalysis.suggestions.length > 0 ? (
+                  <ul className="space-y-3">
+                    {atsAnalysis.suggestions.map((suggestion, idx) => (
+                      <li
+                        key={idx}
+                        className={`p-4 rounded-lg ${
+                          suggestion.includes('✅')
+                            ? 'bg-green-50 text-green-800 border-l-4 border-green-500'
+                            : suggestion.includes('⚠️')
+                            ? 'bg-yellow-50 text-yellow-800 border-l-4 border-yellow-500'
+                            : 'bg-blue-50 text-blue-800 border-l-4 border-blue-500'
+                        }`}
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-green-600 font-semibold">🎉 No suggestions! Your CV looks great!</p>
+                )}
+              </div>
+
+              {/* Formatting Checklist */}
+              <div className="border-2 border-gray-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <span className="text-2xl mr-3">✓</span>
+                  ATS Formatting Checklist
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { label: 'Contact Information', value: atsAnalysis.formatting.hasContactInfo },
+                    { label: 'Professional Summary', value: atsAnalysis.formatting.hasSummary },
+                    { label: 'Skills Section', value: atsAnalysis.formatting.hasSkills },
+                    { label: 'Work Experience', value: atsAnalysis.formatting.hasExperience },
+                    { label: 'Education', value: atsAnalysis.formatting.hasEducation },
+                    { label: 'Readable Format', value: atsAnalysis.formatting.isReadable },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex items-center justify-between p-4 rounded-lg ${
+                        item.value ? 'bg-green-50' : 'bg-red-50'
+                      }`}
+                    >
+                      <span className="font-semibold text-gray-700">{item.label}</span>
+                      <span className="text-2xl">{item.value ? '✅' : '❌'}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Job Description Matching */}
+              <div className="border-2 border-gray-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <span className="text-2xl mr-3">🎯</span>
+                  Job Description Keyword Matcher
+                </h3>
+                <textarea
+                  value={targetJobDescription}
+                  onChange={(e) => setTargetJobDescription(e.target.value)}
+                  placeholder="Paste the job description here to check keyword matching..."
+                  rows={6}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                />
+                <button
+                  onClick={analyzeATS}
+                  className="mt-4 w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-md"
+                >
+                  🔄 Re-analyze with Job Description
+                </button>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setShowATSAnalysis(false)}
+                className="w-full py-4 bg-gray-100 text-gray-700 font-bold rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Close Analysis
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
