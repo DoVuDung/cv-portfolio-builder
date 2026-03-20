@@ -6,30 +6,29 @@
 - [src/agent/core/agent.ts](file://src/agent/core/agent.ts)
 - [src/agent/core/session.ts](file://src/agent/core/session.ts)
 - [src/agent/memory/cv-memory.ts](file://src/agent/memory/cv-memory.ts)
-- [src/agent/memory/context-manager.ts](file://src/agent/memory/context-manager.ts)
+- [src/agent/context/context-manager.ts](file://src/agent/context/context-manager.ts)
 - [src/agent/tools/base-tool.ts](file://src/agent/tools/base-tool.ts)
-- [src/agent/tools/analysis-tools.ts](file://src/agent/tools/analysis-tools.ts)
 - [src/agent/tools/core-tools.ts](file://src/agent/tools/core-tools.ts)
 - [src/agent/tools/experience-tools.ts](file://src/agent/tools/experience-tools.ts)
 - [src/agent/tools/profile-tools.ts](file://src/agent/tools/profile-tools.ts)
 - [src/agent/tools/project-tools.ts](file://src/agent/tools/project-tools.ts)
 - [src/agent/tools/skills-tools.ts](file://src/agent/tools/skills-tools.ts)
-- [src/agent/services/ai-service.ts](file://src/agent/services/ai-service.ts)
 - [src/agent/services/llm.ts](file://src/agent/services/llm.ts)
 - [src/agent/services/prompts.ts](file://src/agent/services/prompts.ts)
 - [src/agent/schemas/agent.schema.ts](file://src/agent/schemas/agent.schema.ts)
 - [src/agent/schemas/cv.schema.ts](file://src/agent/schemas/cv.schema.ts)
 - [src/agent/hooks/useSkillAgent.ts](file://src/agent/hooks/useSkillAgent.ts)
 - [src/agent/examples/usage-examples.tsx](file://src/agent/examples/usage-examples.tsx)
+- [src/agent/README.md](file://src/agent/README.md)
 </cite>
 
 ## Update Summary
 **Changes Made**
-- Updated to reflect MCP (Model Context Protocol) implementation with six specialized tools
-- Added comprehensive documentation for core tools: analyzeCV, generateSummary, improveExperience, extractSkills, optimizeATS, mapToUISections
-- Enhanced agent orchestration patterns and tool execution workflows
-- Updated architecture diagrams to show MCP-inspired design
-- Added practical examples for CV Builder integration
+- Updated to reflect current production state with six specialized MCP tools
+- Removed references to experimental AI assistant panel that was dropped from production
+- Updated architecture diagrams to show current MCP-inspired design
+- Revised documentation to match actual codebase implementation
+- Clarified that the system is production-ready with comprehensive tool suite
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -46,9 +45,11 @@
 12. [Appendices](#appendices)
 
 ## Introduction
-This document explains the AI Agent System powering the CV Portfolio Builder with MCP (Model Context Protocol) implementation. The system features an enhanced architecture with six specialized tools working through an orchestrator pattern to provide real-time AI assistance for CV optimization. The agent integrates seamlessly with the CV Builder application, offering comprehensive CV analysis, optimization, and enhancement capabilities through a structured tool ecosystem.
+This document explains the AI Agent System powering the CV Portfolio Builder with MCP (Model Context Protocol) implementation. The system features a production-ready architecture with six specialized tools working through an orchestrator pattern to provide real-time AI assistance for CV optimization. The agent integrates seamlessly with the CV Builder application, offering comprehensive CV analysis, optimization, and enhancement capabilities through a structured tool ecosystem.
 
 The system follows an MCP-inspired architecture with ToolRegistry, Agent Orchestrator, Memory Management, and Session Tracking. It provides robust AI service integration through LLM providers and offers practical examples for tool development, AI integration, and agent configuration.
+
+**Updated** The system is currently in production-ready state with six fully implemented MCP tools, replacing previous experimental features that were removed from production builds.
 
 ## Project Structure
 The agent subsystem is organized by responsibility with MCP tool integration:
@@ -108,9 +109,9 @@ SESS --> CVM
 - [src/agent/memory/cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [src/agent/memory/cv-memory.ts:165-228](file://src/agent/memory/cv-memory.ts#L165-L228)
 - [src/agent/memory/cv-memory.ts:251-285](file://src/agent/memory/cv-memory.ts#L251-L285)
-- [src/agent/memory/context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
+- [src/agent/context/context-manager.ts:7-137](file://src/agent/context/context-manager.ts#L7-L137)
 - [src/agent/tools/core-tools.ts:17-475](file://src/agent/tools/core-tools.ts#L17-L475)
-- [src/agent/services/llm.ts:144-253](file://src/agent/services/llm.ts#L144-253)
+- [src/agent/services/llm.ts:144-253](file://src/agent/services/llm.ts#L144-L253)
 - [src/agent/services/prompts.ts:5-280](file://src/agent/services/prompts.ts#L5-L280)
 
 **Section sources**
@@ -136,7 +137,7 @@ SESS --> CVM
 - [src/agent/memory/cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [src/agent/memory/cv-memory.ts:165-228](file://src/agent/memory/cv-memory.ts#L165-L228)
 - [src/agent/memory/cv-memory.ts:251-285](file://src/agent/memory/cv-memory.ts#L251-L285)
-- [src/agent/memory/context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
+- [src/agent/context/context-manager.ts:7-137](file://src/agent/context/context-manager.ts#L7-L137)
 - [src/agent/services/llm.ts:144-253](file://src/agent/services/llm.ts#L144-L253)
 - [src/agent/services/prompts.ts:5-280](file://src/agent/services/prompts.ts#L5-L280)
 
@@ -242,7 +243,7 @@ LLMProvider --> LLMProvider : "implements"
 - [src/agent/memory/cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [src/agent/memory/cv-memory.ts:165-228](file://src/agent/memory/cv-memory.ts#L165-L228)
 - [src/agent/memory/cv-memory.ts:251-285](file://src/agent/memory/cv-memory.ts#L251-L285)
-- [src/agent/memory/context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
+- [src/agent/context/context-manager.ts:7-137](file://src/agent/context/context-manager.ts#L7-L137)
 - [src/agent/services/llm.ts:4-8](file://src/agent/services/llm.ts#L4-L8)
 
 ## Detailed Component Analysis
@@ -330,12 +331,12 @@ H --> I["Export/Import Context with JSON"]
 **Diagram sources**
 - [src/agent/memory/cv-memory.ts:56-117](file://src/agent/memory/cv-memory.ts#L56-L117)
 - [src/agent/memory/cv-memory.ts:181-227](file://src/agent/memory/cv-memory.ts#L181-L227)
-- [src/agent/memory/context-manager.ts:27-77](file://src/agent/memory/context-manager.ts#L27-L77)
+- [src/agent/context/context-manager.ts:27-77](file://src/agent/context/context-manager.ts#L27-L77)
 
 **Section sources**
 - [src/agent/memory/cv-memory.ts:20-149](file://src/agent/memory/cv-memory.ts#L20-L149)
 - [src/agent/memory/cv-memory.ts:165-228](file://src/agent/memory/cv-memory.ts#L165-L228)
-- [src/agent/memory/context-manager.ts:7-137](file://src/agent/memory/context-manager.ts#L7-L137)
+- [src/agent/context/context-manager.ts:7-137](file://src/agent/context/context-manager.ts#L7-L137)
 
 ### Session Tracking
 - **SessionManager** handles session lifecycle, persistence, activity updates, and statistics.
@@ -546,12 +547,14 @@ MCP_Tools --> ToolRegistry
 - [src/agent/core/agent.ts:84-127](file://src/agent/core/agent.ts#L84-L127)
 - [src/agent/core/session.ts:75-112](file://src/agent/core/session.ts#L75-L112)
 - [src/agent/memory/cv-memory.ts:131-139](file://src/agent/memory/cv-memory.ts#L131-L139)
-- [src/agent/memory/context-manager.ts:112-115](file://src/agent/memory/context-manager.ts#L112-L115)
+- [src/agent/context/context-manager.ts:112-115](file://src/agent/context/context-manager.ts#L112-L115)
 
 ## Conclusion
 The MCP-enhanced AI Agent System provides a robust, extensible framework for CV authoring with six specialized tools working through an orchestrator pattern. The system's MCP-inspired design enables clear separation of concerns, easy tool registration, and reliable AI integration through a provider abstraction. The integration with CV Builder delivers real-time AI assistance for CV optimization, making the system highly practical for end-users.
 
 By following the patterns documented here, developers can extend the system with new MCP tools, integrate additional AI providers, and tailor the agent's behavior to diverse user needs while maintaining the structured MCP architecture.
+
+**Updated** The system is currently production-ready with six fully implemented MCP tools, providing comprehensive CV optimization capabilities without the experimental features that were previously planned but removed from production builds.
 
 ## Appendices
 
@@ -570,7 +573,7 @@ By following the patterns documented here, developers can extend the system with
 #### Configuring the MCP Agent
 - Create SkillAgent via factory with optional llmService and debugMode.
 - Update context using ContextManager for personalized MCP tool suggestions.
-- Reference: [SkillAgent Factory:398-413](file://src/agent/core/agent.ts#L398-L413), [ContextManager:27-77](file://src/agent/memory/context-manager.ts#L27-L77)
+- Reference: [SkillAgent Factory:398-413](file://src/agent/core/agent.ts#L398-L413), [ContextManager:27-77](file://src/agent/context/context-manager.ts#L27-L77)
 
 #### Running MCP Tasks
 - Call SkillAgent.run with supported MCP tasks and input payload.
@@ -581,3 +584,13 @@ By following the patterns documented here, developers can extend the system with
 - Use useSkillAgent hook for React components with automatic state management.
 - Access reactive CV data through useCVData hook with TanStack Store integration.
 - Reference: [useSkillAgent:38-184](file://src/agent/hooks/useSkillAgent.ts#L38-L184), [useCVData:106-120](file://src/agent/hooks/useSkillAgent.ts#L106-L120)
+
+### Current Production State
+**Updated** The agent system is currently in production-ready state with:
+- Six fully implemented MCP tools (analyzeCV, generateSummary, improveExperience, extractSkills, optimizeATS, mapToUISections)
+- Complete React integration with comprehensive hooks
+- Production-ready LLM service with OpenAI and Mock implementations
+- Full memory management with version control
+- Context-aware suggestions and preferences
+- Comprehensive error handling and logging
+- No experimental AI assistant panel (removed from production builds)

@@ -12,7 +12,6 @@
 - [SkillsSection.tsx](file://src/templates/sections/SkillsSection.tsx)
 - [EducationSection.tsx](file://src/templates/sections/EducationSection.tsx)
 - [default.ts](file://src/templates/themes/default.ts)
-- [index.ts](file://src/templates/themes/index.ts)
 - [harvard.template.ts](file://src/templates/examples/harvard.template.ts)
 - [sidebar.template.ts](file://src/templates/examples/sidebar.template.ts)
 - [template.types.ts](file://src/templates/types/template.types.ts)
@@ -21,12 +20,13 @@
 
 ## Update Summary
 **Changes Made**
-- Updated architecture overview to reflect dynamic rendering capabilities with real-time template switching
-- Enhanced theme system documentation with four pre-built themes (Modern, Professional, Creative, Minimal)
-- Added comprehensive CSS variable-based theming support for consistent styling
-- Updated layout system documentation to cover single-column and two-column dynamic rendering
-- Expanded template registry documentation with advanced discovery and filtering capabilities
-- Added real-time preview functionality integration details
+- Updated architecture overview to reflect simplified direct preview approach replacing complex template switching system
+- Removed documentation of real-time template switching and dynamic preview functionality
+- Streamlined template rendering system documentation to focus on direct template application
+- Updated layout system documentation to emphasize static template rendering rather than dynamic switching
+- Simplified theme management documentation to highlight CSS variable application without real-time switching
+- Removed references to template registry filtering and discovery capabilities in favor of direct template usage
+- Updated performance considerations to reflect simpler rendering pipeline without template switching overhead
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -34,39 +34,38 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dynamic Rendering System](#dynamic-rendering-system)
+6. [Direct Template Rendering System](#direct-template-rendering-system)
 7. [Theme Management System](#theme-management-system)
 8. [Template Registry and Discovery](#template-registry-and-discovery)
 9. [Layout System](#layout-system)
 10. [Section Components](#section-components)
 11. [Template Creation Process](#template-creation-process)
-12. [Real-time Integration](#real-time-integration)
-13. [Performance Considerations](#performance-considerations)
-14. [Troubleshooting Guide](#troubleshooting-guide)
-15. [Conclusion](#conclusion)
-16. [Appendices](#appendices)
+12. [Performance Considerations](#performance-considerations)
+13. [Troubleshooting Guide](#troubleshooting-guide)
+14. [Conclusion](#conclusion)
+15. [Appendices](#appendices)
 
 ## Introduction
-This document explains the Template Engine responsible for rendering CVs and portfolios with dynamic capabilities. The system now features real-time template switching, comprehensive theme management with CSS variable support, and integrated preview functionality. It covers the rendering pipeline via TemplateRenderer, the template registry for discovery and management, layout systems for single-column and two-column designs, the theme system using CSS variables and prebuilt themes, and the section components for Profile, Experience, Projects, Skills, and Education. The engine supports dynamic content rendering with responsive design considerations and performance optimizations.
+This document explains the Template Engine responsible for rendering CVs and portfolios with a streamlined direct preview approach. The system focuses on efficient template rendering without complex switching mechanisms, featuring comprehensive theme management with CSS variable support, and integrated preview functionality. It covers the rendering pipeline via TemplateRenderer, the template registry for template management, layout systems for single-column and two-column designs, the theme system using CSS variables and prebuilt themes, and the section components for Profile, Experience, Projects, Skills, and Education. The engine supports direct content rendering with responsive design considerations and performance optimizations.
 
 ## Project Structure
-The template engine is organized into cohesive modules with enhanced dynamic capabilities:
-- Core renderer and registry: orchestrate rendering and template lifecycle with real-time updates
-- Layouts: renderers for single-column and two-column designs with dynamic switching
+The template engine is organized into cohesive modules with streamlined architecture:
+- Core renderer: orchestrates template rendering with direct application and CSS variable conversion
+- Layouts: renderers for single-column and two-column designs with static configuration
 - Sections: reusable components for each CV domain with typed data handling
 - Themes: prebuilt themes with CSS variable support for consistent styling
-- Examples: ready-to-use templates with dynamic positioning
-- Types: shared TypeScript interfaces for templates, themes, and CV data with enhanced metadata
+- Examples: ready-to-use templates with static positioning
+- Types: shared TypeScript interfaces for templates, themes, and CV data with metadata
 
 ```mermaid
 graph TB
 subgraph "Core Engine"
-TR["TemplateRenderer.tsx<br/>Dynamic Rendering"]
-REG["template-registry.ts<br/>Advanced Discovery"]
+TR["TemplateRenderer.tsx<br/>Direct Template Rendering"]
+REG["template-registry.ts<br/>Template Management"]
 END
 subgraph "Layout System"
-SCL["SingleColumnLayout.tsx<br/>Dynamic Switching"]
-TCL["TwoColumnLayout.tsx<br/>Responsive Design"]
+SCL["SingleColumnLayout.tsx<br/>Static Layout"]
+TCL["TwoColumnLayout.tsx<br/>Static Configuration"]
 END
 subgraph "Section Components"
 PS["ProfileSection.tsx<br/>Typed Data Handling"]
@@ -76,7 +75,6 @@ SS["SkillsSection.tsx<br/>Inline Items"]
 EdS["EducationSection.tsx<br/>GPA Support"]
 END
 subgraph "Theme Management"
-TIDX["themes/index.ts<br/>Export System"]
 TDEF["themes/default.ts<br/>Four Pre-built Themes"]
 CSS["CSS Variables<br/>Consistent Styling"]
 END
@@ -85,8 +83,8 @@ HARV["harvard.template.ts<br/>Academic Style"]
 SB["sidebar.template.ts<br/>Modern Tech Layout"]
 END
 subgraph "Type System"
-TT["types/template.types.ts<br/>Enhanced Interfaces"]
-CT["types/cv.types.ts<br/>Extended Metadata"]
+TT["types/template.types.ts<br/>Interfaces"]
+CT["types/cv.types.ts<br/>CV Data Types"]
 END
 TR --> SCL
 TR --> TCL
@@ -103,7 +101,6 @@ TCL --> SS
 TCL --> EdS
 REG --> HARV
 REG --> SB
-TIDX --> TDEF
 TT --> TR
 TT --> SCL
 TT --> TCL
@@ -125,7 +122,6 @@ CSS --> TCL
 - [ProjectSection.tsx:1-49](file://src/templates/sections/ProjectSection.tsx#L1-L49)
 - [SkillsSection.tsx:1-26](file://src/templates/sections/SkillsSection.tsx#L1-L26)
 - [EducationSection.tsx:1-44](file://src/templates/sections/EducationSection.tsx#L1-L44)
-- [themes/index.ts:1-2](file://src/templates/themes/index.ts#L1-L2)
 - [themes/default.ts:1-103](file://src/templates/themes/default.ts#L1-L103)
 - [examples/harvard.template.ts:1-52](file://src/templates/examples/harvard.template.ts#L1-L52)
 - [examples/sidebar.template.ts:1-55](file://src/templates/examples/sidebar.template.ts#L1-L55)
@@ -133,12 +129,12 @@ CSS --> TCL
 - [cv.types.ts:1-16](file://src/templates/types/cv.types.ts#L1-L16)
 
 ## Core Components
-- **TemplateRenderer**: Central orchestrator with React.memo optimization that converts Theme into CSS variables, dynamically splits sections by position, and delegates rendering to appropriate layout components with real-time switching capabilities.
-- **Template Registry**: Advanced singleton registry managing registration, lookup, filtering, and removal of templates with category tagging, metadata extraction, and discovery capabilities.
-- **Layout System**: Dynamic SingleColumnLayout and TwoColumnLayout components that render sections in order, apply theme CSS variables, and support responsive design with configurable sidebar widths.
+- **TemplateRenderer**: Central orchestrator with React.memo optimization that converts Theme into CSS variables and renders templates directly without switching capabilities.
+- **Template Registry**: Singleton registry managing registration, lookup, and removal of templates with category tagging and metadata extraction.
+- **Layout System**: Static SingleColumnLayout and TwoColumnLayout components that render sections in predefined order and apply theme CSS variables.
 - **Section Components**: ProfileSection, ExperienceSection, ProjectSection, SkillsSection, and EducationSection with typed CV data handling and semantic HTML rendering.
 - **Theme System**: Four pre-built themes (Modern, Professional, Creative, Minimal) with comprehensive CSS variable support for consistent styling across all CV formats.
-- **Template Examples**: Ready-to-use templates demonstrating single-column and two-column compositions with dynamic section positioning and theme references.
+- **Template Examples**: Ready-to-use templates demonstrating single-column and two-column compositions with static section positioning and theme references.
 
 **Section sources**
 - [TemplateRenderer.tsx:13-74](file://src/templates/core/TemplateRenderer.tsx#L13-L74)
@@ -150,31 +146,30 @@ CSS --> TCL
 - [ProjectSection.tsx:8-49](file://src/templates/sections/ProjectSection.tsx#L8-L49)
 - [SkillsSection.tsx:7-26](file://src/templates/sections/SkillsSection.tsx#L7-L26)
 - [EducationSection.tsx:8-44](file://src/templates/sections/EducationSection.tsx#L8-L44)
-- [themes/index.ts:1-2](file://src/templates/themes/index.ts#L1-L2)
 - [themes/default.ts:3-103](file://src/templates/themes/default.ts#L3-L103)
 - [harvard.template.ts:12-52](file://src/templates/examples/harvard.template.ts#L12-L52)
 - [sidebar.template.ts:12-55](file://src/templates/examples/sidebar.template.ts#L12-L55)
 
 ## Architecture Overview
-The enhanced rendering pipeline supports real-time template switching and dynamic theme application. TemplateRenderer transforms themes into CSS variables and routes to correct layout components with React.memo optimization for performance. Layouts sort sections by order and render corresponding section components with data keyed from CV objects, supporting both single-column and two-column arrangements with responsive design.
+The streamlined rendering pipeline focuses on direct template application with static configuration. TemplateRenderer converts themes into CSS variables and renders templates without switching capabilities, delegating to appropriate layout components with React.memo optimization for performance. Layouts sort sections by order and render corresponding section components with data keyed from CV objects, supporting both single-column and two-column arrangements with responsive design.
 
 ```mermaid
 sequenceDiagram
-participant Host as "Host Component<br/>Real-time Switching"
-participant TR as "TemplateRenderer<br/>Dynamic Rendering"
-participant L as "Layout System<br/>Responsive Design"
+participant Host as "Host Component<br/>Direct Template Usage"
+participant TR as "TemplateRenderer<br/>Direct Rendering"
+participant L as "Layout System<br/>Static Configuration"
 participant S as "Section Components<br/>Typed Data"
 participant Theme as "Theme System<br/>CSS Variables"
 Host->>TR : "Render({ template, cvData, theme })"
 TR->>TR : "convertThemeToCSS(theme)<br/>React.memo Optimization"
-TR->>L : "Dynamic Layout Selection"
+TR->>L : "Static Layout Selection"
 L->>L : "Sort sections by order<br/>Apply CSS Variables"
 loop "For each section"
 L->>S : "Render(component, data[key], props)"
 S-->>L : "Semantic HTML Output"
 end
 L-->>TR : "Complete layout"
-TR-->>Host : "Final rendered resume<br/>Real-time Preview"
+TR-->>Host : "Final rendered resume<br/>Direct Preview"
 Note over Theme : CSS Variables<br/>Consistent Styling
 ```
 
@@ -191,9 +186,9 @@ Note over Theme : CSS Variables<br/>Consistent Styling
 ## Detailed Component Analysis
 
 ### TemplateRenderer
-**Enhanced Capabilities**:
-- **Dynamic Rendering**: Converts Theme into CSS variables for runtime application with React.memo optimization preventing unnecessary re-renders
-- **Intelligent Layout Selection**: Splits template sections into left/main/right groups and selects appropriate layout based on template.layout
+**Streamlined Capabilities**:
+- **Direct Rendering**: Converts Theme into CSS variables for immediate application with React.memo optimization preventing unnecessary re-renders
+- **Static Layout Selection**: Renders templates based on predefined layout configuration without switching capabilities
 - **Fallback Mechanism**: Falls back to single-column layout if layout type is unrecognized
 - **Performance Optimization**: Memoized component with displayName for debugging
 
@@ -204,7 +199,7 @@ Note over Theme : CSS Variables<br/>Consistent Styling
 
 ```mermaid
 flowchart TD
-Start(["Dynamic Template Render"]) --> HasTheme{"Theme provided?"}
+Start(["Direct Template Render"]) --> HasTheme{"Theme provided?"}
 HasTheme --> |Yes| ToCSS["convertThemeToCSS(theme)<br/>React.memo Optimization"]
 HasTheme --> |No| SkipCSS["Use empty CSS map"]
 ToCSS --> Split["Split sections by position<br/>left/main/right"]
@@ -227,29 +222,29 @@ Fallback --> End
 - [TemplateRenderer.tsx:13-74](file://src/templates/core/TemplateRenderer.tsx#L13-L74)
 
 ### Template Registry
-**Advanced Features**:
+**Enhanced Features**:
 - **Singleton Pattern**: Thread-safe template registry with lazy initialization
-- **Comprehensive Discovery**: Registration, retrieval by ID, listing, filtering by category/tags, existence checks, removal, and metadata extraction
-- **Enhanced Metadata**: TemplateRegistryEntry includes thumbnail, tags, and category for better organization
+- **Template Management**: Registration, retrieval by ID, listing, filtering by category/tags, existence checks, removal, and metadata extraction
+- **Metadata-rich Entries**: TemplateRegistryEntry includes thumbnail, tags, and category information for organization
 - **Search Capabilities**: Category filtering and tag-based searching for template discovery
 
 **Usage Patterns**:
-- Centralized template management for UIs and engines with real-time updates
+- Centralized template management for UIs and engines with static template selection
 - Supports categorization (professional, creative, minimal, academic) and tagging for discoverability
 - Provides template metadata extraction for preview and management interfaces
 
 **Section sources**
 - [template-registry.ts:4-92](file://src/templates/core/template-registry.ts#L4-L92)
 
-## Dynamic Rendering System
-**Real-time Template Switching**:
-- **Instant Updates**: TemplateRenderer uses React.memo for optimal performance during template switching
-- **Dynamic Layout Selection**: Runtime layout determination based on template.layout property
+## Direct Template Rendering System
+**Simplified Template Application**:
+- **Static Rendering**: TemplateRenderer uses React.memo for optimal performance with direct template application
+- **Static Layout Selection**: Runtime layout determination based on template.layout property with no switching capabilities
 - **Responsive Design**: TwoColumnLayout supports configurable sidebar width with responsive breakpoints
 - **Performance Optimization**: Memoization prevents unnecessary re-renders when props remain unchanged
 
 **Integration Benefits**:
-- Seamless template switching in CV Builder with real-time preview
+- Direct template application in CV Builder with immediate preview
 - Efficient rendering pipeline with minimal DOM manipulation
 - Scalable architecture supporting multiple template types and configurations
 
@@ -279,8 +274,6 @@ InlineStyles --> ComponentStyling["Component Styling<br/>Consistent Across Layou
 
 **Section sources**
 - [themes/default.ts:3-103](file://src/templates/themes/default.ts#L3-L103)
-- [themes/index.ts:1-2](file://src/templates/themes/index.ts#L1-L2)
-- [TemplateRenderer.tsx:58-73](file://src/templates/core/TemplateRenderer.tsx#L58-L73)
 
 ## Template Registry and Discovery
 **Enhanced Template Management**:
@@ -298,7 +291,7 @@ InlineStyles --> ComponentStyling["Component Styling<br/>Consistent Across Layou
 - [template-registry.ts:17-87](file://src/templates/core/template-registry.ts#L17-L87)
 
 ## Layout System
-**Dynamic Layout Architecture**:
+**Static Layout Architecture**:
 - **SingleColumnLayout**: Sorts sections by order and renders them sequentially with theme CSS variables applied via inline styles
 - **TwoColumnLayout**: Accepts left and right section arrays with configurable sidebar width (default 280px) and responsive design considerations
 - **Position-based Rendering**: Sections positioned based on 'main', 'left', or 'right' properties for flexible layout arrangements
@@ -430,19 +423,6 @@ EducationSection --> CV : "reads education"
 - [sidebar.template.ts:12-55](file://src/templates/examples/sidebar.template.ts#L12-L55)
 - [template.types.ts:43-53](file://src/templates/types/template.types.ts#L43-L53)
 
-## Real-time Integration
-**CV Builder Integration**:
-- **Live Template Switching**: Real-time template preview updates without page reload
-- **Dynamic Theme Application**: Instant theme changes reflected across all sections
-- **Responsive Preview**: Live preview adjusts to different screen sizes and orientations
-- **Performance Monitoring**: Optimized rendering pipeline prevents lag during frequent switching
-
-**Enhanced User Experience**:
-- Immediate visual feedback for template and theme selections
-- Smooth transitions between different layout configurations
-- Consistent styling application across all component types
-- Accessible preview modes for different viewing contexts
-
 ## Performance Considerations
 **Optimization Strategies**:
 - **React.memo Implementation**: TemplateRenderer, layouts, and sections wrapped in React.memo prevent unnecessary re-renders when props are unchanged
@@ -455,7 +435,7 @@ EducationSection --> CV : "reads education"
 - Template caching for frequently used templates
 - Lazy loading for large CV data sets
 - Optimized theme variable conversion for repeated use
-- Efficient layout switching with minimal DOM manipulation
+- Efficient layout rendering with minimal DOM manipulation
 
 ## Troubleshooting Guide
 **Common Issues and Resolutions**:
@@ -478,7 +458,7 @@ EducationSection --> CV : "reads education"
 - [EducationSection.tsx:8-44](file://src/templates/sections/EducationSection.tsx#L8-L44)
 
 ## Conclusion
-The enhanced Template Engine provides a sophisticated, modular, and highly dynamic system for rendering CVs and portfolios. With real-time template switching, comprehensive theme management, and responsive design capabilities, the system delivers exceptional user experience and developer flexibility. TemplateRenderer coordinates theme application and layout selection with React.memo optimization, while the advanced registry enables powerful template discovery and management. The layout system supports both single-column and two-column designs with CSS variable-based theming across four pre-built themes. The section components encapsulate domain-specific rendering with typed data handling and semantic HTML structure. This architecture enables seamless integration with CV Builder for real-time preview functionality and supports scalable customization for diverse professional needs.
+The streamlined Template Engine provides a sophisticated, modular, and efficient system for rendering CVs and portfolios. With direct template application, comprehensive theme management, and responsive design capabilities, the system delivers exceptional user experience and developer flexibility. TemplateRenderer coordinates theme application and layout selection with React.memo optimization, while the template registry enables powerful template management. The layout system supports both single-column and two-column designs with CSS variable-based theming across four pre-built themes. The section components encapsulate domain-specific rendering with typed data handling and semantic HTML structure. This architecture enables seamless integration with CV Builder for direct preview functionality and supports scalable customization for diverse professional needs.
 
 ## Appendices
 
