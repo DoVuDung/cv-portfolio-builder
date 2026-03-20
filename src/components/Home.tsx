@@ -9,7 +9,8 @@ export default function Home() {
           Build Your CV & Portfolio Effortlessly
         </h1>
         <p className="text-lg text-gray-600">
-          A modern web app for developers to create, customize and export their CVs or portfolio websites. Powered by Vite, Bun, React, Tailwind and Module Federation.
+          A modern web app for developers to create, customize and export their CVs or portfolio
+          websites. Powered by Vite, Bun, React, Tailwind and Module Federation.
         </p>
 
         <div className="flex justify-center gap-4 pt-4">
@@ -32,8 +33,12 @@ export default function Home() {
         <h2 className="text-2xl font-semibold mb-4 ">🚀 How to Contribute</h2>
         <ul className="list-disc list-inside text-left text-gray-700 space-y-2">
           <li>Fork the repo and clone it</li>
-          <li>Install dependencies with <code>bun install</code></li>
-          <li>Start dev server with <code>bun dev</code></li>
+          <li>
+            Install dependencies with <code>bun install</code>
+          </li>
+          <li>
+            Start dev server with <code>bun dev</code>
+          </li>
           <li>Create a new branch for your feature</li>
           <li>Submit a pull request with a clear description</li>
         </ul>

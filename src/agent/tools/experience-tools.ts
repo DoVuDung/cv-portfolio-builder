@@ -19,7 +19,12 @@ export class AddExperienceTool extends BaseTool<AddExperienceParams, ToolResult<
       { name: 'company', type: 'string', description: 'Company name', required: true },
       { name: 'role', type: 'string', description: 'Job title/role', required: true },
       { name: 'startDate', type: 'string', description: 'Start date (YYYY-MM)', required: true },
-      { name: 'endDate', type: 'string', description: 'End date (YYYY-MM) or empty for current', required: false },
+      {
+        name: 'endDate',
+        type: 'string',
+        description: 'End date (YYYY-MM) or empty for current',
+        required: false,
+      },
       { name: 'achievements', type: 'array', description: 'Key achievements', required: true },
       { name: 'techStack', type: 'array', description: 'Technologies used', required: false },
     ],
@@ -62,38 +67,60 @@ export class AddExperienceTool extends BaseTool<AddExperienceParams, ToolResult<
   }
 }
 
-export class EnhanceAchievementsTool extends BaseTool<EnhanceAchievementsParams, ToolResult<string[]>> {
+export class EnhanceAchievementsTool extends BaseTool<
+  EnhanceAchievementsParams,
+  ToolResult<string[]>
+> {
   readonly metadata = {
     name: 'enhanceAchievements',
     description: 'Enhance achievement descriptions with impact metrics and stronger language',
     parameters: [
-      { name: 'experienceIndex', type: 'number', description: 'Index of experience entry', required: true },
-      { name: 'achievements', type: 'array', description: 'Achievements to enhance', required: true },
+      {
+        name: 'experienceIndex',
+        type: 'number',
+        description: 'Index of experience entry',
+        required: true,
+      },
+      {
+        name: 'achievements',
+        type: 'array',
+        description: 'Achievements to enhance',
+        required: true,
+      },
     ],
     category: 'experience' as const,
   }
 
   async execute(params: EnhanceAchievementsParams): Promise<ToolResult<string[]>> {
     const { achievements } = params
-    
+
     // TODO: Integrate with AI service for enhancement
     // For now, provide template enhancements
-    const enhanced = achievements.map(achievement => {
+    const enhanced = achievements.map((achievement) => {
       // Simple enhancement patterns
       let enhanced = achievement
-      
+
       // Add metric placeholder if not present
       if (!/\d+%|\d+x|\$\d+/.test(enhanced)) {
         enhanced += ' [Add specific metric]'
       }
-      
+
       // Ensure starts with action verb
-      const actionVerbs = ['Developed', 'Led', 'Improved', 'Reduced', 'Increased', 'Implemented', 'Designed', 'Optimized']
+      const actionVerbs = [
+        'Developed',
+        'Led',
+        'Improved',
+        'Reduced',
+        'Increased',
+        'Implemented',
+        'Designed',
+        'Optimized',
+      ]
       const firstWord = enhanced.split(' ')[0]
-      if (!actionVerbs.some(v => v.toLowerCase() === firstWord.toLowerCase())) {
+      if (!actionVerbs.some((v) => v.toLowerCase() === firstWord.toLowerCase())) {
         enhanced = 'Developed ' + enhanced.charAt(0).toLowerCase() + enhanced.slice(1)
       }
-      
+
       return enhanced
     })
 
@@ -126,7 +153,7 @@ export class SuggestTechStackTool extends BaseTool<SuggestTechStackParams, ToolR
     const suggestions: string[] = []
 
     const roleLower = role.toLowerCase()
-    
+
     // Role-based suggestions
     if (roleLower.includes('frontend') || roleLower.includes('react')) {
       suggestions.push('React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'GraphQL')

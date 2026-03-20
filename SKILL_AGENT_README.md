@@ -11,21 +11,25 @@ A sophisticated MCP (Model Context Protocol) based intelligent agent system for 
 The agent follows MCP principles with four core components:
 
 ### 1. **Tools** (Functions the Agent Can Call)
+
 - 15 specialized tools organized into 5 categories
 - Each tool is idempotent, validated, and provides detailed feedback
 - Abstract base class ensures consistency
 
 ### 2. **Memory** (State Management)
+
 - TanStack Store for reactive state management
 - Derived states for computed values (completeness score, skill categorization)
 - Automatic persistence to localStorage
 
 ### 3. **Context** (User Profile & Goals)
+
 - Job targets and application goals
 - Domain/industry settings
 - Experience level configuration
 
 ### 4. **AI Services** (Content Generation)
+
 - Pluggable AI provider abstraction
 - Support for OpenAI, Anthropic, or local models
 - Template-based prompt engineering
@@ -75,6 +79,7 @@ src/
 ### Schema Layer (`/agent/schemas/`)
 
 **CV Schema** - Strongly typed CV structure:
+
 ```typescript
 type CV = {
   profile: {
@@ -92,6 +97,7 @@ type CV = {
 ```
 
 **Agent Schema** - Configuration and context:
+
 ```typescript
 type AgentContext = {
   jobTarget: string
@@ -104,12 +110,14 @@ type AgentContext = {
 ### Memory Layer (`/agent/memory/`)
 
 **CV Store** - Reactive state with derived values:
+
 - `cvStore`: Main store with CV data and context
 - `cvCompletenessScore`: Computed completeness (0-100)
 - `categorizedSkills`: Auto-categorized skills
 - `cvActions`: Helper functions for updates
 
 **Context Manager** - User-specific settings:
+
 - Singleton pattern for global access
 - Methods for updating job targets, domain, experience level
 - Contextual suggestions based on user profile
@@ -117,12 +125,13 @@ type AgentContext = {
 ### Tool System (`/agent/tools/`)
 
 **Base Tool** - Abstract class ensuring consistency:
+
 ```typescript
 abstract class BaseTool<TParams, TResult> {
   abstract metadata: ToolMetadata
   abstract execute(params: TParams): Promise<TResult>
   validate?(params: TParams): boolean
-  executeSafe(params: TParams): Promise<{ success, result?, error? }>
+  executeSafe(params: TParams): Promise<{ success; result?; error? }>
 }
 ```
 
@@ -156,6 +165,7 @@ abstract class BaseTool<TParams, TResult> {
 ### AI Services (`/agent/services/`)
 
 **AI Service Interface**:
+
 ```typescript
 interface AIProvider {
   generateText(prompt: string): Promise<string>
@@ -163,7 +173,7 @@ interface AIProvider {
 }
 
 class AIService {
-  provider: AIProvider  // Pluggable
+  provider: AIProvider // Pluggable
   generateSummary(params): Promise<string>
   enhanceAchievements(achievements): Promise<string[]>
   analyzeCV(cvData): Promise<CVAnalysis>
@@ -172,6 +182,7 @@ class AIService {
 ```
 
 **Prompt Templates** - Reusable templates for:
+
 - Summary generation (professional, elevator pitch)
 - Achievement enhancement (STAR method)
 - Skill gap analysis
@@ -181,17 +192,20 @@ class AIService {
 ### Core Orchestrator (`/agent/core/`)
 
 **Tool Registry**:
+
 - Central registration for all tools
 - Get tools by name or category
 - Global access for hooks
 
 **Agent Orchestrator**:
+
 - Execute tools with error handling
 - Automated analysis workflows
 - Action history tracking
 - State import/export
 
 **Session Manager**:
+
 - localStorage persistence
 - Session statistics
 - Activity tracking
@@ -204,42 +218,46 @@ class AIService {
 ### Hooks (`/hooks/use-cv-agent.ts`)
 
 **useCVAgent** - Access agent functionality:
+
 ```typescript
 const {
-  executeTool,      // Execute any tool by name
-  getSuggestions,   // Get intelligent suggestions
-  runAnalysis,      // Run automated analysis
-  updateContext,    // Update agent context
-  exportState,      // Export full state
+  executeTool, // Execute any tool by name
+  getSuggestions, // Get intelligent suggestions
+  runAnalysis, // Run automated analysis
+  updateContext, // Update agent context
+  exportState, // Export full state
   isProcessing,
   lastError,
 } = useCVAgent()
 ```
 
 **useCVData** - Reactive CV data access:
+
 ```typescript
 const {
-  cv,              // Current CV data
-  context,         // Agent context
-  completeness,    // Completeness score (0-100)
-  skills,          // Categorized skills
-  lastModified,    // Last modification timestamp
+  cv, // Current CV data
+  context, // Agent context
+  completeness, // Completeness score (0-100)
+  skills, // Categorized skills
+  lastModified, // Last modification timestamp
 } = useCVData()
 ```
 
 **useSession** - Session information:
+
 ```typescript
 const {
-  stats,          // Session duration, actions count
-  clearSession,   // Reset session
-  exportData,     // Export session data
-  isActive,       // Session active flag
+  stats, // Session duration, actions count
+  clearSession, // Reset session
+  exportData, // Export session data
+  isActive, // Session active flag
 } = useSession()
 ```
 
 ### Provider Component
 
 Wrap your app with `AgentProvider`:
+
 ```tsx
 import { AgentProvider } from './components/AgentProvider'
 
@@ -259,6 +277,7 @@ function App() {
 ### AgentChat Component
 
 Chat-like interface for natural language interaction:
+
 - Intent recognition for common requests
 - Quick action buttons
 - Suggestion chips
@@ -267,6 +286,7 @@ Chat-like interface for natural language interaction:
 ### CVDashboard Component
 
 Visual dashboard with:
+
 - Completeness score gauge
 - Quick stats (experiences, projects, skills)
 - Skills breakdown by category
@@ -278,6 +298,7 @@ Visual dashboard with:
 ## 🚀 Usage Examples
 
 ### Adding Experience
+
 ```typescript
 const { executeTool } = useCVAgent()
 
@@ -286,18 +307,16 @@ const result = await executeTool('addExperience', {
   role: 'Senior Developer',
   startDate: '2023-01',
   endDate: '',
-  achievements: [
-    'Led development of new platform',
-    'Improved performance by 40%',
-  ],
+  achievements: ['Led development of new platform', 'Improved performance by 40%'],
   techStack: ['React', 'Node.js', 'PostgreSQL'],
 })
 
-console.log(result.success)  // true
-console.log(result.message)  // "Experience added successfully"
+console.log(result.success) // true
+console.log(result.message) // "Experience added successfully"
 ```
 
 ### Generating Summary
+
 ```typescript
 const result = await executeTool('generateSummary', {
   role: 'Full Stack Developer',
@@ -305,27 +324,29 @@ const result = await executeTool('generateSummary', {
   skills: ['React', 'Node.js', 'TypeScript', 'AWS'],
 })
 
-console.log(result.data)  // Generated summary
+console.log(result.data) // Generated summary
 ```
 
 ### Analyzing CV
+
 ```typescript
 const { runAnalysis } = useCVAgent()
 
 const analysis = await runAnalysis()
-console.log(analysis.score)              // 75
+console.log(analysis.score) // 75
 console.log(analysis.topRecommendations) // ["Add more metrics", ...]
-console.log(analysis.criticalIssues)     // ["No projects", ...]
+console.log(analysis.criticalIssues) // ["No projects", ...]
 ```
 
 ### Identifying Skill Gaps
+
 ```typescript
 const result = await executeTool('identifyGaps', {
   targetRole: 'Senior Frontend Developer',
   currentSkills: ['React', 'JavaScript', 'CSS'],
 })
 
-console.log(result.data.gaps)           
+console.log(result.data.gaps)
 // ['TypeScript', 'Next.js', 'Testing', ...]
 ```
 
@@ -334,32 +355,38 @@ console.log(result.data.gaps)
 ## 🔑 Key Features
 
 ### ✅ Type Safety
+
 - Full TypeScript coverage
 - Zod runtime validation
 - Type-safe tool parameters and results
 
 ### ✅ Reactive State
+
 - TanStack Store for reactivity
 - Derived states auto-update
 - No manual subscription management
 
 ### ✅ Error Handling
+
 - All tools have safe execution wrapper
 - Detailed error messages
 - Graceful degradation
 
 ### ✅ Persistence
+
 - Automatic localStorage save
 - Session recovery
 - State export/import
 
 ### ✅ Extensibility
+
 - Pluggable AI providers
 - Easy to add new tools
 - Configurable prompts
 - Modular architecture
 
 ### ✅ Best Practices
+
 - Idempotent operations
 - Validation before execution
 - Detailed logging
@@ -370,6 +397,7 @@ console.log(result.data.gaps)
 ## 🎯 Demo Route
 
 Access the demo at `/agent-demo` which showcases:
+
 - Interactive dashboard
 - Chat interface
 - All available tools
@@ -405,16 +433,19 @@ Access the demo at `/agent-demo` which showcases:
 ## 📝 Testing Strategy
 
 ### Unit Tests
+
 - Test each tool independently
 - Validate schema enforcement
 - Test edge cases and errors
 
 ### Integration Tests
+
 - Test tool workflows
 - Test state updates
 - Test persistence
 
 ### E2E Tests
+
 - Test complete user flows
 - Test UI interactions
 - Test session management
@@ -426,6 +457,7 @@ Access the demo at `/agent-demo` which showcases:
 ### Adding a New Tool
 
 1. Create tool file in `/agent/tools/`:
+
 ```typescript
 import { BaseTool } from './base-tool'
 
@@ -444,11 +476,13 @@ export class MyNewTool extends BaseTool<Params, Result> {
 ```
 
 2. Register in `/agent/core/agent.ts`:
+
 ```typescript
 this.registerTool('myNewTool', new MyNewTool())
 ```
 
 3. Use in components:
+
 ```typescript
 const result = await executeTool('myNewTool', params)
 ```
@@ -456,14 +490,15 @@ const result = await executeTool('myNewTool', params)
 ### Adding AI Provider
 
 Implement `AIProvider` interface:
+
 ```typescript
 class MyAIProvider implements AIProvider {
   readonly name = 'my-ai'
-  
+
   async generateText(prompt: string): Promise<string> {
     // Call your AI API
   }
-  
+
   async generateJSON(prompt: string): Promise<any> {
     // Call your AI API and parse JSON
   }

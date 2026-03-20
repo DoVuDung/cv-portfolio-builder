@@ -57,7 +57,12 @@ export function CVDashboard() {
           </div>
           <div className="flex-1">
             <p className="text-sm text-gray-600">
-              Your CV is {completeness >= 80 ? 'mostly complete' : completeness >= 50 ? 'partially complete' : 'incomplete'}
+              Your CV is{' '}
+              {completeness >= 80
+                ? 'mostly complete'
+                : completeness >= 50
+                  ? 'partially complete'
+                  : 'incomplete'}
             </p>
             <p className="text-xs text-gray-500 mt-1">
               Last modified: {lastModified.toLocaleString()}
@@ -87,20 +92,24 @@ export function CVDashboard() {
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Skills Breakdown</h3>
           <div className="space-y-3">
-            {Object.entries(skills).slice(0, 5).map(([category, skillList]) => (
-              <div key={category}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="capitalize">{category}</span>
-                  <span className="text-gray-600">{skillList.length}</span>
+            {Object.entries(skills)
+              .slice(0, 5)
+              .map(([category, skillList]) => (
+                <div key={category}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="capitalize">{category}</span>
+                    <span className="text-gray-600">{skillList.length}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{
+                        width: `${Math.min(100, (skillList.length / cv.skills.length) * 100)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: `${Math.min(100, (skillList.length / cv.skills.length) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       )}
@@ -154,7 +163,9 @@ export function CVDashboard() {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Experience Level:</span>
-            <span className="font-medium capitalize">{cv.context.experienceLevel || 'Not set'}</span>
+            <span className="font-medium capitalize">
+              {cv.context.experienceLevel || 'Not set'}
+            </span>
           </div>
         </div>
       </div>

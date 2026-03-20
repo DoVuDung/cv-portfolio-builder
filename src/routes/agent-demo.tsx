@@ -102,28 +102,29 @@ function AgentDemo() {
               <div>
                 <h3 className="font-semibold mb-2">Tools (Functions)</h3>
                 <p className="text-gray-600">
-                  15 specialized tools organized into 5 categories for managing all aspects of CV 
-                  and portfolio data. Each tool is idempotent, validated, and provides detailed feedback.
+                  15 specialized tools organized into 5 categories for managing all aspects of CV
+                  and portfolio data. Each tool is idempotent, validated, and provides detailed
+                  feedback.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Memory (State)</h3>
                 <p className="text-gray-600">
-                  TanStack Store provides reactive state management with derived states for computed 
+                  TanStack Store provides reactive state management with derived states for computed
                   values like completeness score and skill categorization.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">Context (User Profile)</h3>
                 <p className="text-gray-600">
-                  Context Manager maintains user-specific information including job targets, domain, 
+                  Context Manager maintains user-specific information including job targets, domain,
                   experience level, and application goals to personalize suggestions.
                 </p>
               </div>
               <div>
                 <h3 className="font-semibold mb-2">AI Service Integration</h3>
                 <p className="text-gray-600">
-                  Pluggable AI provider abstraction allows switching between different AI services 
+                  Pluggable AI provider abstraction allows switching between different AI services
                   (OpenAI, Anthropic, local models) without code changes.
                 </p>
               </div>

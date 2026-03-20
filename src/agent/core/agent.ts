@@ -24,19 +24,19 @@ export class ToolRegistry {
     this.registerTool('updateProfile', profileTools.updateProfile)
     this.registerTool('generateSummary', profileTools.generateSummary)
     this.registerTool('optimizeContact', profileTools.optimizeContact)
-    
+
     this.registerTool('addExperience', experienceTools.addExperience)
     this.registerTool('enhanceAchievements', experienceTools.enhanceAchievements)
     this.registerTool('suggestTechStack', experienceTools.suggestTechStack)
-    
+
     this.registerTool('addProject', projectTools.addProject)
     this.registerTool('generateHighlights', projectTools.generateHighlights)
     this.registerTool('linkToSkills', projectTools.linkToSkills)
-    
+
     this.registerTool('addSkill', skillsTools.addSkill)
     this.registerTool('categorizeSkills', skillsTools.categorizeSkills)
     this.registerTool('identifyGaps', skillsTools.identifyGaps)
-    
+
     this.registerTool('analyzeCV', analysisTools.analyzeCV)
     this.registerTool('keywordOptimization', analysisTools.keywordOptimization)
     this.registerTool('consistencyCheck', analysisTools.consistencyCheck)
@@ -65,9 +65,7 @@ export class ToolRegistry {
   }
 
   getToolsByCategory(category: string): any[] {
-    return Array.from(this.tools.values()).filter(
-      tool => tool.metadata.category === category
-    )
+    return Array.from(this.tools.values()).filter((tool) => tool.metadata.category === category)
   }
 }
 
@@ -91,7 +89,7 @@ export class AgentOrchestrator {
     params: TParams
   ): Promise<ToolResult<TResult>> {
     const tool = this.toolRegistry.getTool(toolName)
-    
+
     if (!tool) {
       return {
         success: false,
@@ -110,15 +108,15 @@ export class AgentOrchestrator {
     try {
       this.isProcessing = true
       const result = await tool.execute(params)
-      
+
       action.status = 'completed'
       this.actionHistory.push(action)
-      
+
       return result
     } catch (error) {
       action.status = 'failed'
       this.actionHistory.push(action)
-      
+
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Tool execution failed',
@@ -133,14 +131,14 @@ export class AgentOrchestrator {
    */
   async getSuggestions(): Promise<string[]> {
     const suggestions: string[] = []
-    
+
     // Get context-based suggestions
     const contextSuggestions = contextManager.getContextualSuggestions()
     suggestions.push(...contextSuggestions)
 
     // Analyze CV for gaps
     const analysis = await this.executeTool<void, any>('analyzeCV', undefined as any)
-    
+
     if (analysis.success && analysis.data) {
       if (analysis.data.weaknesses) {
         suggestions.push(...analysis.data.weaknesses)
@@ -166,7 +164,10 @@ export class AgentOrchestrator {
     }
 
     // Run consistency check
-    const consistencyResult = await this.executeTool<void, any>('consistencyCheck', undefined as any)
+    const consistencyResult = await this.executeTool<void, any>(
+      'consistencyCheck',
+      undefined as any
+    )
     if (consistencyResult.success && consistencyResult.data) {
       results.criticalIssues.push(...(consistencyResult.data.issues || []))
       results.topRecommendations.push(...(consistencyResult.data.suggestions || []))
@@ -186,11 +187,9 @@ export class AgentOrchestrator {
         targetRole: context.jobTarget,
         currentSkills: currentSkills,
       })
-      
+
       if (gapsResult.success && gapsResult.data) {
-        results.topRecommendations.push(
-          ...((gapsResult.data.suggestions || []) as string[])
-        )
+        results.topRecommendations.push(...((gapsResult.data.suggestions || []) as string[]))
       }
     }
 
@@ -222,11 +221,15 @@ export class AgentOrchestrator {
    * Export agent state
    */
   exportState(): string {
-    return JSON.stringify({
-      cv: cvStore.state.cv,
-      context: cvStore.state.context,
-      actionHistory: this.actionHistory,
-    }, null, 2)
+    return JSON.stringify(
+      {
+        cv: cvStore.state.cv,
+        context: cvStore.state.context,
+        actionHistory: this.actionHistory,
+      },
+      null,
+      2
+    )
   }
 
   /**

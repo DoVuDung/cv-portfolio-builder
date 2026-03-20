@@ -8,18 +8,18 @@ import type { Template } from '../types/template.types'
  * Hook to access template engine functionality
  */
 export function useTemplateEngine() {
-  const activeTemplate = useStore(templateStore, state => {
+  const activeTemplate = useStore(templateStore, (state) => {
     if (!state.activeTemplateId) return null
-    
+
     // Check custom templates first
-    const custom = state.customTemplates.find(t => t.id === state.activeTemplateId)
+    const custom = state.customTemplates.find((t) => t.id === state.activeTemplateId)
     if (custom) return custom
-    
+
     // Then check registry
     return templateRegistry.getTemplate(state.activeTemplateId)
   })
 
-  const allTemplates = useStore(templateStore, state => [
+  const allTemplates = useStore(templateStore, (state) => [
     ...templateRegistry.getAllTemplates(),
     ...state.customTemplates,
   ])

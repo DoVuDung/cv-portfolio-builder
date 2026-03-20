@@ -56,14 +56,14 @@ export class MockAIProvider implements AIProvider {
 
   async generateText(prompt: string, options?: GenerationOptions): Promise<string> {
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     return `Generated response for: "${prompt.substring(0, 50)}..."`
   }
 
   async generateJSON(prompt: string, options?: GenerationOptions): Promise<any> {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     return {
       generated: true,
       prompt: prompt.substring(0, 50),
@@ -135,7 +135,7 @@ Keep it concise, impactful, and under 100 words.`
 
 function buildEnhancementPrompt(achievements: string[]): string {
   return `Enhance these achievement descriptions to be more impactful and quantifiable:
-${achievements.map(a => `- ${a}`).join('\n')}
+${achievements.map((a) => `- ${a}`).join('\n')}
 
 Make them:
 - Start with strong action verbs

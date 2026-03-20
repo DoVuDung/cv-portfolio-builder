@@ -1,5 +1,11 @@
 import type { Template } from '../types/template.types'
-import { ProfileSection, ExperienceSection, EducationSection, SkillsSection, ProjectSection } from '../sections'
+import {
+  ProfileSection,
+  ExperienceSection,
+  EducationSection,
+  SkillsSection,
+  ProjectSection,
+} from '../sections'
 import { professionalTheme } from '../themes'
 
 // Harvard Template - Classic academic single-column format

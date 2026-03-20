@@ -17,12 +17,13 @@ export function AgentChat() {
     {
       id: '1',
       type: 'agent',
-      content: "Hi! I'm your CV assistant. I can help you create, optimize, and manage your CV and portfolio. What would you like to work on today?",
+      content:
+        "Hi! I'm your CV assistant. I can help you create, optimize, and manage your CV and portfolio. What would you like to work on today?",
       timestamp: new Date(),
     },
   ])
   const [inputValue, setInputValue] = useState('')
-  
+
   const { executeTool, getSuggestions, isProcessing } = useCVAgent()
   const { cv, completeness } = useCVData()
   const { stats } = useSession()
@@ -38,13 +39,13 @@ export function AgentChat() {
       timestamp: new Date(),
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInputValue('')
 
     // Process message
     try {
       const response = await processMessage(message)
-      setMessages(prev => [...prev, response])
+      setMessages((prev) => [...prev, response])
     } catch (error) {
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -52,7 +53,7 @@ export function AgentChat() {
         content: 'Sorry, I encountered an error processing your request.',
         timestamp: new Date(),
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
     }
   }
 
@@ -71,7 +72,10 @@ export function AgentChat() {
       }
     }
 
-    if (lowerMessage.includes('skill') && (lowerMessage.includes('gap') || lowerMessage.includes('missing'))) {
+    if (
+      lowerMessage.includes('skill') &&
+      (lowerMessage.includes('gap') || lowerMessage.includes('missing'))
+    ) {
       const context = cv.context
       if (context.jobTarget) {
         const result = await executeTool<any, any>('identifyGaps', {
@@ -89,7 +93,7 @@ export function AgentChat() {
         return {
           id: Date.now().toString(),
           type: 'agent',
-          content: "Please set your job target first so I can identify relevant skill gaps.",
+          content: 'Please set your job target first so I can identify relevant skill gaps.',
           timestamp: new Date(),
         }
       }
@@ -110,7 +114,8 @@ export function AgentChat() {
     return {
       id: Date.now().toString(),
       type: 'agent',
-      content: "I can help you with:\n- Analyzing your CV\n- Identifying skill gaps\n- Generating summaries\n- Enhancing achievements\n- Adding projects\n\nWhat would you like to work on?",
+      content:
+        'I can help you with:\n- Analyzing your CV\n- Identifying skill gaps\n- Generating summaries\n- Enhancing achievements\n- Adding projects\n\nWhat would you like to work on?',
       timestamp: new Date(),
     }
   }
@@ -131,7 +136,7 @@ export function AgentChat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map(message => (
+        {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -141,12 +146,12 @@ export function AgentChat() {
                 message.type === 'user'
                   ? 'bg-blue-600 text-white'
                   : message.type === 'system'
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-gray-100 text-gray-900'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-900'
               }`}
             >
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              
+
               {message.suggestions && message.suggestions.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {message.suggestions.slice(0, 5).map((suggestion, idx) => (
@@ -160,14 +165,16 @@ export function AgentChat() {
                   ))}
                 </div>
               )}
-              
-              <p className={`text-xs mt-1 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+
+              <p
+                className={`text-xs mt-1 ${message.type === 'user' ? 'text-blue-100' : 'text-gray-500'}`}
+              >
                 {message.timestamp.toLocaleTimeString()}
               </p>
             </div>
           </div>
         ))}
-        
+
         {isProcessing && (
           <div className="flex justify-start">
             <div className="bg-gray-100 p-3 rounded-lg">

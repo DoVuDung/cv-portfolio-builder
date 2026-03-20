@@ -47,7 +47,7 @@ export class SessionManager {
 
     this.currentSession = session
     this.saveSession()
-    
+
     return session
   }
 
@@ -61,7 +61,7 @@ export class SessionManager {
     }
 
     this.currentSession.lastActivity = new Date()
-    
+
     if (action) {
       this.currentSession.actionHistory.push(action)
     }
@@ -75,11 +75,14 @@ export class SessionManager {
   private saveSession(): void {
     try {
       if (this.currentSession) {
-        localStorage.setItem(this.sessionKey, JSON.stringify({
-          ...this.currentSession,
-          startTime: this.currentSession.startTime.toISOString(),
-          lastActivity: this.currentSession.lastActivity.toISOString(),
-        }))
+        localStorage.setItem(
+          this.sessionKey,
+          JSON.stringify({
+            ...this.currentSession,
+            startTime: this.currentSession.startTime.toISOString(),
+            lastActivity: this.currentSession.lastActivity.toISOString(),
+          })
+        )
       }
     } catch (error) {
       console.error('Failed to save session:', error)
@@ -139,7 +142,7 @@ export class SessionManager {
 
     const now = new Date()
     const duration = now.getTime() - this.currentSession.startTime.getTime()
-    
+
     return {
       duration: Math.round(duration / 1000 / 60), // minutes
       actionsCount: this.currentSession.actionHistory.length,
@@ -155,11 +158,15 @@ export class SessionManager {
       return '{}'
     }
 
-    return JSON.stringify({
-      session: this.currentSession,
-      cv: cvStore.state.cv,
-      context: cvStore.state.context,
-    }, null, 2)
+    return JSON.stringify(
+      {
+        session: this.currentSession,
+        cv: cvStore.state.cv,
+        context: cvStore.state.context,
+      },
+      null,
+      2
+    )
   }
 
   /**
@@ -179,7 +186,7 @@ export class SessionManager {
 
     const now = new Date()
     const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000)
-    
+
     return this.currentSession.lastActivity > thirtyMinutesAgo
   }
 

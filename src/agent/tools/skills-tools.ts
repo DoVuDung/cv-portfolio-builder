@@ -16,7 +16,12 @@ export class AddSkillTool extends BaseTool<AddSkillParams, ToolResult<{ skill: s
     description: 'Add a new skill to the CV',
     parameters: [
       { name: 'skill', type: 'string', description: 'Skill name', required: true },
-      { name: 'category', type: 'string', description: 'Skill category (optional)', required: false },
+      {
+        name: 'category',
+        type: 'string',
+        description: 'Skill category (optional)',
+        required: false,
+      },
     ],
     category: 'skills' as const,
   }
@@ -28,12 +33,10 @@ export class AddSkillTool extends BaseTool<AddSkillParams, ToolResult<{ skill: s
   async execute(params: AddSkillParams): Promise<ToolResult<{ skill: string }>> {
     try {
       const skillName = params.skill.trim()
-      
+
       // Check if skill already exists
       const existingSkills = cvStore.state.cv.skills
-      const skillExists = existingSkills.some(
-        s => s.toLowerCase() === skillName.toLowerCase()
-      )
+      const skillExists = existingSkills.some((s) => s.toLowerCase() === skillName.toLowerCase())
 
       if (skillExists) {
         return {
@@ -88,7 +91,10 @@ export class CategorizeSkillsTool extends BaseTool<CategorizeSkillsParams, ToolR
   }
 }
 
-export class IdentifyGapsTool extends BaseTool<IdentifyGapsParams, ToolResult<{ gaps: string[]; recommendations: string[] }>> {
+export class IdentifyGapsTool extends BaseTool<
+  IdentifyGapsParams,
+  ToolResult<{ gaps: string[]; recommendations: string[] }>
+> {
   readonly metadata = {
     name: 'identifyGaps',
     description: 'Identify skill gaps based on target role requirements',
@@ -99,38 +105,65 @@ export class IdentifyGapsTool extends BaseTool<IdentifyGapsParams, ToolResult<{ 
     category: 'skills' as const,
   }
 
-  async execute(params: IdentifyGapsParams): Promise<ToolResult<{ gaps: string[]; recommendations: string[] }>> {
+  async execute(
+    params: IdentifyGapsParams
+  ): Promise<ToolResult<{ gaps: string[]; recommendations: string[] }>> {
     const { targetRole, currentSkills } = params
-    const currentSkillsLower = currentSkills.map(s => s.toLowerCase())
-    
+    const currentSkillsLower = currentSkills.map((s) => s.toLowerCase())
+
     // Role-based skill requirements (simplified - would use AI/ML in production)
     const roleRequirements: Record<string, string[]> = {
       'frontend developer': [
-        'React', 'TypeScript', 'JavaScript', 'HTML', 'CSS', 
-        'State Management', 'Responsive Design', 'Testing'
+        'React',
+        'TypeScript',
+        'JavaScript',
+        'HTML',
+        'CSS',
+        'State Management',
+        'Responsive Design',
+        'Testing',
       ],
       'backend developer': [
-        'Node.js', 'Python', 'Database', 'API Design', 
-        'Security', 'Caching', 'Message Queues'
+        'Node.js',
+        'Python',
+        'Database',
+        'API Design',
+        'Security',
+        'Caching',
+        'Message Queues',
       ],
       'full stack developer': [
-        'React', 'Node.js', 'TypeScript', 'Database', 
-        'API Design', 'Deployment', 'Testing'
+        'React',
+        'Node.js',
+        'TypeScript',
+        'Database',
+        'API Design',
+        'Deployment',
+        'Testing',
       ],
       'devops engineer': [
-        'Docker', 'Kubernetes', 'CI/CD', 'Cloud Platforms', 
-        'Infrastructure as Code', 'Monitoring', 'Linux'
+        'Docker',
+        'Kubernetes',
+        'CI/CD',
+        'Cloud Platforms',
+        'Infrastructure as Code',
+        'Monitoring',
+        'Linux',
       ],
       'software engineer': [
-        'Data Structures', 'Algorithms', 'System Design', 
-        'Version Control', 'Testing', 'Problem Solving'
+        'Data Structures',
+        'Algorithms',
+        'System Design',
+        'Version Control',
+        'Testing',
+        'Problem Solving',
       ],
     }
 
     // Find closest matching role
     const targetRoleLower = targetRole.toLowerCase()
     let requiredSkills: string[] = []
-    
+
     for (const [role, skills] of Object.entries(roleRequirements)) {
       if (targetRoleLower.includes(role)) {
         requiredSkills = skills
@@ -145,11 +178,11 @@ export class IdentifyGapsTool extends BaseTool<IdentifyGapsParams, ToolResult<{ 
 
     // Identify gaps
     const gaps = requiredSkills.filter(
-      skill => !currentSkillsLower.some(s => s.includes(skill.toLowerCase()))
+      (skill) => !currentSkillsLower.some((s) => s.includes(skill.toLowerCase()))
     )
 
     // Generate recommendations
-    const recommendations = gaps.slice(0, 5).map(skill => ({
+    const recommendations = gaps.slice(0, 5).map((skill) => ({
       skill,
       priority: gaps.indexOf(skill) < 3 ? 'high' : 'medium',
       learningPath: `Learn ${skill} through projects and courses`,

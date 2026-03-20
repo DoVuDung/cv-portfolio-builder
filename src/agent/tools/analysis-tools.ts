@@ -21,7 +21,7 @@ export class AnalyzeCVTool extends BaseTool<AnalyzeCVParams, ToolResult<any>> {
   async execute(params: AnalyzeCVParams): Promise<ToolResult<any>> {
     const state = cvStore.state
     const completeness = cvCompletenessScore.state
-    
+
     const analysis = {
       completeness,
       sections: {
@@ -65,8 +65,8 @@ export class AnalyzeCVTool extends BaseTool<AnalyzeCVParams, ToolResult<any>> {
       data: analysis,
       message: `CV Analysis Complete - Score: ${analysis.overallScore}/100`,
       suggestions: [
-        ...analysis.weaknesses.map(w => `Improve: ${w}`),
-        ...analysis.strengths.map(s => `Maintain: ${s}`),
+        ...analysis.weaknesses.map((w) => `Improve: ${w}`),
+        ...analysis.strengths.map((s) => `Maintain: ${s}`),
       ],
     }
   }
@@ -80,18 +80,21 @@ export class AnalyzeCVTool extends BaseTool<AnalyzeCVParams, ToolResult<any>> {
     }
 
     return {
-      complete: Object.values(score).every(v => v === true || (typeof v === 'number' && v >= 50)),
-      score: Object.values(score).filter(Boolean).length / Object.keys(score).length * 100,
+      complete: Object.values(score).every((v) => v === true || (typeof v === 'number' && v >= 50)),
+      score: (Object.values(score).filter(Boolean).length / Object.keys(score).length) * 100,
     }
   }
 
   private analyzeExperience(experience: any[]) {
     return {
       count: experience.length,
-      averageAchievements: experience.length > 0 
-        ? Math.round(experience.reduce((sum, exp) => sum + exp.achievements.length, 0) / experience.length)
-        : 0,
-      withMetrics: experience.filter(exp => 
+      averageAchievements:
+        experience.length > 0
+          ? Math.round(
+              experience.reduce((sum, exp) => sum + exp.achievements.length, 0) / experience.length
+            )
+          : 0,
+      withMetrics: experience.filter((exp) =>
         exp.achievements.some((a: string) => /\d+%|\d+x|\$\d+/.test(a))
       ).length,
     }
@@ -100,21 +103,21 @@ export class AnalyzeCVTool extends BaseTool<AnalyzeCVParams, ToolResult<any>> {
   private analyzeProjects(projects: any[]) {
     return {
       count: projects.length,
-      withTechStack: projects.filter(p => p.techStack && p.techStack.length > 0).length,
-      withHighlights: projects.filter(p => p.highlights && p.highlights.length > 0).length,
+      withTechStack: projects.filter((p) => p.techStack && p.techStack.length > 0).length,
+      withHighlights: projects.filter((p) => p.highlights && p.highlights.length > 0).length,
     }
   }
 
   private analyzeSkills(skills: string[]) {
     return {
       total: skills.length,
-      unique: new Set(skills.map(s => s.toLowerCase())).size,
+      unique: new Set(skills.map((s) => s.toLowerCase())).size,
     }
   }
 
   private calculateOverallScore(state: any): number {
     let score = 0
-    
+
     // Profile section (25 points)
     if (state.cv.profile.name) score += 5
     if (state.cv.profile.title) score += 5
@@ -137,57 +140,87 @@ export class AnalyzeCVTool extends BaseTool<AnalyzeCVParams, ToolResult<any>> {
   }
 }
 
-export class KeywordOptimizationTool extends BaseTool<KeywordOptimizationParams, ToolResult<{ keywords: string[]; missingKeywords: string[] }>> {
+export class KeywordOptimizationTool extends BaseTool<
+  KeywordOptimizationParams,
+  ToolResult<{ keywords: string[]; missingKeywords: string[] }>
+> {
   readonly metadata = {
     name: 'keywordOptimization',
     description: 'Optimize CV for ATS by analyzing keywords',
     parameters: [
-      { name: 'jobDescription', type: 'string', description: 'Job description text', required: false },
+      {
+        name: 'jobDescription',
+        type: 'string',
+        description: 'Job description text',
+        required: false,
+      },
     ],
     category: 'analysis' as const,
   }
 
-  async execute(params: KeywordOptimizationParams): Promise<ToolResult<{ keywords: string[]; missingKeywords: string[] }>> {
+  async execute(
+    params: KeywordOptimizationParams
+  ): Promise<ToolResult<{ keywords: string[]; missingKeywords: string[] }>> {
     const { jobDescription } = params
-    
+
     // Extract keywords from current CV
     const currentSkills = cvStore.state.cv.skills
-    const currentKeywords = currentSkills.map(s => s.toLowerCase())
+    const currentKeywords = currentSkills.map((s) => s.toLowerCase())
 
     // If job description provided, extract keywords from it
     let jobKeywords: string[] = []
     if (jobDescription) {
       // Simple keyword extraction (would use NLP in production)
       const commonTechKeywords = [
-        'react', 'angular', 'vue', 'node', 'python', 'java', 'javascript', 'typescript',
-        'aws', 'azure', 'docker', 'kubernetes', 'mongodb', 'postgresql', 'mysql',
-        'graphql', 'rest', 'microservices', 'ci/cd', 'agile', 'scrum'
+        'react',
+        'angular',
+        'vue',
+        'node',
+        'python',
+        'java',
+        'javascript',
+        'typescript',
+        'aws',
+        'azure',
+        'docker',
+        'kubernetes',
+        'mongodb',
+        'postgresql',
+        'mysql',
+        'graphql',
+        'rest',
+        'microservices',
+        'ci/cd',
+        'agile',
+        'scrum',
       ]
-      
-      jobKeywords = commonTechKeywords.filter(keyword => 
+
+      jobKeywords = commonTechKeywords.filter((keyword) =>
         jobDescription.toLowerCase().includes(keyword)
       )
     }
 
     // Find missing keywords
-    const missingKeywords = jobKeywords.filter(
-      kw => !currentKeywords.includes(kw)
-    )
+    const missingKeywords = jobKeywords.filter((kw) => !currentKeywords.includes(kw))
 
     return {
       success: true,
       data: { keywords: currentKeywords, missingKeywords },
-      message: jobDescription 
+      message: jobDescription
         ? `Found ${missingKeywords.length} missing keywords from job description`
         : `Current CV has ${currentKeywords.length} keywords`,
-      suggestions: missingKeywords.length > 0
-        ? [`Consider adding these keywords: ${missingKeywords.slice(0, 5).join(', ')}`]
-        : ['Your CV keywords look good!'],
+      suggestions:
+        missingKeywords.length > 0
+          ? [`Consider adding these keywords: ${missingKeywords.slice(0, 5).join(', ')}`]
+          : ['Your CV keywords look good!'],
     }
   }
 }
 
-export class ConsistencyCheckTool extends BaseTool<ConsistencyCheckParams, ToolResult<{ issues: string[]; suggestions: string[] }>> {
+export class ConsistencyCheckTool extends BaseTool<
+  ConsistencyCheckParams,
+  ToolResult<{ issues: string[]; suggestions: string[] }>
+> {
   readonly metadata = {
     name: 'consistencyCheck',
     description: 'Check consistency between CV sections and portfolio',
@@ -195,29 +228,33 @@ export class ConsistencyCheckTool extends BaseTool<ConsistencyCheckParams, ToolR
     category: 'analysis' as const,
   }
 
-  async execute(params: ConsistencyCheckParams): Promise<ToolResult<{ issues: string[]; suggestions: string[] }>> {
+  async execute(
+    params: ConsistencyCheckParams
+  ): Promise<ToolResult<{ issues: string[]; suggestions: string[] }>> {
     const state = cvStore.state
     const issues: string[] = []
     const suggestions: string[] = []
 
     // Check if skills are reflected in projects
-    const projectTechStacks = state.cv.projects.flatMap(p => p.techStack.map(t => t.toLowerCase()))
-    
-    state.cv.skills.forEach(skill => {
+    const projectTechStacks = state.cv.projects.flatMap((p) =>
+      p.techStack.map((t) => t.toLowerCase())
+    )
+
+    state.cv.skills.forEach((skill) => {
       const skillLower = skill.toLowerCase()
       const isInProjects = projectTechStacks.includes(skillLower)
-      
+
       if (!isInProjects && state.cv.projects.length > 0) {
         issues.push(`Skill "${skill}" is not demonstrated in any project`)
       }
     })
 
     // Check if project technologies are in skills
-    state.cv.projects.forEach(project => {
-      project.techStack.forEach(tech => {
+    state.cv.projects.forEach((project) => {
+      project.techStack.forEach((tech) => {
         const techLower = tech.toLowerCase()
-        const isInSkills = state.cv.skills.some(s => s.toLowerCase().includes(techLower))
-        
+        const isInSkills = state.cv.skills.some((s) => s.toLowerCase().includes(techLower))
+
         if (!isInSkills) {
           suggestions.push(`Consider adding "${tech}" from "${project.name}" to your skills`)
         }
@@ -240,10 +277,7 @@ export class ConsistencyCheckTool extends BaseTool<ConsistencyCheckParams, ToolR
       success: true,
       data: { issues, suggestions },
       message: `Found ${issues.length} issues and ${suggestions.length} suggestions`,
-      suggestions: [
-        ...issues.map(i => `Fix: ${i}`),
-        ...suggestions,
-      ],
+      suggestions: [...issues.map((i) => `Fix: ${i}`), ...suggestions],
     }
   }
 }

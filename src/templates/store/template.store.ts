@@ -24,14 +24,12 @@ export const activeTemplate = new Derived({
   fn: () => {
     const state = templateStore.state
     if (!state.activeTemplateId) return null
-    
+
     // First check custom templates
-    const custom = state.customTemplates.find(
-      t => t.id === state.activeTemplateId
-    )
-    
+    const custom = state.customTemplates.find((t) => t.id === state.activeTemplateId)
+
     if (custom) return custom
-    
+
     // Then check registered templates (will be loaded from registry)
     return null
   },
@@ -47,38 +45,38 @@ export const hasActiveTemplate = new Derived({
 // Actions
 export const templateActions = {
   setActiveTemplate(templateId: string) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
       activeTemplateId: templateId,
     }))
   },
 
   addCustomTemplate(template: Template) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
       customTemplates: [...prev.customTemplates, template],
     }))
   },
 
   updateCustomTemplate(templateId: string, updates: Partial<Template>) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
-      customTemplates: prev.customTemplates.map(t =>
+      customTemplates: prev.customTemplates.map((t) =>
         t.id === templateId ? { ...t, ...updates } : t
       ),
     }))
   },
 
   removeCustomTemplate(templateId: string) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
-      customTemplates: prev.customTemplates.filter(t => t.id !== templateId),
+      customTemplates: prev.customTemplates.filter((t) => t.id !== templateId),
       activeTemplateId: prev.activeTemplateId === templateId ? null : prev.activeTemplateId,
     }))
   },
 
   setSectionOrder(templateId: string, order: number[]) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
       sectionOrder: {
         ...prev.sectionOrder,
@@ -88,7 +86,7 @@ export const templateActions = {
   },
 
   toggleCustomizing(isCustomizing: boolean) {
-    templateStore.setState(prev => ({
+    templateStore.setState((prev) => ({
       ...prev,
       isCustomizing,
     }))

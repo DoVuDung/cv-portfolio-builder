@@ -17,7 +17,7 @@ export const EducationSection: React.FC<EducationSectionProps> = React.memo(({ d
   return (
     <section className="education-section">
       <h2 className="section-title">Education</h2>
-      
+
       <div className="education-list">
         {data.map((edu, index) => (
           <div key={index} className="education-item">
@@ -32,9 +32,7 @@ export const EducationSection: React.FC<EducationSectionProps> = React.memo(({ d
               </div>
             </div>
 
-            {edu.gpa && (
-              <p className="education-gpa">GPA: {edu.gpa}</p>
-            )}
+            {edu.gpa && <p className="education-gpa">GPA: {edu.gpa}</p>}
           </div>
         ))}
       </div>

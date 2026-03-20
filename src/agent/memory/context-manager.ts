@@ -64,8 +64,8 @@ export class ContextManager {
    */
   removeApplicationGoal(goal: string): void {
     const currentGoals = this.getContext().applicationGoals
-    this.updateContext({ 
-      applicationGoals: currentGoals.filter(g => g !== goal) 
+    this.updateContext({
+      applicationGoals: currentGoals.filter((g) => g !== goal),
     })
   }
 
@@ -111,11 +111,7 @@ export class ContextManager {
    */
   isContextComplete(): boolean {
     const context = this.getContext()
-    return !!(
-      context.jobTarget &&
-      context.domain &&
-      context.experienceLevel
-    )
+    return !!(context.jobTarget && context.domain && context.experienceLevel)
   }
 
   /**

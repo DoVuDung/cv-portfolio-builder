@@ -10,61 +10,47 @@ interface TemplateRendererProps {
   theme?: Theme
 }
 
-export const TemplateRenderer: React.FC<TemplateRendererProps> = React.memo(({
-  template,
-  cvData,
-  theme,
-}) => {
-  // Convert theme to CSS variables
-  const cssVariables = theme ? convertThemeToCSS(theme) : {}
+export const TemplateRenderer: React.FC<TemplateRendererProps> = React.memo(
+  ({ template, cvData, theme }) => {
+    // Convert theme to CSS variables
+    const cssVariables = theme ? convertThemeToCSS(theme) : {}
 
-  // Separate sections by position
-  const leftSections = template.sections.filter(s => s.position === 'left')
-  const rightSections = template.sections.filter(s => s.position === 'right')
-  const mainSections = template.sections.filter(s => s.position === 'main')
+    // Separate sections by position
+    const leftSections = template.sections.filter((s) => s.position === 'left')
+    const rightSections = template.sections.filter((s) => s.position === 'right')
+    const mainSections = template.sections.filter((s) => s.position === 'main')
 
-  // Render based on layout type
-  switch (template.layout) {
-    case 'single-column':
-      return (
-        <SingleColumnLayout
-          sections={mainSections}
-          cvData={cvData}
-          theme={cssVariables}
-        />
-      )
+    // Render based on layout type
+    switch (template.layout) {
+      case 'single-column':
+        return <SingleColumnLayout sections={mainSections} cvData={cvData} theme={cssVariables} />
 
-    case 'two-column-left':
-      return (
-        <TwoColumnLayout
-          leftSections={leftSections}
-          rightSections={mainSections}
-          cvData={cvData}
-          theme={cssVariables}
-        />
-      )
+      case 'two-column-left':
+        return (
+          <TwoColumnLayout
+            leftSections={leftSections}
+            rightSections={mainSections}
+            cvData={cvData}
+            theme={cssVariables}
+          />
+        )
 
-    case 'two-column-right':
-      return (
-        <TwoColumnLayout
-          leftSections={mainSections}
-          rightSections={leftSections}
-          cvData={cvData}
-          theme={cssVariables}
-        />
-      )
+      case 'two-column-right':
+        return (
+          <TwoColumnLayout
+            leftSections={mainSections}
+            rightSections={leftSections}
+            cvData={cvData}
+            theme={cssVariables}
+          />
+        )
 
-    default:
-      // Fallback to single column
-      return (
-        <SingleColumnLayout
-          sections={mainSections}
-          cvData={cvData}
-          theme={cssVariables}
-        />
-      )
+      default:
+        // Fallback to single column
+        return <SingleColumnLayout sections={mainSections} cvData={cvData} theme={cssVariables} />
+    }
   }
-})
+)
 
 TemplateRenderer.displayName = 'TemplateRenderer'
 

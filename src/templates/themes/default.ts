@@ -3,7 +3,8 @@ import type { Theme } from '../types/template.types'
 export const modernTheme: Theme = {
   id: 'modern',
   name: 'Modern',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   fontSize: {
     base: '14px',
     heading: '24px',

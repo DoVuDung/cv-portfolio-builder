@@ -27,7 +27,9 @@ export abstract class BaseTool<TParams = any, TResult = any> implements ITool<TP
   /**
    * Execute with error handling
    */
-  async executeSafe(params: TParams): Promise<{ success: boolean; result?: TResult; error?: string }> {
+  async executeSafe(
+    params: TParams
+  ): Promise<{ success: boolean; result?: TResult; error?: string }> {
     try {
       if (this.validate && !this.validate(params)) {
         throw new Error('Validation failed')

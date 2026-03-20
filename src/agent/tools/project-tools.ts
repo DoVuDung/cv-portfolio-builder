@@ -19,7 +19,12 @@ export class AddProjectTool extends BaseTool<AddProjectParams, ToolResult<Projec
       { name: 'name', type: 'string', description: 'Project name', required: true },
       { name: 'description', type: 'string', description: 'Project description', required: true },
       { name: 'techStack', type: 'array', description: 'Technologies used', required: false },
-      { name: 'highlights', type: 'array', description: 'Key highlights/achievements', required: true },
+      {
+        name: 'highlights',
+        type: 'array',
+        description: 'Key highlights/achievements',
+        required: true,
+      },
     ],
     category: 'project' as const,
   }
@@ -58,7 +63,10 @@ export class AddProjectTool extends BaseTool<AddProjectParams, ToolResult<Projec
   }
 }
 
-export class GenerateHighlightsTool extends BaseTool<GenerateHighlightsParams, ToolResult<string[]>> {
+export class GenerateHighlightsTool extends BaseTool<
+  GenerateHighlightsParams,
+  ToolResult<string[]>
+> {
   readonly metadata = {
     name: 'generateHighlights',
     description: 'Generate compelling project highlights based on project details',
@@ -72,7 +80,7 @@ export class GenerateHighlightsTool extends BaseTool<GenerateHighlightsParams, T
 
   async execute(params: GenerateHighlightsParams): Promise<ToolResult<string[]>> {
     const { projectName, description, techStack } = params
-    
+
     // TODO: Integrate with AI service for generation
     // For now, provide template highlights
     const highlights: string[] = [
@@ -95,12 +103,20 @@ export class GenerateHighlightsTool extends BaseTool<GenerateHighlightsParams, T
   }
 }
 
-export class LinkToSkillsTool extends BaseTool<LinkToSkillsParams, ToolResult<{ linkedSkills: string[] }>> {
+export class LinkToSkillsTool extends BaseTool<
+  LinkToSkillsParams,
+  ToolResult<{ linkedSkills: string[] }>
+> {
   readonly metadata = {
     name: 'linkToSkills',
     description: 'Link project technologies to CV skills and identify gaps',
     parameters: [
-      { name: 'projectIndex', type: 'number', description: 'Index of project entry', required: true },
+      {
+        name: 'projectIndex',
+        type: 'number',
+        description: 'Index of project entry',
+        required: true,
+      },
     ],
     category: 'project' as const,
   }
@@ -108,7 +124,7 @@ export class LinkToSkillsTool extends BaseTool<LinkToSkillsParams, ToolResult<{ 
   async execute(params: LinkToSkillsParams): Promise<ToolResult<{ linkedSkills: string[] }>> {
     const { projectIndex } = params
     const projects = cvStore.state.cv.projects
-    
+
     if (projectIndex < 0 || projectIndex >= projects.length) {
       return {
         success: false,
@@ -119,17 +135,15 @@ export class LinkToSkillsTool extends BaseTool<LinkToSkillsParams, ToolResult<{ 
 
     const project = projects[projectIndex]
     const currentSkills = cvStore.state.cv.skills
-    const projectTech = project.techStack.map(t => t.toLowerCase())
-    
+    const projectTech = project.techStack.map((t) => t.toLowerCase())
+
     // Find skills from project that aren't in CV yet
     const newSkills = project.techStack.filter(
-      tech => !currentSkills.some(skill => skill.toLowerCase() === tech.toLowerCase())
+      (tech) => !currentSkills.some((skill) => skill.toLowerCase() === tech.toLowerCase())
     )
 
     // Find existing skills that are used in this project
-    const matchedSkills = currentSkills.filter(
-      skill => projectTech.includes(skill.toLowerCase())
-    )
+    const matchedSkills = currentSkills.filter((skill) => projectTech.includes(skill.toLowerCase()))
 
     const allLinkedSkills = [...matchedSkills, ...newSkills]
 
@@ -137,9 +151,10 @@ export class LinkToSkillsTool extends BaseTool<LinkToSkillsParams, ToolResult<{ 
       success: true,
       data: { linkedSkills: allLinkedSkills },
       message: `Found ${allLinkedSkills.length} skills linked to this project`,
-      suggestions: newSkills.length > 0
-        ? [`Consider adding these new skills to your CV: ${newSkills.join(', ')}`]
-        : ['All project technologies are already in your skills list'],
+      suggestions:
+        newSkills.length > 0
+          ? [`Consider adding these new skills to your CV: ${newSkills.join(', ')}`]
+          : ['All project technologies are already in your skills list'],
     }
   }
 }

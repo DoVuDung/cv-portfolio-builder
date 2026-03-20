@@ -17,7 +17,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = React.memo(({
   return (
     <section className="experience-section">
       <h2 className="section-title">Experience</h2>
-      
+
       <div className="experience-list">
         {data.map((exp, index) => (
           <div key={index} className="experience-item">
@@ -34,7 +34,9 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = React.memo(({
             {exp.achievements && exp.achievements.length > 0 && (
               <ul className="experience-achievements">
                 {exp.achievements.map((achievement, idx) => (
-                  <li key={idx} className="achievement-item">{achievement}</li>
+                  <li key={idx} className="achievement-item">
+                    {achievement}
+                  </li>
                 ))}
               </ul>
             )}
@@ -42,7 +44,9 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = React.memo(({
             {exp.techStack && exp.techStack.length > 0 && (
               <div className="experience-techstack">
                 {exp.techStack.map((tech, idx) => (
-                  <span key={idx} className="tech-badge">{tech}</span>
+                  <span key={idx} className="tech-badge">
+                    {tech}
+                  </span>
                 ))}
               </div>
             )}

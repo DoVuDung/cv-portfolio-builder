@@ -3,25 +3,25 @@ name: xurl
 description: A CLI tool for making authenticated requests to the X (Twitter) API. Use this skill when you need to post tweets, reply, quote, search, read posts, manage followers, send DMs, upload media, or interact with any X API v2 endpoint.
 metadata:
   {
-    "openclaw":
+    'openclaw':
       {
-        "emoji": "🐦",
-        "requires": { "bins": ["xurl"] },
-        "install":
+        'emoji': '🐦',
+        'requires': { 'bins': ['xurl'] },
+        'install':
           [
             {
-              "id": "brew",
-              "kind": "brew",
-              "formula": "xdevplatform/tap/xurl",
-              "bins": ["xurl"],
-              "label": "Install xurl (brew)",
+              'id': 'brew',
+              'kind': 'brew',
+              'formula': 'xdevplatform/tap/xurl',
+              'bins': ['xurl'],
+              'label': 'Install xurl (brew)',
             },
             {
-              "id": "npm",
-              "kind": "npm",
-              "package": "@xdevplatform/xurl",
-              "bins": ["xurl"],
-              "label": "Install xurl (npm)",
+              'id': 'npm',
+              'kind': 'npm',
+              'package': '@xdevplatform/xurl',
+              'bins': ['xurl'],
+              'label': 'Install xurl (npm)',
             },
           ],
       },

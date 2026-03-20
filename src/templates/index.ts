@@ -12,7 +12,12 @@ export type {
 } from './types/template.types'
 
 // Store
-export { templateStore, activeTemplate, hasActiveTemplate, templateActions } from './store/template.store'
+export {
+  templateStore,
+  activeTemplate,
+  hasActiveTemplate,
+  templateActions,
+} from './store/template.store'
 export { previewStore, currentZoom, isEditMode, previewActions } from './store/preview.store'
 
 // Layouts

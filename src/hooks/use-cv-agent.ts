@@ -17,33 +17,36 @@ export function useCVAgent() {
   /**
    * Execute a tool with error handling and loading state
    */
-  const executeTool = useCallback(async <TParams, TResult>(
-    toolName: string,
-    params?: TParams
-  ): Promise<ToolResult<TResult>> => {
-    try {
-      setIsProcessing(true)
-      setLastError(null)
-      
-      const result = await agentOrchestrator.executeTool<TParams, TResult>(toolName, params as TParams)
-      
-      // Update session activity
-      sessionManager.updateActivity({
-        type: 'suggest',
-        tool: toolName,
-        payload: params as any,
-        status: result.success ? 'completed' : 'failed',
-      })
-      
-      return result
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      setLastError(errorMessage)
-      throw error
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [])
+  const executeTool = useCallback(
+    async <TParams, TResult>(toolName: string, params?: TParams): Promise<ToolResult<TResult>> => {
+      try {
+        setIsProcessing(true)
+        setLastError(null)
+
+        const result = await agentOrchestrator.executeTool<TParams, TResult>(
+          toolName,
+          params as TParams
+        )
+
+        // Update session activity
+        sessionManager.updateActivity({
+          type: 'suggest',
+          tool: toolName,
+          payload: params as any,
+          status: result.success ? 'completed' : 'failed',
+        })
+
+        return result
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+        setLastError(errorMessage)
+        throw error
+      } finally {
+        setIsProcessing(false)
+      }
+    },
+    []
+  )
 
   /**
    * Get intelligent suggestions
@@ -104,11 +107,11 @@ export function useCVAgent() {
  * Hook to access reactive CV data
  */
 export function useCVData() {
-  const cv = useStore(cvStore, state => state.cv)
-  const context = useStore(cvStore, state => state.context)
+  const cv = useStore(cvStore, (state) => state.cv)
+  const context = useStore(cvStore, (state) => state.context)
   const completeness = useStore(cvCompletenessScore)
   const skills = useStore(categorizedSkills)
-  const lastModified = useStore(cvStore, state => state.lastModified)
+  const lastModified = useStore(cvStore, (state) => state.lastModified)
 
   return {
     cv,
@@ -130,15 +133,15 @@ export function useAgentTools() {
 
   const toolsByCategory = useMemo(() => {
     const categories: Record<string, any[]> = {}
-    
-    availableTools.forEach(tool => {
+
+    availableTools.forEach((tool) => {
       const category = tool.metadata.category
       if (!categories[category]) {
         categories[category] = []
       }
       categories[category].push(tool)
     })
-    
+
     return categories
   }, [availableTools])
 

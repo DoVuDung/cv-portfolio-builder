@@ -15,7 +15,8 @@ export const summaryPrompts = {
   professional: {
     name: 'professional-summary',
     description: 'Generate a professional CV summary',
-    build: (params: { role: string; experience: number; skills: string[]; domain?: string }) => `
+    build: (params: { role: string; experience: number; skills: string[]; domain?: string }) =>
+      `
 You are an expert career coach and resume writer. Generate a compelling professional summary for a ${params.role}.
 
 Context:
@@ -37,7 +38,8 @@ Generate a summary that would catch a recruiter's attention in under 10 seconds.
   elevator: {
     name: 'elevator-pitch',
     description: 'Generate a concise elevator pitch',
-    build: (params: { role: string; valueProp: string; skills: string[] }) => `
+    build: (params: { role: string; valueProp: string; skills: string[] }) =>
+      `
 Create a 30-second elevator pitch for a ${params.role}.
 
 Key Information:
@@ -62,14 +64,15 @@ export const achievementPrompts = {
   enhance: {
     name: 'achievement-enhancement',
     description: 'Enhance achievement descriptions with impact',
-    build: (params: { achievements: string[]; role: string; context?: string }) => `
+    build: (params: { achievements: string[]; role: string; context?: string }) =>
+      `
 You are helping improve CV achievement descriptions using the STAR method.
 
 Role: ${params.role}
 ${params.context ? `Context: ${params.context}` : ''}
 
 Current Achievements:
-${params.achievements.map(a => `• ${a}`).join('\n')}
+${params.achievements.map((a) => `• ${a}`).join('\n')}
 
 Enhancement Guidelines:
 1. Start each bullet with a strong action verb (Led, Developed, Optimized, etc.)
@@ -85,7 +88,8 @@ Provide enhanced versions as a JSON array of strings.
   quantify: {
     name: 'quantify-impact',
     description: 'Add metrics to achievements',
-    build: (params: { achievement: string }) => `
+    build: (params: { achievement: string }) =>
+      `
 Analyze this achievement and suggest specific metrics that could be added:
 
 "${params.achievement}"
@@ -109,7 +113,8 @@ export const skillGapPrompts = {
   analyze: {
     name: 'skill-gap-analysis',
     description: 'Identify skill gaps for target role',
-    build: (params: { currentSkills: string[]; targetRole: string; experienceLevel: string }) => `
+    build: (params: { currentSkills: string[]; targetRole: string; experienceLevel: string }) =>
+      `
 Perform a comprehensive skill gap analysis.
 
 Target Role: ${params.targetRole}
@@ -137,7 +142,8 @@ Output Format (JSON):
   learningPath: {
     name: 'learning-path',
     description: 'Create learning path for skill',
-    build: (params: { skill: string; currentLevel: string; goalLevel: string }) => `
+    build: (params: { skill: string; currentLevel: string; goalLevel: string }) =>
+      `
 Create a structured learning path for ${params.skill}.
 
 Current Level: ${params.currentLevel}
@@ -161,7 +167,8 @@ export const analysisPrompts = {
   comprehensive: {
     name: 'comprehensive-cv-analysis',
     description: 'Full CV strength analysis',
-    build: (params: { cvData: any; jobDescription?: string }) => `
+    build: (params: { cvData: any; jobDescription?: string }) =>
+      `
 You are an experienced recruiter reviewing this CV.
 
 ${params.jobDescription ? `Job Description:\n${params.jobDescription}\n\n` : ''}
@@ -189,7 +196,8 @@ Output as JSON with detailed feedback.
   atsCheck: {
     name: 'ats-optimization',
     description: 'ATS keyword optimization check',
-    build: (params: { cvText: string; jobDescription: string }) => `
+    build: (params: { cvText: string; jobDescription: string }) =>
+      `
 Analyze this CV for ATS (Applicant Tracking System) optimization.
 
 Job Description Keywords: Extract key terms from the job description
@@ -213,7 +221,13 @@ export const projectPrompts = {
   highlight: {
     name: 'project-highlights',
     description: 'Generate compelling project highlights',
-    build: (params: { projectName: string; description: string; techStack: string[]; impact?: string }) => `
+    build: (params: {
+      projectName: string
+      description: string
+      techStack: string[]
+      impact?: string
+    }) =>
+      `
 Create compelling highlights for this portfolio project.
 
 Project Name: ${params.projectName}
@@ -235,7 +249,8 @@ Make each highlight concise and impactful.
   caseStudy: {
     name: 'project-case-study',
     description: 'Expand project into case study format',
-    build: (params: { projectName: string; description: string }) => `
+    build: (params: { projectName: string; description: string }) =>
+      `
 Expand this project into a detailed case study.
 
 Project: ${params.projectName}

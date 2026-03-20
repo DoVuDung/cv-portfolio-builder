@@ -115,7 +115,7 @@ export const cvCompletenessScore = new Derived({
 export const categorizedSkills = new Derived({
   fn: () => {
     const skills = cvStore.state.cv.skills
-    
+
     // Simple categorization based on keywords
     const categories: Record<string, string[]> = {
       frontend: [],
@@ -126,24 +126,34 @@ export const categorizedSkills = new Derived({
       other: [],
     }
 
-    const frontendKeywords = ['react', 'vue', 'angular', 'html', 'css', 'javascript', 'typescript', 'next.js', 'nuxt']
+    const frontendKeywords = [
+      'react',
+      'vue',
+      'angular',
+      'html',
+      'css',
+      'javascript',
+      'typescript',
+      'next.js',
+      'nuxt',
+    ]
     const backendKeywords = ['node', 'python', 'java', 'go', 'rust', 'ruby', 'php', '.net']
     const databaseKeywords = ['sql', 'mongodb', 'postgres', 'mysql', 'redis', 'firebase']
     const devopsKeywords = ['docker', 'kubernetes', 'aws', 'azure', 'gcp', 'ci/cd', 'jenkins']
     const toolsKeywords = ['git', 'linux', 'bash', 'webpack', 'vite', 'npm', 'yarn']
 
-    skills.forEach(skill => {
+    skills.forEach((skill) => {
       const lowerSkill = skill.toLowerCase()
-      
-      if (frontendKeywords.some(kw => lowerSkill.includes(kw))) {
+
+      if (frontendKeywords.some((kw) => lowerSkill.includes(kw))) {
         categories.frontend.push(skill)
-      } else if (backendKeywords.some(kw => lowerSkill.includes(kw))) {
+      } else if (backendKeywords.some((kw) => lowerSkill.includes(kw))) {
         categories.backend.push(skill)
-      } else if (databaseKeywords.some(kw => lowerSkill.includes(kw))) {
+      } else if (databaseKeywords.some((kw) => lowerSkill.includes(kw))) {
         categories.database.push(skill)
-      } else if (devopsKeywords.some(kw => lowerSkill.includes(kw))) {
+      } else if (devopsKeywords.some((kw) => lowerSkill.includes(kw))) {
         categories.devops.push(skill)
-      } else if (toolsKeywords.some(kw => lowerSkill.includes(kw))) {
+      } else if (toolsKeywords.some((kw) => lowerSkill.includes(kw))) {
         categories.tools.push(skill)
       } else {
         categories.other.push(skill)
@@ -158,7 +168,7 @@ export const categorizedSkills = new Derived({
 // Helper functions to update store
 export const cvActions = {
   updateProfile(profile: Partial<CV['profile']>) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
@@ -180,7 +190,7 @@ export const cvActions = {
   },
 
   addExperience(experience: Experience) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
@@ -199,11 +209,11 @@ export const cvActions = {
   },
 
   updateExperience(index: number, experience: Partial<Experience>) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
-        experience: prev.cv.experience.map((exp, i) => 
+        experience: prev.cv.experience.map((exp, i) =>
           i === index ? { ...exp, ...experience } : exp
         ),
       },
@@ -220,7 +230,7 @@ export const cvActions = {
   },
 
   addProject(project: Project) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
@@ -239,13 +249,11 @@ export const cvActions = {
   },
 
   updateProject(index: number, project: Partial<Project>) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
-        projects: prev.cv.projects.map((proj, i) => 
-          i === index ? { ...proj, ...project } : proj
-        ),
+        projects: prev.cv.projects.map((proj, i) => (i === index ? { ...proj, ...project } : proj)),
       },
       lastModified: new Date(),
       modificationHistory: [
@@ -260,7 +268,7 @@ export const cvActions = {
   },
 
   addSkills(skills: string[]) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
@@ -279,11 +287,11 @@ export const cvActions = {
   },
 
   removeSkill(skill: string) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: {
         ...prev.cv,
-        skills: prev.cv.skills.filter(s => s !== skill),
+        skills: prev.cv.skills.filter((s) => s !== skill),
       },
       lastModified: new Date(),
       modificationHistory: [
@@ -298,7 +306,7 @@ export const cvActions = {
   },
 
   updateContext(context: Partial<AgentContext>) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       context: {
         ...prev.context,
@@ -316,7 +324,7 @@ export const cvActions = {
   },
 
   loadCV(cvData: CV) {
-    cvStore.setState(prev => ({
+    cvStore.setState((prev) => ({
       ...prev,
       cv: cvData,
       lastModified: new Date(),

@@ -1,5 +1,11 @@
 import type { Template } from '../types/template.types'
-import { ProfileSection, ExperienceSection, EducationSection, SkillsSection, ProjectSection } from '../sections'
+import {
+  ProfileSection,
+  ExperienceSection,
+  EducationSection,
+  SkillsSection,
+  ProjectSection,
+} from '../sections'
 import { modernTheme } from '../themes'
 
 // Sidebar Template - Modern two-column tech industry style

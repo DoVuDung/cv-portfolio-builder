@@ -6,16 +6,17 @@ description: Use when you need to check feature flag states, compare channels, o
 # Feature Flags
 
 Arguments:
+
 - $ARGUMENTS: Optional flags
 
 ## Options
 
-| Option | Purpose |
-|--------|---------|
-| (none) | Show all flags across all channels |
-| `--diff <ch1> <ch2>` | Compare flags between channels |
-| `--cleanup` | Show flags grouped by cleanup status |
-| `--csv` | Output in CSV format |
+| Option               | Purpose                              |
+| -------------------- | ------------------------------------ |
+| (none)               | Show all flags across all channels   |
+| `--diff <ch1> <ch2>` | Compare flags between channels       |
+| `--cleanup`          | Show flags grouped by cleanup status |
+| `--csv`              | Output in CSV format                 |
 
 ## Channels
 

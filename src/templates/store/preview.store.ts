@@ -39,7 +39,7 @@ export const isEditMode = new Derived({
 // Actions
 export const previewActions = {
   updateSettings(updates: Partial<PreviewSettings>) {
-    previewStore.setState(prev => ({
+    previewStore.setState((prev) => ({
       ...prev,
       settings: {
         ...prev.settings,
@@ -59,7 +59,7 @@ export const previewActions = {
   },
 
   toggleGuides() {
-    previewStore.setState(prev => ({
+    previewStore.setState((prev) => ({
       ...prev,
       settings: {
         ...prev.settings,
@@ -73,21 +73,21 @@ export const previewActions = {
   },
 
   toggleFullscreen() {
-    previewStore.setState(prev => ({
+    previewStore.setState((prev) => ({
       ...prev,
       isFullscreen: !prev.isFullscreen,
     }))
   },
 
   togglePrintPreview() {
-    previewStore.setState(prev => ({
+    previewStore.setState((prev) => ({
       ...prev,
       showPrintPreview: !prev.showPrintPreview,
     }))
   },
 
   resetSettings() {
-    previewStore.setState(prev => ({
+    previewStore.setState((prev) => ({
       ...prev,
       settings: initialPreviewSettings,
     }))

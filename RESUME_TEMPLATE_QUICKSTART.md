@@ -27,17 +27,12 @@ import { harvardTemplate } from '@/templates/examples/harvard.template'
 
 function SimpleResumePreview() {
   const { cv } = useCVData()
-  
+
   return (
     <div className="p-8">
       <h1>My Resume</h1>
-      
-      {cv && (
-        <TemplateRenderer
-          template={harvardTemplate}
-          cvData={cv}
-        />
-      )}
+
+      {cv && <TemplateRenderer template={harvardTemplate} cvData={cv} />}
     </div>
   )
 }
@@ -57,7 +52,7 @@ import { useCVData } from '@/hooks/use-cv-agent'
 function ResumeWithSwitcher() {
   const { cv } = useCVData()
   const { activeTemplate, setActiveTemplate, allTemplates } = useTemplateEngine()
-  
+
   return (
     <div>
       {/* Template Selector */}
@@ -69,21 +64,16 @@ function ResumeWithSwitcher() {
           className="ml-2 p-2 border rounded"
         >
           <option value="">Choose a template...</option>
-          {allTemplates.map(template => (
+          {allTemplates.map((template) => (
             <option key={template.id} value={template.id}>
               {template.name}
             </option>
           ))}
         </select>
       </div>
-      
+
       {/* Preview */}
-      {activeTemplate && cv && (
-        <TemplateRenderer
-          template={activeTemplate}
-          cvData={cv}
-        />
-      )}
+      {activeTemplate && cv && <TemplateRenderer template={activeTemplate} cvData={cv} />}
     </div>
   )
 }
@@ -103,7 +93,7 @@ import { harvardTemplate } from '@/templates/examples/harvard.template'
 function ResumeWithControls() {
   const { cv } = useCVData()
   const { settings, setZoom, setPageSize, toggleFullscreen } = useCVPreview()
-  
+
   return (
     <div>
       {/* Control Panel */}
@@ -111,33 +101,25 @@ function ResumeWithControls() {
         <button onClick={() => setZoom(settings.zoom - 0.1)}>Zoom Out</button>
         <span>Zoom: {Math.round(settings.zoom * 100)}%</span>
         <button onClick={() => setZoom(settings.zoom + 0.1)}>Zoom In</button>
-        
-        <select 
-          value={settings.pageSize}
-          onChange={(e) => setPageSize(e.target.value as any)}
-        >
+
+        <select value={settings.pageSize} onChange={(e) => setPageSize(e.target.value as any)}>
           <option value="A4">A4</option>
           <option value="Letter">Letter</option>
           <option value="Legal">Legal</option>
         </select>
-        
+
         <button onClick={toggleFullscreen}>Fullscreen</button>
       </div>
-      
+
       {/* Preview with Zoom */}
-      <div 
+      <div
         className="preview-container"
-        style={{ 
+        style={{
           transform: `scale(${settings.zoom})`,
           transformOrigin: 'top center',
         }}
       >
-        {cv && (
-          <TemplateRenderer
-            template={harvardTemplate}
-            cvData={cv}
-          />
-        )}
+        {cv && <TemplateRenderer template={harvardTemplate} cvData={cv} />}
       </div>
     </div>
   )
@@ -149,6 +131,7 @@ function ResumeWithControls() {
 ## 📋 Available Templates
 
 ### Harvard Template
+
 - **Layout**: Single column
 - **Best For**: Academic, traditional industries
 - **Sections**: Profile → Education → Experience → Skills → Projects
@@ -159,9 +142,10 @@ import { harvardTemplate } from '@/templates/examples/harvard.template'
 ```
 
 ### Sidebar Template
+
 - **Layout**: Two columns (sidebar left)
 - **Best For**: Tech industry, modern companies
-- **Sections**: 
+- **Sections**:
   - Left: Profile, Skills, Education
   - Right: Experience, Projects
 - **Theme**: Modern (sans-serif, blue accent)
@@ -201,12 +185,12 @@ const myCustomTheme: Theme = {
     small: '12px',
   },
   colors: {
-    primary: '#7c3aed',    // Purple
-    secondary: '#64748b',  // Gray
-    accent: '#f59e0b',     // Amber
-    text: '#1f2937',       // Dark gray
+    primary: '#7c3aed', // Purple
+    secondary: '#64748b', // Gray
+    accent: '#f59e0b', // Amber
+    text: '#1f2937', // Dark gray
     background: '#ffffff', // White
-    border: '#e5e7eb',     // Light gray
+    border: '#e5e7eb', // Light gray
   },
   spacing: {
     section: '2rem',
@@ -223,11 +207,7 @@ const myCustomTheme: Theme = {
 
 ```typescript
 import type { Template } from '@/templates/types/template.types'
-import { 
-  ProfileSection, 
-  ExperienceSection, 
-  SkillsSection 
-} from '@/templates/sections'
+import { ProfileSection, ExperienceSection, SkillsSection } from '@/templates/sections'
 import { creativeTheme } from '@/templates/themes'
 
 const creativeTemplate: Template = {
@@ -313,20 +293,20 @@ import { useCVData } from '@/hooks/use-cv-agent'
 
 function ExportButton() {
   const { cv } = useCVData()
-  
+
   const handleExport = () => {
     const json = JSON.stringify(cv, null, 2)
     const blob = new Blob([json], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    
+
     const a = document.createElement('a')
     a.href = url
     a.download = 'my-cv.json'
     a.click()
-    
+
     URL.revokeObjectURL(url)
   }
-  
+
   return <button onClick={handleExport}>Export CV</button>
 }
 ```
@@ -336,23 +316,29 @@ function ExportButton() {
 ## 🎯 Best Practices
 
 ### 1. Use Memoization
+
 All section components are already memoized with React.memo. Don't wrap them again.
 
 ### 2. Selective Subscriptions
+
 Subscribe only to the CV data you need:
+
 ```typescript
 // Good - specific subscription
-const skills = useStore(cvStore, state => state.cv.skills)
+const skills = useStore(cvStore, (state) => state.cv.skills)
 
 // Avoid - subscribes to entire CV
-const cv = useStore(cvStore, state => state.cv)
+const cv = useStore(cvStore, (state) => state.cv)
 ```
 
 ### 3. Theme Consistency
+
 Keep themes consistent across templates. Use the same color palette and typography.
 
 ### 4. Print Optimization
+
 Always test your templates in print mode:
+
 ```typescript
 const { setMode } = useCVPreview()
 setMode('print') // Shows print preview
@@ -372,17 +358,17 @@ function IntegratedResumeBuilder() {
   const { cv, completeness } = useCVData()
   const { executeTool } = useCVAgent()
   const { activeTemplate } = useTemplateEngine()
-  
+
   return (
     <div>
       {/* Show completeness score */}
       <div>CV Completeness: {completeness}%</div>
-      
+
       {/* Run analysis tool */}
       <button onClick={() => executeTool('analyzeCV', undefined)}>
         Analyze My Resume
       </button>
-      
+
       {/* Render resume */}
       {activeTemplate && cv && (
         <TemplateRenderer
@@ -420,7 +406,7 @@ function StandaloneExample() {
     projects: [...],
     education: [...],
   }
-  
+
   return (
     <TemplateRenderer
       template={harvardTemplate}
@@ -435,13 +421,13 @@ function StandaloneExample() {
 ## 📊 Performance Tips
 
 ### 1. Lazy Load Templates
+
 ```typescript
-const HeavyTemplate = lazy(() => 
-  import('@/templates/examples/heavy.template')
-)
+const HeavyTemplate = lazy(() => import('@/templates/examples/heavy.template'))
 ```
 
 ### 2. Debounce Rapid Changes
+
 ```typescript
 import { debounce } from 'lodash'
 
@@ -451,6 +437,7 @@ const debouncedSetZoom = debounce((zoom) => {
 ```
 
 ### 3. Use Derived States
+
 ```typescript
 // Already provided by the system
 const currentZoom = useStore(currentZoom)
@@ -462,16 +449,19 @@ const isEditMode = useStore(isEditMode)
 ## 🐛 Troubleshooting
 
 ### Template Not Rendering
+
 - Check that template ID matches
 - Ensure CV data is loaded
 - Verify section components are imported
 
 ### Styles Not Applying
+
 - Make sure CSS variables are defined
 - Check Tailwind config
 - Verify theme object structure
 
 ### State Not Updating
+
 - Ensure you're using TanStack Store hooks correctly
 - Check that stores are mounted
 - Verify derived states dependencies

@@ -7,9 +7,9 @@ import type { PreviewSettings } from '../types/template.types'
  * Hook to access preview functionality
  */
 export function useCVPreview() {
-  const settings = useStore(previewStore, state => state.settings)
-  const isFullscreen = useStore(previewStore, state => state.isFullscreen)
-  const showPrintPreview = useStore(previewStore, state => state.showPrintPreview)
+  const settings = useStore(previewStore, (state) => state.settings)
+  const isFullscreen = useStore(previewStore, (state) => state.isFullscreen)
+  const showPrintPreview = useStore(previewStore, (state) => state.showPrintPreview)
 
   const updateSettings = useCallback((updates: Partial<PreviewSettings>) => {
     previewActions.updateSettings(updates)

@@ -33,7 +33,7 @@ class TemplateRegistry {
    * Get all templates
    */
   getAllTemplates(): Array<Template> {
-    return Array.from(this.templates.values()).map(entry => entry.template)
+    return Array.from(this.templates.values()).map((entry) => entry.template)
   }
 
   /**
@@ -41,8 +41,8 @@ class TemplateRegistry {
    */
   getByCategory(category: string): Array<Template> {
     return Array.from(this.templates.values())
-      .filter(entry => entry.category === category)
-      .map(entry => entry.template)
+      .filter((entry) => entry.category === category)
+      .map((entry) => entry.template)
   }
 
   /**
@@ -50,10 +50,8 @@ class TemplateRegistry {
    */
   searchByTags(tags: Array<string>): Array<Template> {
     return Array.from(this.templates.values())
-      .filter(entry => 
-        tags.some(tag => entry.tags.includes(tag))
-      )
-      .map(entry => entry.template)
+      .filter((entry) => tags.some((tag) => entry.tags.includes(tag)))
+      .map((entry) => entry.template)
   }
 
   /**
@@ -76,7 +74,7 @@ class TemplateRegistry {
   getTemplateMetadata(id: string): Omit<TemplateRegistryEntry, 'template'> | null {
     const entry = this.templates.get(id)
     if (!entry) return null
-    
+
     const { template, ...metadata } = entry
     return metadata
   }

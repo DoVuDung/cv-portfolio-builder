@@ -14,7 +14,8 @@ type OptimizeContactParams = { email: string; github?: string; linkedin?: string
 export class UpdateProfileTool extends BaseTool<UpdateProfileParams, ToolResult<Profile>> {
   readonly metadata = {
     name: 'updateProfile',
-    description: 'Update personal profile information including name, title, summary, and contact details',
+    description:
+      'Update personal profile information including name, title, summary, and contact details',
     parameters: [
       { name: 'name', type: 'string', description: 'Full name', required: false },
       { name: 'title', type: 'string', description: 'Professional title', required: false },
@@ -28,7 +29,7 @@ export class UpdateProfileTool extends BaseTool<UpdateProfileParams, ToolResult<
   async execute(params: UpdateProfileParams): Promise<ToolResult<Profile>> {
     try {
       cvActions.updateProfile(params)
-      
+
       return {
         success: true,
         data: cvStore.state.cv.profile,
@@ -59,9 +60,9 @@ export class GenerateSummaryTool extends BaseTool<GenerateSummaryParams, ToolRes
     // TODO: Integrate with AI service
     // For now, generate a template summary
     const { role, experience, skills } = params
-    
+
     const topSkills = skills.slice(0, 5).join(', ')
-    
+
     const summary = `Experienced ${role} with ${experience}+ years of expertise in designing and implementing scalable solutions. Proficient in ${topSkills}. Passionate about building high-quality applications and driving technical excellence.`
 
     return {
@@ -77,7 +78,10 @@ export class GenerateSummaryTool extends BaseTool<GenerateSummaryParams, ToolRes
   }
 }
 
-export class OptimizeContactTool extends BaseTool<OptimizeContactParams, ToolResult<{ suggestions: string[] }>> {
+export class OptimizeContactTool extends BaseTool<
+  OptimizeContactParams,
+  ToolResult<{ suggestions: string[] }>
+> {
   readonly metadata = {
     name: 'optimizeContact',
     description: 'Analyze and suggest improvements to contact information',
@@ -121,9 +125,10 @@ export class OptimizeContactTool extends BaseTool<OptimizeContactParams, ToolRes
     return {
       success: true,
       data: { suggestions },
-      message: suggestions.length > 0 
-        ? 'Found optimization opportunities' 
-        : 'Contact information looks good!',
+      message:
+        suggestions.length > 0
+          ? 'Found optimization opportunities'
+          : 'Contact information looks good!',
     }
   }
 }
