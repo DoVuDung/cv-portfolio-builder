@@ -52,14 +52,18 @@ export class ContextManager {
    * Update context
    */
   update(context: Partial<AgentContext>): void {
-    this.store.setState((prev) => ({
-      ...prev,
-      ...context,
-      preferences: {
+    this.store.setState((prev) => {
+      const newPreferences = {
         ...prev.preferences,
         ...(context.preferences || {}),
-      },
-    }))
+      }
+      
+      return {
+        ...prev,
+        ...context,
+        preferences: newPreferences,
+      }
+    })
   }
 
   /**
@@ -89,8 +93,8 @@ export class ContextManager {
   setTone(tone: Tone): void {
     this.update({
       preferences: {
-        ...this.store.state.preferences,
         tone,
+        emphasis: this.store.state.preferences?.emphasis || [],
       },
     })
   }
@@ -103,7 +107,7 @@ export class ContextManager {
     if (!current.includes(emphasis)) {
       this.update({
         preferences: {
-          ...this.store.state.preferences,
+          tone: this.store.state.preferences?.tone || 'professional',
           emphasis: [...current, emphasis],
         },
       })
@@ -117,7 +121,7 @@ export class ContextManager {
     const current = this.store.state.preferences?.emphasis || []
     this.update({
       preferences: {
-        ...this.store.state.preferences,
+        tone: this.store.state.preferences?.tone || 'professional',
         emphasis: current.filter((e) => e !== emphasis),
       },
     })
@@ -178,7 +182,7 @@ export class ContextManager {
   /**
    * Check if context matches CV
    */
-  validateWithCV(cv: unknown): Array<string> {
+  validateWithCV(_cv: unknown): Array<string> {
     const warnings: Array<string> = []
 
     // This would be implemented with actual CV validation
@@ -212,7 +216,7 @@ export class ContextManager {
    */
   subscribe(callback: (context: AgentContext) => void): () => void {
     return this.store.subscribe((state) => {
-      callback({ ...state })
+      callback(state)
     })
   }
 }
